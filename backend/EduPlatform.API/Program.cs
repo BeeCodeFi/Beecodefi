@@ -45,7 +45,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:3000",
-                "https://localhost:3000")
+                "https://localhost:3000",
+                "https://beecodefi-edu.vercel.app")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -68,5 +69,8 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5219";
+app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();
