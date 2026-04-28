@@ -1,5 +1,6 @@
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 
 namespace EduPlatform.API.Services;
 
@@ -16,17 +17,25 @@ public class EmailService : IEmailService
 
     public async Task SendContactEmailAsync(string name, string email, string subject, string message)
     {
-        var apiKey = _config["SendGrid:ApiKey"];
+        var smtpUser = _config["Smtp:Username"];
+        var smtpPass = _config["Smtp:Password"];
 
-        if (string.IsNullOrEmpty(apiKey) || apiKey == "your-sendgrid-api-key")
+        if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass) || smtpPass == "your-app-password")
         {
-            _logger.LogWarning("SendGrid API key not configured. Contact message from {Email} logged but not sent.", email);
+            _logger.LogWarning("SMTP not configured. Contact message from {Email} logged but not sent.", email);
             return;
         }
 
-        var client = new SendGridClient(apiKey);
-        var from = new EmailAddress(_config["SendGrid:FromEmail"] ?? "noreply@beecodefi.com", "BEECODEFI Contact");
-        var to = new EmailAddress(_config["SendGrid:ToEmail"] ?? "kumaryursh@gmail.com", "Ayush Kumar");
+        var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
+        var port = int.Parse(_config["Smtp:Port"] ?? "587");
+        var toEmail = _config["Smtp:ToEmail"] ?? "kumaryursh@gmail.com";
+
+        var msg = new MimeMessage();
+        msg.From.Add(new MailboxAddress("BEECODEFI Contact", smtpUser));
+        msg.To.Add(new MailboxAddress("Ayush Kumar", toEmail));
+        msg.Subject = $"[BEECODEFI Contact] {subject}";
+        msg.ReplyTo.Add(new MailboxAddress(name, email));
+
         var htmlContent = $@"
             <h2>New Contact Message from BEECODEFI</h2>
             <p><strong>Name:</strong> {System.Net.WebUtility.HtmlEncode(name)}</p>
@@ -35,12 +44,12 @@ public class EmailService : IEmailService
             <hr/>
             <p>{System.Net.WebUtility.HtmlEncode(message)}</p>";
 
-        var msg = MailHelper.CreateSingleEmail(from, to, $"[BEECODEFI Contact] {subject}", message, htmlContent);
-        var response = await client.SendEmailAsync(msg);
+        msg.Body = new TextPart("html") { Text = htmlContent };
 
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError("Failed to send contact email. Status: {StatusCode}", response.StatusCode);
-        }
+        using var client = new SmtpClient();
+        await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+        await client.AuthenticateAsync(smtpUser, smtpPass);
+        await client.SendAsync(msg);
+        await client.DisconnectAsync(true);
     }
 }
