@@ -3005,11 +3005,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\akumar\\Desktop\\Workspace\\Project\\backend\\EduPlatform.API\\EduPlatform.API.csproj",
+      "projectUniqueName": "C:\\Users\\akumar\\Desktop\\Workspace\\Project\\Beecodefi\\backend\\EduPlatform.API\\EduPlatform.API.csproj",
       "projectName": "EduPlatform.API",
-      "projectPath": "C:\\Users\\akumar\\Desktop\\Workspace\\Project\\backend\\EduPlatform.API\\EduPlatform.API.csproj",
+      "projectPath": "C:\\Users\\akumar\\Desktop\\Workspace\\Project\\Beecodefi\\backend\\EduPlatform.API\\EduPlatform.API.csproj",
       "packagesPath": "C:\\Users\\akumar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\akumar\\Desktop\\Workspace\\Project\\backend\\EduPlatform.API\\obj\\",
+      "outputPath": "C:\\Users\\akumar\\Desktop\\Workspace\\Project\\Beecodefi\\backend\\EduPlatform.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\akumar\\AppData\\Roaming\\NuGet\\NuGet.Config"
