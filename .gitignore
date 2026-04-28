@@ -3,3 +3,7 @@
 backend/EduPlatform.API/beecodefi.db
 backend/EduPlatform.API/beecodefi.db-shm
 backend/EduPlatform.API/beecodefi.db-wal
+
+# Build outputs
+backend/*/bin/
+backend/*/obj/
