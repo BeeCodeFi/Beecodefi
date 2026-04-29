@@ -213,7 +213,7 @@ export default function AccountPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
           >
             {[
-              { icon: Trophy, label: "Quiz Attempts", value: stats.totalQuizAttempts, color: "text-yellow-500" },
+              { icon: Trophy, label: "Quizzes Completed", value: stats.quizzesCompleted, color: "text-yellow-500" },
               { icon: BookOpen, label: "Lessons Done", value: stats.totalLessonsCompleted, color: "text-green-500" },
               { icon: BarChart3, label: "Avg Quiz Score", value: `${stats.averageQuizScore}%`, color: "text-blue-500" },
               { icon: Calendar, label: "Member Since", value: new Date(stats.memberSince).toLocaleDateString("en-US", { month: "short", year: "numeric" }), color: "text-purple-500" },

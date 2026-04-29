@@ -6,8 +6,8 @@ export interface QuizCategoryMeta {
   color: string;
   gradientBg: string;
   order: number;
-  tutorialSlug: string; // maps to the tutorial course slug
-  topics: string[];     // quiz topic names from the backend
+  tutorialSlug: string;
+  categoryName: string; // matches backend Category field (HTML, CSS, JavaScript)
 }
 
 export const quizCategories: QuizCategoryMeta[] = [
@@ -21,7 +21,7 @@ export const quizCategories: QuizCategoryMeta[] = [
     gradientBg: "from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20",
     order: 1,
     tutorialSlug: "html",
-    topics: ["HTML"],
+    categoryName: "HTML",
   },
   {
     id: "css",
@@ -33,7 +33,7 @@ export const quizCategories: QuizCategoryMeta[] = [
     gradientBg: "from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20",
     order: 2,
     tutorialSlug: "css",
-    topics: ["CSS"],
+    categoryName: "CSS",
   },
   {
     id: "javascript",
@@ -45,22 +45,22 @@ export const quizCategories: QuizCategoryMeta[] = [
     gradientBg: "from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20",
     order: 3,
     tutorialSlug: "javascript",
-    topics: ["JavaScript"],
+    categoryName: "JavaScript",
   },
 ];
+
+/** Map a quiz category name to its metadata */
+export function getCategoryMeta(
+  categoryName: string
+): QuizCategoryMeta | undefined {
+  return quizCategories.find(
+    (c) => c.categoryName.toLowerCase() === categoryName.toLowerCase()
+  );
+}
 
 /** Map a tutorial slug to its quiz category */
 export function getQuizCategoryForTutorial(
   tutorialSlug: string
 ): QuizCategoryMeta | undefined {
   return quizCategories.find((c) => c.tutorialSlug === tutorialSlug);
-}
-
-/** Map a quiz topic to its category */
-export function getCategoryForTopic(
-  topic: string
-): QuizCategoryMeta | undefined {
-  return quizCategories.find((c) =>
-    c.topics.some((t) => t.toLowerCase() === topic.toLowerCase())
-  );
 }

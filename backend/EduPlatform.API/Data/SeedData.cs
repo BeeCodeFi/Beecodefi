@@ -9,141 +9,343 @@ public static class SeedData
     {
         await db.Database.MigrateAsync();
 
-        if (await db.Quizzes.AnyAsync()) return;
+        // Re-seed if no quizzes or still using old 3-quiz structure
+        var quizCount = await db.Quizzes.CountAsync();
+        if (quizCount >= 18) return;
 
-        var htmlQuiz = new Quiz
+        // Clear old quiz data to reseed
+        if (quizCount > 0)
         {
-            Title = "HTML Fundamentals",
-            Topic = "HTML",
-            Description = "Test your knowledge of HTML basics, elements, attributes, forms, tables, semantic markup, and HTML5 APIs.",
+            var oldAttempts = await db.QuizAttempts.ToListAsync();
+            db.QuizAttempts.RemoveRange(oldAttempts);
+            var oldQuizzes = await db.Quizzes.Include(q => q.Questions).ThenInclude(q => q.Answers).ToListAsync();
+            db.Quizzes.RemoveRange(oldQuizzes);
+            await db.SaveChangesAsync();
+        }
+
+        // ═══════════════════════════════════════════════════
+        //  HTML Quizzes (6 subcategories × 5 questions)
+        // ═══════════════════════════════════════════════════
+
+        var htmlBasics = new Quiz
+        {
+            Title = "HTML Basics",
+            Topic = "html-basics",
+            Category = "HTML",
+            Description = "Core HTML concepts including document structure, headings, and basic elements.",
             Difficulty = "Beginner",
             Questions = new List<Question>
             {
-                // ── Beginner ──
                 new() { Text = "What does HTML stand for?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "Hyper Text Markup Language", IsCorrect = true }, new() { Text = "High Tech Modern Language", IsCorrect = false }, new() { Text = "Hyper Transfer Markup Language", IsCorrect = false }, new() { Text = "Home Tool Markup Language", IsCorrect = false } } },
                 new() { Text = "Which HTML element is used to define the largest heading?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<h1>", IsCorrect = true }, new() { Text = "<heading>", IsCorrect = false }, new() { Text = "<h6>", IsCorrect = false }, new() { Text = "<head>", IsCorrect = false } } },
-                new() { Text = "Which attribute is used to provide an alternate text for an image?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "alt", IsCorrect = true }, new() { Text = "title", IsCorrect = false }, new() { Text = "src", IsCorrect = false }, new() { Text = "name", IsCorrect = false } } },
-                new() { Text = "Which HTML element is used to create an unordered list?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<ul>", IsCorrect = true }, new() { Text = "<ol>", IsCorrect = false }, new() { Text = "<li>", IsCorrect = false }, new() { Text = "<list>", IsCorrect = false } } },
-                new() { Text = "What is the correct HTML element for inserting a line break?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<br>", IsCorrect = true }, new() { Text = "<lb>", IsCorrect = false }, new() { Text = "<break>", IsCorrect = false }, new() { Text = "<newline>", IsCorrect = false } } },
-                new() { Text = "Which element is used to define a table row?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<tr>", IsCorrect = true }, new() { Text = "<td>", IsCorrect = false }, new() { Text = "<th>", IsCorrect = false }, new() { Text = "<row>", IsCorrect = false } } },
-                new() { Text = "Which tag is used to create a hyperlink?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<a>", IsCorrect = true }, new() { Text = "<link>", IsCorrect = false }, new() { Text = "<href>", IsCorrect = false }, new() { Text = "<url>", IsCorrect = false } } },
-                new() { Text = "What is the correct HTML for adding a background color?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<body style=\"background-color:yellow;\">", IsCorrect = true }, new() { Text = "<body bg=\"yellow\">", IsCorrect = false }, new() { Text = "<background>yellow</background>", IsCorrect = false }, new() { Text = "<body color=\"yellow\">", IsCorrect = false } } },
                 new() { Text = "Which HTML element defines the title of a document?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<title>", IsCorrect = true }, new() { Text = "<head>", IsCorrect = false }, new() { Text = "<meta>", IsCorrect = false }, new() { Text = "<header>", IsCorrect = false } } },
                 new() { Text = "Which HTML element is used for bold text?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<strong>", IsCorrect = true }, new() { Text = "<bold>", IsCorrect = false }, new() { Text = "<b> (presentational only)", IsCorrect = false }, new() { Text = "<em>", IsCorrect = false } } },
-                // ── Intermediate ──
-                new() { Text = "Which HTML attribute specifies where to open the linked document?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "target", IsCorrect = true }, new() { Text = "href", IsCorrect = false }, new() { Text = "rel", IsCorrect = false }, new() { Text = "link", IsCorrect = false } } },
-                new() { Text = "What does the <meta charset='UTF-8'> tag specify?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "The character encoding for the document", IsCorrect = true }, new() { Text = "The page title", IsCorrect = false }, new() { Text = "The document language", IsCorrect = false }, new() { Text = "The viewport width", IsCorrect = false } } },
-                new() { Text = "Which HTML5 element is used for navigation links?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<nav>", IsCorrect = true }, new() { Text = "<navigation>", IsCorrect = false }, new() { Text = "<menu>", IsCorrect = false }, new() { Text = "<links>", IsCorrect = false } } },
-                new() { Text = "Which input type is used for email addresses in HTML5?", CodeSnippet = "<input type=\"???\" name=\"email\">", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "email", IsCorrect = true }, new() { Text = "mail", IsCorrect = false }, new() { Text = "text", IsCorrect = false }, new() { Text = "address", IsCorrect = false } } },
-                new() { Text = "What is the purpose of the <fieldset> element?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "To group related form controls together", IsCorrect = true }, new() { Text = "To create a text input field", IsCorrect = false }, new() { Text = "To define a form action", IsCorrect = false }, new() { Text = "To style form labels", IsCorrect = false } } },
-                new() { Text = "Which attribute makes an input field required before form submission?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "required", IsCorrect = true }, new() { Text = "validate", IsCorrect = false }, new() { Text = "mandatory", IsCorrect = false }, new() { Text = "notempty", IsCorrect = false } } },
-                new() { Text = "What does the 'colspan' attribute do in a table?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Makes a cell span multiple columns", IsCorrect = true }, new() { Text = "Makes a cell span multiple rows", IsCorrect = false }, new() { Text = "Adds spacing between columns", IsCorrect = false }, new() { Text = "Sets the column width", IsCorrect = false } } },
-                new() { Text = "Which HTML element is used to define an independent, self-contained piece of content?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<article>", IsCorrect = true }, new() { Text = "<section>", IsCorrect = false }, new() { Text = "<div>", IsCorrect = false }, new() { Text = "<aside>", IsCorrect = false } } },
-                new() { Text = "What is the correct way to embed an external JavaScript file?", CodeSnippet = "<??? src=\"app.js\"><???>", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<script src=\"app.js\"></script>", IsCorrect = true }, new() { Text = "<js src=\"app.js\"></js>", IsCorrect = false }, new() { Text = "<javascript href=\"app.js\">", IsCorrect = false }, new() { Text = "<link rel=\"script\" href=\"app.js\">", IsCorrect = false } } },
-                new() { Text = "What does the 'defer' attribute do on a <script> tag?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Delays script execution until the HTML is fully parsed", IsCorrect = true }, new() { Text = "Downloads the script asynchronously", IsCorrect = false }, new() { Text = "Prevents the script from running", IsCorrect = false }, new() { Text = "Makes the script run immediately", IsCorrect = false } } },
-                // ── Advanced ──
-                new() { Text = "What is the purpose of the 'data-*' attributes in HTML5?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "To store custom data private to the page or application", IsCorrect = true }, new() { Text = "To define database connections", IsCorrect = false }, new() { Text = "To create data tables", IsCorrect = false }, new() { Text = "To link external data sources", IsCorrect = false } } },
-                new() { Text = "Which attribute should be added to <html> to set the document language?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "lang", IsCorrect = true }, new() { Text = "language", IsCorrect = false }, new() { Text = "locale", IsCorrect = false }, new() { Text = "xml:lang", IsCorrect = false } } },
-                new() { Text = "What is the difference between <section> and <div>?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "<section> is semantic and represents a thematic grouping with a heading", IsCorrect = true }, new() { Text = "They are identical in every way", IsCorrect = false }, new() { Text = "<div> is semantic while <section> is not", IsCorrect = false }, new() { Text = "<section> is a block element while <div> is inline", IsCorrect = false } } },
-                new() { Text = "What does ARIA stand for in web accessibility?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Accessible Rich Internet Applications", IsCorrect = true }, new() { Text = "Advanced Responsive Internet Architecture", IsCorrect = false }, new() { Text = "Automated Rich Interface Attributes", IsCorrect = false }, new() { Text = "Accessible Rendered Interactive Application", IsCorrect = false } } },
-                new() { Text = "Which attribute would you use to specify that an image should be loaded lazily?", CodeSnippet = "<img src=\"photo.jpg\" ???=\"lazy\">", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "loading", IsCorrect = true }, new() { Text = "defer", IsCorrect = false }, new() { Text = "async", IsCorrect = false }, new() { Text = "lazy", IsCorrect = false } } },
-                new() { Text = "What is the purpose of the <picture> element in HTML5?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "To provide multiple source images for responsive art direction", IsCorrect = true }, new() { Text = "To display a photo gallery", IsCorrect = false }, new() { Text = "To add image filters", IsCorrect = false }, new() { Text = "To create an image placeholder", IsCorrect = false } } },
-                new() { Text = "Which element is used to represent a self-contained composition in a document?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "<figure>", IsCorrect = true }, new() { Text = "<image>", IsCorrect = false }, new() { Text = "<picture>", IsCorrect = false }, new() { Text = "<canvas>", IsCorrect = false } } },
-                new() { Text = "What is the correct way to define a custom element in HTML?", CodeSnippet = "class MyEl extends HTMLElement {}\ncustomElements.define('???', MyEl);", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A tag name with a hyphen like 'my-element'", IsCorrect = true }, new() { Text = "Any single-word name like 'myelement'", IsCorrect = false }, new() { Text = "A name starting with 'x-' only", IsCorrect = false }, new() { Text = "A name using camelCase like 'myElement'", IsCorrect = false } } },
-                new() { Text = "What does the 'contenteditable' attribute do?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Makes the element's content editable by the user", IsCorrect = true }, new() { Text = "Locks the content from being edited", IsCorrect = false }, new() { Text = "Enables spell checking", IsCorrect = false }, new() { Text = "Allows drag and drop of the element", IsCorrect = false } } },
-                new() { Text = "Which HTML element is used to embed vector graphics?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "<svg>", IsCorrect = true }, new() { Text = "<canvas>", IsCorrect = false }, new() { Text = "<vector>", IsCorrect = false }, new() { Text = "<img> with .svg src", IsCorrect = false } } },
+                new() { Text = "What does the <meta charset='UTF-8'> tag specify?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "The character encoding for the document", IsCorrect = true }, new() { Text = "The page title", IsCorrect = false }, new() { Text = "The document language", IsCorrect = false }, new() { Text = "The viewport width", IsCorrect = false } } },
             }
         };
 
-        var cssQuiz = new Quiz
+        var htmlLinksMedia = new Quiz
         {
-            Title = "CSS Mastery",
-            Topic = "CSS",
-            Description = "Challenge yourself with CSS selectors, layouts, flexbox, grid, animations, responsive design, and modern features.",
+            Title = "Links & Media",
+            Topic = "html-links-media",
+            Category = "HTML",
+            Description = "Hyperlinks, images, media elements, and their attributes.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which attribute is used to provide an alternate text for an image?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "alt", IsCorrect = true }, new() { Text = "title", IsCorrect = false }, new() { Text = "src", IsCorrect = false }, new() { Text = "name", IsCorrect = false } } },
+                new() { Text = "What is the correct HTML element for inserting a line break?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<br>", IsCorrect = true }, new() { Text = "<lb>", IsCorrect = false }, new() { Text = "<break>", IsCorrect = false }, new() { Text = "<newline>", IsCorrect = false } } },
+                new() { Text = "Which tag is used to create a hyperlink?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<a>", IsCorrect = true }, new() { Text = "<link>", IsCorrect = false }, new() { Text = "<href>", IsCorrect = false }, new() { Text = "<url>", IsCorrect = false } } },
+                new() { Text = "Which HTML attribute specifies where to open the linked document?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "target", IsCorrect = true }, new() { Text = "href", IsCorrect = false }, new() { Text = "rel", IsCorrect = false }, new() { Text = "link", IsCorrect = false } } },
+                new() { Text = "What is the correct HTML for adding a background color?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<body style=\"background-color:yellow;\">", IsCorrect = true }, new() { Text = "<body bg=\"yellow\">", IsCorrect = false }, new() { Text = "<background>yellow</background>", IsCorrect = false }, new() { Text = "<body color=\"yellow\">", IsCorrect = false } } },
+            }
+        };
+
+        var htmlListsTables = new Quiz
+        {
+            Title = "Lists & Tables",
+            Topic = "html-lists-tables",
+            Category = "HTML",
+            Description = "Ordered and unordered lists, table elements, and data layout.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which HTML element is used to create an unordered list?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<ul>", IsCorrect = true }, new() { Text = "<ol>", IsCorrect = false }, new() { Text = "<li>", IsCorrect = false }, new() { Text = "<list>", IsCorrect = false } } },
+                new() { Text = "Which element is used to define a table row?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<tr>", IsCorrect = true }, new() { Text = "<td>", IsCorrect = false }, new() { Text = "<th>", IsCorrect = false }, new() { Text = "<row>", IsCorrect = false } } },
+                new() { Text = "What does the 'colspan' attribute do in a table?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Makes a cell span multiple columns", IsCorrect = true }, new() { Text = "Makes a cell span multiple rows", IsCorrect = false }, new() { Text = "Adds spacing between columns", IsCorrect = false }, new() { Text = "Sets the column width", IsCorrect = false } } },
+                new() { Text = "Which HTML5 element is used for navigation links?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<nav>", IsCorrect = true }, new() { Text = "<navigation>", IsCorrect = false }, new() { Text = "<menu>", IsCorrect = false }, new() { Text = "<links>", IsCorrect = false } } },
+                new() { Text = "Which HTML element is used to define an independent, self-contained piece of content?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<article>", IsCorrect = true }, new() { Text = "<section>", IsCorrect = false }, new() { Text = "<div>", IsCorrect = false }, new() { Text = "<aside>", IsCorrect = false } } },
+            }
+        };
+
+        var htmlForms = new Quiz
+        {
+            Title = "Forms & Inputs",
+            Topic = "html-forms",
+            Category = "HTML",
+            Description = "Form elements, input types, validation, and form attributes.",
             Difficulty = "Intermediate",
             Questions = new List<Question>
             {
-                // ── Beginner ──
+                new() { Text = "Which input type is used for email addresses in HTML5?", CodeSnippet = "<input type=\"???\" name=\"email\">", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "email", IsCorrect = true }, new() { Text = "mail", IsCorrect = false }, new() { Text = "text", IsCorrect = false }, new() { Text = "address", IsCorrect = false } } },
+                new() { Text = "What is the purpose of the <fieldset> element?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "To group related form controls together", IsCorrect = true }, new() { Text = "To create a text input field", IsCorrect = false }, new() { Text = "To define a form action", IsCorrect = false }, new() { Text = "To style form labels", IsCorrect = false } } },
+                new() { Text = "Which attribute makes an input field required before form submission?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "required", IsCorrect = true }, new() { Text = "validate", IsCorrect = false }, new() { Text = "mandatory", IsCorrect = false }, new() { Text = "notempty", IsCorrect = false } } },
+                new() { Text = "What is the correct way to embed an external JavaScript file?", CodeSnippet = "<??? src=\"app.js\"><???>", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<script src=\"app.js\"></script>", IsCorrect = true }, new() { Text = "<js src=\"app.js\"></js>", IsCorrect = false }, new() { Text = "<javascript href=\"app.js\">", IsCorrect = false }, new() { Text = "<link rel=\"script\" href=\"app.js\">", IsCorrect = false } } },
+                new() { Text = "What does the 'defer' attribute do on a <script> tag?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Delays script execution until the HTML is fully parsed", IsCorrect = true }, new() { Text = "Downloads the script asynchronously", IsCorrect = false }, new() { Text = "Prevents the script from running", IsCorrect = false }, new() { Text = "Makes the script run immediately", IsCorrect = false } } },
+            }
+        };
+
+        var htmlSemantic = new Quiz
+        {
+            Title = "Semantic HTML",
+            Topic = "html-semantic",
+            Category = "HTML",
+            Description = "Semantic elements, accessibility, and meaningful document structure.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What is the difference between <section> and <div>?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "<section> is semantic and represents a thematic grouping with a heading", IsCorrect = true }, new() { Text = "They are identical in every way", IsCorrect = false }, new() { Text = "<div> is semantic while <section> is not", IsCorrect = false }, new() { Text = "<section> is a block element while <div> is inline", IsCorrect = false } } },
+                new() { Text = "What does ARIA stand for in web accessibility?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Accessible Rich Internet Applications", IsCorrect = true }, new() { Text = "Advanced Responsive Internet Architecture", IsCorrect = false }, new() { Text = "Automated Rich Interface Attributes", IsCorrect = false }, new() { Text = "Accessible Rendered Interactive Application", IsCorrect = false } } },
+                new() { Text = "Which attribute should be added to <html> to set the document language?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "lang", IsCorrect = true }, new() { Text = "language", IsCorrect = false }, new() { Text = "locale", IsCorrect = false }, new() { Text = "xml:lang", IsCorrect = false } } },
+                new() { Text = "Which element is used to represent a self-contained composition in a document?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "<figure>", IsCorrect = true }, new() { Text = "<image>", IsCorrect = false }, new() { Text = "<picture>", IsCorrect = false }, new() { Text = "<canvas>", IsCorrect = false } } },
+                new() { Text = "What is the purpose of the <picture> element in HTML5?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "To provide multiple source images for responsive art direction", IsCorrect = true }, new() { Text = "To display a photo gallery", IsCorrect = false }, new() { Text = "To add image filters", IsCorrect = false }, new() { Text = "To create an image placeholder", IsCorrect = false } } },
+            }
+        };
+
+        var htmlAdvanced = new Quiz
+        {
+            Title = "HTML5 & Advanced",
+            Topic = "html-advanced",
+            Category = "HTML",
+            Description = "Custom data attributes, lazy loading, custom elements, and modern HTML5 APIs.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What is the purpose of the 'data-*' attributes in HTML5?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "To store custom data private to the page or application", IsCorrect = true }, new() { Text = "To define database connections", IsCorrect = false }, new() { Text = "To create data tables", IsCorrect = false }, new() { Text = "To link external data sources", IsCorrect = false } } },
+                new() { Text = "Which attribute would you use to specify that an image should be loaded lazily?", CodeSnippet = "<img src=\"photo.jpg\" ???=\"lazy\">", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "loading", IsCorrect = true }, new() { Text = "defer", IsCorrect = false }, new() { Text = "async", IsCorrect = false }, new() { Text = "lazy", IsCorrect = false } } },
+                new() { Text = "What does the 'contenteditable' attribute do?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Makes the element's content editable by the user", IsCorrect = true }, new() { Text = "Locks the content from being edited", IsCorrect = false }, new() { Text = "Enables spell checking", IsCorrect = false }, new() { Text = "Allows drag and drop of the element", IsCorrect = false } } },
+                new() { Text = "Which HTML element is used to embed vector graphics?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "<svg>", IsCorrect = true }, new() { Text = "<canvas>", IsCorrect = false }, new() { Text = "<vector>", IsCorrect = false }, new() { Text = "<img> with .svg src", IsCorrect = false } } },
+                new() { Text = "What is the correct way to define a custom element in HTML?", CodeSnippet = "class MyEl extends HTMLElement {}\ncustomElements.define('???', MyEl);", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A tag name with a hyphen like 'my-element'", IsCorrect = true }, new() { Text = "Any single-word name like 'myelement'", IsCorrect = false }, new() { Text = "A name starting with 'x-' only", IsCorrect = false }, new() { Text = "A name using camelCase like 'myElement'", IsCorrect = false } } },
+            }
+        };
+
+        // ═══════════════════════════════════════════════════
+        //  CSS Quizzes (6 subcategories × 5 questions)
+        // ═══════════════════════════════════════════════════
+
+        var cssBasics = new Quiz
+        {
+            Title = "CSS Basics",
+            Topic = "css-basics",
+            Category = "CSS",
+            Description = "Fundamental CSS properties for color, fonts, backgrounds, and selectors.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
                 new() { Text = "Which CSS property is used to change the text color?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "color", IsCorrect = true }, new() { Text = "text-color", IsCorrect = false }, new() { Text = "font-color", IsCorrect = false }, new() { Text = "foreground", IsCorrect = false } } },
-                new() { Text = "Which property is used to create space between the element's border and inner content?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "padding", IsCorrect = true }, new() { Text = "margin", IsCorrect = false }, new() { Text = "spacing", IsCorrect = false }, new() { Text = "border-spacing", IsCorrect = false } } },
-                new() { Text = "What does the CSS Box Model consist of?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "Content, Padding, Border, Margin", IsCorrect = true }, new() { Text = "Header, Body, Footer, Sidebar", IsCorrect = false }, new() { Text = "Width, Height, Color, Font", IsCorrect = false }, new() { Text = "Display, Position, Float, Clear", IsCorrect = false } } },
-                new() { Text = "How do you apply a style to all <p> elements inside a <div>?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "div p { }", IsCorrect = true }, new() { Text = "div + p { }", IsCorrect = false }, new() { Text = "div > p { } (only direct children)", IsCorrect = false }, new() { Text = "div.p { }", IsCorrect = false } } },
                 new() { Text = "Which property is used to set the background color?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "background-color", IsCorrect = true }, new() { Text = "bgcolor", IsCorrect = false }, new() { Text = "color-background", IsCorrect = false }, new() { Text = "bg-color", IsCorrect = false } } },
                 new() { Text = "How do you make text bold in CSS?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "font-weight: bold;", IsCorrect = true }, new() { Text = "text-style: bold;", IsCorrect = false }, new() { Text = "font-bold: true;", IsCorrect = false }, new() { Text = "text-weight: bold;", IsCorrect = false } } },
                 new() { Text = "Which property sets the font size?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "font-size", IsCorrect = true }, new() { Text = "text-size", IsCorrect = false }, new() { Text = "size", IsCorrect = false }, new() { Text = "font-style", IsCorrect = false } } },
+                new() { Text = "How do you select an element with class 'active'?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = ".active { }", IsCorrect = true }, new() { Text = "#active { }", IsCorrect = false }, new() { Text = "active { }", IsCorrect = false }, new() { Text = "*active { }", IsCorrect = false } } },
+            }
+        };
+
+        var cssBoxModel = new Quiz
+        {
+            Title = "Box Model & Layout",
+            Topic = "css-box-model",
+            Category = "CSS",
+            Description = "The CSS box model, padding, margins, display, and box-sizing.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which property is used to create space between the element's border and inner content?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "padding", IsCorrect = true }, new() { Text = "margin", IsCorrect = false }, new() { Text = "spacing", IsCorrect = false }, new() { Text = "border-spacing", IsCorrect = false } } },
+                new() { Text = "What does the CSS Box Model consist of?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "Content, Padding, Border, Margin", IsCorrect = true }, new() { Text = "Header, Body, Footer, Sidebar", IsCorrect = false }, new() { Text = "Width, Height, Color, Font", IsCorrect = false }, new() { Text = "Display, Position, Float, Clear", IsCorrect = false } } },
                 new() { Text = "What does 'display: none' do?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "Hides the element completely and removes it from the layout", IsCorrect = true }, new() { Text = "Makes the element invisible but keeps its space", IsCorrect = false }, new() { Text = "Sets opacity to 0", IsCorrect = false }, new() { Text = "Moves the element off-screen", IsCorrect = false } } },
                 new() { Text = "Which unit is relative to the font-size of the root element?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "rem", IsCorrect = true }, new() { Text = "em", IsCorrect = false }, new() { Text = "px", IsCorrect = false }, new() { Text = "%", IsCorrect = false } } },
-                new() { Text = "How do you select an element with class 'active'?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = ".active { }", IsCorrect = true }, new() { Text = "#active { }", IsCorrect = false }, new() { Text = "active { }", IsCorrect = false }, new() { Text = "*active { }", IsCorrect = false } } },
-                // ── Intermediate ──
+                new() { Text = "What does 'box-sizing: border-box' do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Includes padding and border in the element's total width and height", IsCorrect = true }, new() { Text = "Adds a border around the box model", IsCorrect = false }, new() { Text = "Removes the border from the box model", IsCorrect = false }, new() { Text = "Sets the box shadow style", IsCorrect = false } } },
+            }
+        };
+
+        var cssSelectors = new Quiz
+        {
+            Title = "Selectors & Specificity",
+            Topic = "css-selectors",
+            Category = "CSS",
+            Description = "CSS selectors, combinators, pseudo-classes, and specificity rules.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "How do you apply a style to all <p> elements inside a <div>?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "div p { }", IsCorrect = true }, new() { Text = "div + p { }", IsCorrect = false }, new() { Text = "div > p { } (only direct children)", IsCorrect = false }, new() { Text = "div.p { }", IsCorrect = false } } },
                 new() { Text = "What is the default value of the position property?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "static", IsCorrect = true }, new() { Text = "relative", IsCorrect = false }, new() { Text = "absolute", IsCorrect = false }, new() { Text = "fixed", IsCorrect = false } } },
-                new() { Text = "How do you make a flex container?", CodeSnippet = ".container { display: ???; }", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "flex", IsCorrect = true }, new() { Text = "flexbox", IsCorrect = false }, new() { Text = "block-flex", IsCorrect = false }, new() { Text = "inline", IsCorrect = false } } },
                 new() { Text = "Which CSS property controls the stacking order of elements?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "z-index", IsCorrect = true }, new() { Text = "order", IsCorrect = false }, new() { Text = "stack", IsCorrect = false }, new() { Text = "layer", IsCorrect = false } } },
+                new() { Text = "Which pseudo-class selects the first child element?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = ":first-child", IsCorrect = true }, new() { Text = ":first-of-type", IsCorrect = false }, new() { Text = ":first", IsCorrect = false }, new() { Text = ":nth-child(first)", IsCorrect = false } } },
+                new() { Text = "What is the CSS specificity order (lowest to highest)?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Element → Class → ID → Inline", IsCorrect = true }, new() { Text = "ID → Class → Element → Inline", IsCorrect = false }, new() { Text = "Inline → ID → Class → Element", IsCorrect = false }, new() { Text = "Class → Element → ID → Inline", IsCorrect = false } } },
+            }
+        };
+
+        var cssFlexboxGrid = new Quiz
+        {
+            Title = "Flexbox & Grid",
+            Topic = "css-flexbox-grid",
+            Category = "CSS",
+            Description = "Modern layout techniques with Flexbox and CSS Grid.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "How do you make a flex container?", CodeSnippet = ".container { display: ???; }", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "flex", IsCorrect = true }, new() { Text = "flexbox", IsCorrect = false }, new() { Text = "block-flex", IsCorrect = false }, new() { Text = "inline", IsCorrect = false } } },
                 new() { Text = "Which CSS Grid property defines the number of columns?", CodeSnippet = ".grid { display: grid; ???: 1fr 1fr 1fr; }", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "grid-template-columns", IsCorrect = true }, new() { Text = "grid-columns", IsCorrect = false }, new() { Text = "columns", IsCorrect = false }, new() { Text = "grid-auto-columns", IsCorrect = false } } },
                 new() { Text = "Which media query targets screens smaller than 768px?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "@media (max-width: 768px)", IsCorrect = true }, new() { Text = "@media (min-width: 768px)", IsCorrect = false }, new() { Text = "@screen (max-width: 768px)", IsCorrect = false }, new() { Text = "@responsive (768px)", IsCorrect = false } } },
                 new() { Text = "What does 'flex: 1' mean?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "flex-grow: 1, flex-shrink: 1, flex-basis: 0%", IsCorrect = true }, new() { Text = "Set width to 1px", IsCorrect = false }, new() { Text = "Display only 1 flex item", IsCorrect = false }, new() { Text = "flex-direction: row with 1 column", IsCorrect = false } } },
                 new() { Text = "Which property centers flex items along the cross axis?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "align-items", IsCorrect = true }, new() { Text = "justify-content", IsCorrect = false }, new() { Text = "align-content", IsCorrect = false }, new() { Text = "text-align", IsCorrect = false } } },
+            }
+        };
+
+        var cssVisual = new Quiz
+        {
+            Title = "Colors & Effects",
+            Topic = "css-visual",
+            Category = "CSS",
+            Description = "CSS visual properties, transitions, custom properties, and modern functions.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
                 new() { Text = "What is the difference between 'visibility: hidden' and 'display: none'?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "visibility: hidden keeps the space; display: none removes it", IsCorrect = true }, new() { Text = "They are identical", IsCorrect = false }, new() { Text = "display: none keeps the space; visibility: hidden removes it", IsCorrect = false }, new() { Text = "visibility: hidden only works on images", IsCorrect = false } } },
-                new() { Text = "What does 'box-sizing: border-box' do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Includes padding and border in the element's total width and height", IsCorrect = true }, new() { Text = "Adds a border around the box model", IsCorrect = false }, new() { Text = "Removes the border from the box model", IsCorrect = false }, new() { Text = "Sets the box shadow style", IsCorrect = false } } },
-                new() { Text = "Which pseudo-class selects the first child element?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = ":first-child", IsCorrect = true }, new() { Text = ":first-of-type", IsCorrect = false }, new() { Text = ":first", IsCorrect = false }, new() { Text = ":nth-child(first)", IsCorrect = false } } },
-                // ── Advanced ──
-                new() { Text = "What is the CSS specificity order (lowest to highest)?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Element → Class → ID → Inline", IsCorrect = true }, new() { Text = "ID → Class → Element → Inline", IsCorrect = false }, new() { Text = "Inline → ID → Class → Element", IsCorrect = false }, new() { Text = "Class → Element → ID → Inline", IsCorrect = false } } },
                 new() { Text = "What does the CSS 'clamp()' function do?", CodeSnippet = "font-size: clamp(1rem, 2.5vw, 2rem);", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Sets a value that scales between a minimum and maximum", IsCorrect = true }, new() { Text = "Restricts a value to exactly one size", IsCorrect = false }, new() { Text = "Creates a CSS animation clamp", IsCorrect = false }, new() { Text = "Rounds the value to the nearest integer", IsCorrect = false } } },
                 new() { Text = "What is a CSS custom property (variable)?", CodeSnippet = ":root { --primary: #6366f1; }\n.btn { color: var(--primary); }", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A reusable value defined with -- prefix, accessed via var()", IsCorrect = true }, new() { Text = "A JavaScript variable used in CSS", IsCorrect = false }, new() { Text = "A preprocessor feature like SASS variables", IsCorrect = false }, new() { Text = "An attribute selector for custom data", IsCorrect = false } } },
                 new() { Text = "Which property creates a smooth transition between states?", CodeSnippet = ".btn { ???: background-color 0.3s ease; }", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "transition", IsCorrect = true }, new() { Text = "animation", IsCorrect = false }, new() { Text = "transform", IsCorrect = false }, new() { Text = "change", IsCorrect = false } } },
+                new() { Text = "What does the CSS 'aspect-ratio' property do?", CodeSnippet = ".video { aspect-ratio: 16 / 9; }", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Sets a preferred width-to-height ratio for the element", IsCorrect = true }, new() { Text = "Crops the element to a specific ratio", IsCorrect = false }, new() { Text = "Only works on images and videos", IsCorrect = false }, new() { Text = "Scales the font proportionally", IsCorrect = false } } },
+            }
+        };
+
+        var cssAdvanced = new Quiz
+        {
+            Title = "Advanced CSS",
+            Topic = "css-advanced",
+            Category = "CSS",
+            Description = "Performance optimizations, stacking contexts, containment, and animations.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
                 new() { Text = "What is the 'will-change' CSS property used for?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Hints to the browser that a property will change, enabling optimizations", IsCorrect = true }, new() { Text = "Prevents an element from changing", IsCorrect = false }, new() { Text = "Triggers a change event in JavaScript", IsCorrect = false }, new() { Text = "Sets default values that will change on hover", IsCorrect = false } } },
                 new() { Text = "How does CSS Grid's 'auto-fit' differ from 'auto-fill'?", CodeSnippet = "grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "auto-fit collapses empty tracks; auto-fill keeps them", IsCorrect = true }, new() { Text = "They are identical", IsCorrect = false }, new() { Text = "auto-fill collapses empty tracks; auto-fit keeps them", IsCorrect = false }, new() { Text = "auto-fit only works with fixed widths", IsCorrect = false } } },
                 new() { Text = "What is a stacking context in CSS?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A three-dimensional conceptualization of HTML elements along the z-axis", IsCorrect = true }, new() { Text = "The order in which CSS files are loaded", IsCorrect = false }, new() { Text = "How flex items are stacked vertically", IsCorrect = false }, new() { Text = "The cascade order of stylesheets", IsCorrect = false } } },
                 new() { Text = "What does 'contain: layout' do?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Isolates the element's layout from the rest of the page for performance", IsCorrect = true }, new() { Text = "Centers the element in its container", IsCorrect = false }, new() { Text = "Prevents the element from overflowing", IsCorrect = false }, new() { Text = "Creates a new flex container", IsCorrect = false } } },
                 new() { Text = "Which at-rule is used to define a CSS animation?", CodeSnippet = "??? fadeIn { from { opacity: 0; } to { opacity: 1; } }", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "@keyframes", IsCorrect = true }, new() { Text = "@animation", IsCorrect = false }, new() { Text = "@transition", IsCorrect = false }, new() { Text = "@animate", IsCorrect = false } } },
-                new() { Text = "What does the CSS 'aspect-ratio' property do?", CodeSnippet = ".video { aspect-ratio: 16 / 9; }", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Sets a preferred width-to-height ratio for the element", IsCorrect = true }, new() { Text = "Crops the element to a specific ratio", IsCorrect = false }, new() { Text = "Only works on images and videos", IsCorrect = false }, new() { Text = "Scales the font proportionally", IsCorrect = false } } },
             }
         };
 
-        var jsQuiz = new Quiz
+        // ═══════════════════════════════════════════════════
+        //  JavaScript Quizzes (6 subcategories × 5 questions)
+        // ═══════════════════════════════════════════════════
+
+        var jsBasics = new Quiz
         {
-            Title = "JavaScript Essentials",
-            Topic = "JavaScript",
-            Description = "Test your JavaScript skills covering variables, functions, DOM, ES6+, async patterns, closures, and advanced concepts.",
-            Difficulty = "Intermediate",
+            Title = "JS Basics",
+            Topic = "js-basics",
+            Category = "JavaScript",
+            Description = "Variables, data types, operators, and core JavaScript syntax.",
+            Difficulty = "Beginner",
             Questions = new List<Question>
             {
-                // ── Beginner ──
                 new() { Text = "Which keyword declares a block-scoped variable?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "let", IsCorrect = true }, new() { Text = "var", IsCorrect = false }, new() { Text = "define", IsCorrect = false }, new() { Text = "variable", IsCorrect = false } } },
-                new() { Text = "Which array method creates a new array with filtered elements?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "filter()", IsCorrect = true }, new() { Text = "map()", IsCorrect = false }, new() { Text = "reduce()", IsCorrect = false }, new() { Text = "find()", IsCorrect = false } } },
                 new() { Text = "What does the '===' operator check?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "Value and type equality", IsCorrect = true }, new() { Text = "Value equality only", IsCorrect = false }, new() { Text = "Reference equality", IsCorrect = false }, new() { Text = "Type equality only", IsCorrect = false } } },
-                new() { Text = "Which method converts a JSON string into a JavaScript object?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "JSON.parse()", IsCorrect = true }, new() { Text = "JSON.stringify()", IsCorrect = false }, new() { Text = "JSON.convert()", IsCorrect = false }, new() { Text = "JSON.toObject()", IsCorrect = false } } },
-                new() { Text = "Which method adds an element to the end of an array?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "push()", IsCorrect = true }, new() { Text = "append()", IsCorrect = false }, new() { Text = "add()", IsCorrect = false }, new() { Text = "insert()", IsCorrect = false } } },
                 new() { Text = "How do you write a single-line comment in JavaScript?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "// comment", IsCorrect = true }, new() { Text = "<!-- comment -->", IsCorrect = false }, new() { Text = "# comment", IsCorrect = false }, new() { Text = "/* comment */", IsCorrect = false } } },
                 new() { Text = "What does 'console.log()' do?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "Outputs a message to the browser console", IsCorrect = true }, new() { Text = "Displays an alert box", IsCorrect = false }, new() { Text = "Writes to the HTML document", IsCorrect = false }, new() { Text = "Saves data to a log file", IsCorrect = false } } },
                 new() { Text = "Which keyword prevents a variable from being reassigned?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "const", IsCorrect = true }, new() { Text = "let", IsCorrect = false }, new() { Text = "final", IsCorrect = false }, new() { Text = "static", IsCorrect = false } } },
+            }
+        };
+
+        var jsArraysData = new Quiz
+        {
+            Title = "Arrays & Data",
+            Topic = "js-arrays-data",
+            Category = "JavaScript",
+            Description = "Array methods, JSON handling, and data type fundamentals.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which array method creates a new array with filtered elements?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "filter()", IsCorrect = true }, new() { Text = "map()", IsCorrect = false }, new() { Text = "reduce()", IsCorrect = false }, new() { Text = "find()", IsCorrect = false } } },
+                new() { Text = "Which method converts a JSON string into a JavaScript object?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "JSON.parse()", IsCorrect = true }, new() { Text = "JSON.stringify()", IsCorrect = false }, new() { Text = "JSON.convert()", IsCorrect = false }, new() { Text = "JSON.toObject()", IsCorrect = false } } },
+                new() { Text = "Which method adds an element to the end of an array?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "push()", IsCorrect = true }, new() { Text = "append()", IsCorrect = false }, new() { Text = "add()", IsCorrect = false }, new() { Text = "insert()", IsCorrect = false } } },
                 new() { Text = "What data type is returned by typeof []?", CodeSnippet = "console.log(typeof []);", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "\"object\"", IsCorrect = true }, new() { Text = "\"array\"", IsCorrect = false }, new() { Text = "\"list\"", IsCorrect = false }, new() { Text = "\"undefined\"", IsCorrect = false } } },
+                new() { Text = "What does Array.prototype.map() return?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "A new array with the results of calling a function on every element", IsCorrect = true }, new() { Text = "The original array, modified in place", IsCorrect = false }, new() { Text = "A single value reduced from the array", IsCorrect = false }, new() { Text = "A boolean indicating if all elements match", IsCorrect = false } } },
+            }
+        };
+
+        var jsFunctionsScope = new Quiz
+        {
+            Title = "Functions & Scope",
+            Topic = "js-functions-scope",
+            Category = "JavaScript",
+            Description = "Function declarations, closures, scope, and the 'this' keyword.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
                 new() { Text = "What is the correct syntax for an arrow function?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "const fn = () => { }", IsCorrect = true }, new() { Text = "const fn = -> { }", IsCorrect = false }, new() { Text = "const fn = => { }", IsCorrect = false }, new() { Text = "const fn = function=> { }", IsCorrect = false } } },
-                // ── Intermediate ──
-                new() { Text = "What is the output of typeof null?", CodeSnippet = "console.log(typeof null);", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "\"object\"", IsCorrect = true }, new() { Text = "\"null\"", IsCorrect = false }, new() { Text = "\"undefined\"", IsCorrect = false }, new() { Text = "\"boolean\"", IsCorrect = false } } },
+                new() { Text = "What is the difference between 'let' and 'var'?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "'let' is block-scoped; 'var' is function-scoped", IsCorrect = true }, new() { Text = "'let' is global; 'var' is local", IsCorrect = false }, new() { Text = "'var' cannot be reassigned; 'let' can", IsCorrect = false }, new() { Text = "There is no difference", IsCorrect = false } } },
+                new() { Text = "What is a closure in JavaScript?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A function that has access to its outer scope's variables", IsCorrect = true }, new() { Text = "A way to close a browser window", IsCorrect = false }, new() { Text = "A method to end a loop", IsCorrect = false }, new() { Text = "A type of error handling", IsCorrect = false } } },
+                new() { Text = "What does the 'this' keyword refer to in an arrow function?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "The enclosing lexical context", IsCorrect = true }, new() { Text = "The global object", IsCorrect = false }, new() { Text = "The function itself", IsCorrect = false }, new() { Text = "undefined", IsCorrect = false } } },
+                new() { Text = "What is the difference between call(), apply(), and bind()?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "call/apply invoke immediately (apply takes array); bind returns a new function", IsCorrect = true }, new() { Text = "They are identical methods with different names", IsCorrect = false }, new() { Text = "call is for arrays, apply is for objects, bind is for strings", IsCorrect = false }, new() { Text = "bind invokes immediately; call and apply return new functions", IsCorrect = false } } },
+            }
+        };
+
+        var jsDomEvents = new Quiz
+        {
+            Title = "DOM & Events",
+            Topic = "js-dom-events",
+            Category = "JavaScript",
+            Description = "DOM manipulation, event handling, bubbling, and the event loop.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does document.querySelector() return?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "The first element matching the CSS selector", IsCorrect = true }, new() { Text = "All elements matching the CSS selector", IsCorrect = false }, new() { Text = "An array of matching elements", IsCorrect = false }, new() { Text = "The element's inner text", IsCorrect = false } } },
+                new() { Text = "What is event bubbling?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "When an event triggers on a child and propagates up to parent elements", IsCorrect = true }, new() { Text = "When events are queued and processed in order", IsCorrect = false }, new() { Text = "When multiple events fire at the same time", IsCorrect = false }, new() { Text = "When an event only fires once", IsCorrect = false } } },
+                new() { Text = "What does 'e.preventDefault()' do in an event handler?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Stops the browser's default action for the event", IsCorrect = true }, new() { Text = "Stops event bubbling", IsCorrect = false }, new() { Text = "Removes the event listener", IsCorrect = false }, new() { Text = "Prevents the function from returning a value", IsCorrect = false } } },
+                new() { Text = "What is the event loop in JavaScript?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A mechanism that handles async callbacks by monitoring the call stack and task queue", IsCorrect = true }, new() { Text = "A for loop that iterates over events", IsCorrect = false }, new() { Text = "A recursive function that listens for DOM events", IsCorrect = false }, new() { Text = "A browser API for scheduling animations", IsCorrect = false } } },
+                new() { Text = "What is the output?", CodeSnippet = "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "3, 3, 3", IsCorrect = true }, new() { Text = "0, 1, 2", IsCorrect = false }, new() { Text = "undefined, undefined, undefined", IsCorrect = false }, new() { Text = "0, 0, 0", IsCorrect = false } } },
+            }
+        };
+
+        var jsEs6 = new Quiz
+        {
+            Title = "ES6+ Features",
+            Topic = "js-es6",
+            Category = "JavaScript",
+            Description = "Modern JavaScript features including async/await, destructuring, and Promises.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
                 new() { Text = "What does 'async/await' help with?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Writing asynchronous code that looks synchronous", IsCorrect = true }, new() { Text = "Making code run faster", IsCorrect = false }, new() { Text = "Creating multiple threads", IsCorrect = false }, new() { Text = "Handling CSS animations", IsCorrect = false } } },
                 new() { Text = "Which ES6 feature allows extracting values from arrays or objects?", CodeSnippet = "const { name, age } = person;", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Destructuring", IsCorrect = true }, new() { Text = "Spread operator", IsCorrect = false }, new() { Text = "Template literals", IsCorrect = false }, new() { Text = "Rest parameters", IsCorrect = false } } },
                 new() { Text = "What does the spread operator (...) do?", CodeSnippet = "const arr2 = [...arr1, 4, 5];", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Expands an iterable into individual elements", IsCorrect = true }, new() { Text = "Concatenates two strings", IsCorrect = false }, new() { Text = "Creates a deep copy of an object", IsCorrect = false }, new() { Text = "Removes duplicate values", IsCorrect = false } } },
-                new() { Text = "What does document.querySelector() return?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "The first element matching the CSS selector", IsCorrect = true }, new() { Text = "All elements matching the CSS selector", IsCorrect = false }, new() { Text = "An array of matching elements", IsCorrect = false }, new() { Text = "The element's inner text", IsCorrect = false } } },
-                new() { Text = "What is event bubbling?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "When an event triggers on a child and propagates up to parent elements", IsCorrect = true }, new() { Text = "When events are queued and processed in order", IsCorrect = false }, new() { Text = "When multiple events fire at the same time", IsCorrect = false }, new() { Text = "When an event only fires once", IsCorrect = false } } },
-                new() { Text = "What does Array.prototype.map() return?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "A new array with the results of calling a function on every element", IsCorrect = true }, new() { Text = "The original array, modified in place", IsCorrect = false }, new() { Text = "A single value reduced from the array", IsCorrect = false }, new() { Text = "A boolean indicating if all elements match", IsCorrect = false } } },
+                new() { Text = "What is the output of typeof null?", CodeSnippet = "console.log(typeof null);", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "\"object\"", IsCorrect = true }, new() { Text = "\"null\"", IsCorrect = false }, new() { Text = "\"undefined\"", IsCorrect = false }, new() { Text = "\"boolean\"", IsCorrect = false } } },
                 new() { Text = "What is the purpose of Promise.all()?", CodeSnippet = "const results = await Promise.all([p1, p2, p3]);", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Waits for all promises to resolve and returns their results", IsCorrect = true }, new() { Text = "Returns the first promise that resolves", IsCorrect = false }, new() { Text = "Runs promises sequentially", IsCorrect = false }, new() { Text = "Catches errors from all promises", IsCorrect = false } } },
-                new() { Text = "What is the difference between 'let' and 'var'?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "'let' is block-scoped; 'var' is function-scoped", IsCorrect = true }, new() { Text = "'let' is global; 'var' is local", IsCorrect = false }, new() { Text = "'var' cannot be reassigned; 'let' can", IsCorrect = false }, new() { Text = "There is no difference", IsCorrect = false } } },
-                new() { Text = "What does 'e.preventDefault()' do in an event handler?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Stops the browser's default action for the event", IsCorrect = true }, new() { Text = "Stops event bubbling", IsCorrect = false }, new() { Text = "Removes the event listener", IsCorrect = false }, new() { Text = "Prevents the function from returning a value", IsCorrect = false } } },
-                // ── Advanced ──
+            }
+        };
+
+        var jsAdvanced = new Quiz
+        {
+            Title = "Advanced JavaScript",
+            Topic = "js-advanced",
+            Category = "JavaScript",
+            Description = "Floating point quirks, Object.freeze, WeakMap, Symbol, and Proxy.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
                 new() { Text = "What is the output of this code?", CodeSnippet = "console.log(0.1 + 0.2 === 0.3);", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "false", IsCorrect = true }, new() { Text = "true", IsCorrect = false }, new() { Text = "undefined", IsCorrect = false }, new() { Text = "NaN", IsCorrect = false } } },
-                new() { Text = "What is a closure in JavaScript?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A function that has access to its outer scope's variables", IsCorrect = true }, new() { Text = "A way to close a browser window", IsCorrect = false }, new() { Text = "A method to end a loop", IsCorrect = false }, new() { Text = "A type of error handling", IsCorrect = false } } },
-                new() { Text = "What does the 'this' keyword refer to in an arrow function?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "The enclosing lexical context", IsCorrect = true }, new() { Text = "The global object", IsCorrect = false }, new() { Text = "The function itself", IsCorrect = false }, new() { Text = "undefined", IsCorrect = false } } },
-                new() { Text = "What is the event loop in JavaScript?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A mechanism that handles async callbacks by monitoring the call stack and task queue", IsCorrect = true }, new() { Text = "A for loop that iterates over events", IsCorrect = false }, new() { Text = "A recursive function that listens for DOM events", IsCorrect = false }, new() { Text = "A browser API for scheduling animations", IsCorrect = false } } },
-                new() { Text = "What is the output?", CodeSnippet = "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "3, 3, 3", IsCorrect = true }, new() { Text = "0, 1, 2", IsCorrect = false }, new() { Text = "undefined, undefined, undefined", IsCorrect = false }, new() { Text = "0, 0, 0", IsCorrect = false } } },
                 new() { Text = "What does Object.freeze() do?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Prevents adding, removing, or modifying properties of an object", IsCorrect = true }, new() { Text = "Creates a deep copy of the object", IsCorrect = false }, new() { Text = "Converts the object to an immutable string", IsCorrect = false }, new() { Text = "Locks the object in memory permanently", IsCorrect = false } } },
-                new() { Text = "What is the difference between call(), apply(), and bind()?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "call/apply invoke immediately (apply takes array); bind returns a new function", IsCorrect = true }, new() { Text = "They are identical methods with different names", IsCorrect = false }, new() { Text = "call is for arrays, apply is for objects, bind is for strings", IsCorrect = false }, new() { Text = "bind invokes immediately; call and apply return new functions", IsCorrect = false } } },
                 new() { Text = "What is a WeakMap in JavaScript?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A Map where keys are weakly referenced and can be garbage collected", IsCorrect = true }, new() { Text = "A Map with limited storage capacity", IsCorrect = false }, new() { Text = "A Map that automatically deletes old entries", IsCorrect = false }, new() { Text = "A Map that only stores primitive values", IsCorrect = false } } },
                 new() { Text = "What is the purpose of Symbol in JavaScript?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "To create unique, immutable identifiers for object properties", IsCorrect = true }, new() { Text = "To create special string types", IsCorrect = false }, new() { Text = "To define mathematical symbols", IsCorrect = false }, new() { Text = "To encrypt object properties", IsCorrect = false } } },
                 new() { Text = "What does the 'Proxy' object do in JavaScript?", CodeSnippet = "const proxy = new Proxy(target, handler);", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "Creates a wrapper that intercepts and redefines fundamental operations on an object", IsCorrect = true }, new() { Text = "Creates a copy of the object", IsCorrect = false }, new() { Text = "Establishes a network proxy connection", IsCorrect = false }, new() { Text = "Converts an object to a different type", IsCorrect = false } } },
             }
         };
 
-        db.Quizzes.AddRange(htmlQuiz, cssQuiz, jsQuiz);
+        db.Quizzes.AddRange(
+            htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAdvanced,
+            cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced,
+            jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced
+        );
         await db.SaveChangesAsync();
     }
 }

@@ -12,7 +12,7 @@ export interface AuthResponse {
 }
 
 export interface AccountStats {
-  totalQuizAttempts: number;
+  quizzesCompleted: number;
   totalLessonsCompleted: number;
   averageQuizScore: number;
   memberSince: string;
@@ -22,6 +22,7 @@ export interface QuizTopic {
   id: number;
   title: string;
   topic: string;
+  category: string;
   description: string;
   difficulty: string;
   questionCount: number;
@@ -59,6 +60,7 @@ export interface QuizAttempt {
   id: number;
   quizTitle: string;
   topic: string;
+  category: string;
   score: number;
   totalQuestions: number;
   percentage: number;

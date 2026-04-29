@@ -12,7 +12,7 @@ const topicIcons: Record<string, React.ElementType> = {
 };
 
 export default function QuizCTA({ category }: { category: QuizCategoryMeta }) {
-  const Icon = topicIcons[category.topics[0]] || Brain;
+  const Icon = topicIcons[category.categoryName] || Brain;
 
   return (
     <motion.div
@@ -44,7 +44,7 @@ export default function QuizCTA({ category }: { category: QuizCategoryMeta }) {
           </div>
 
           <Link
-            href={`/quiz/${category.topics[0].toLowerCase()}`}
+            href={`/quiz?category=${category.id}`}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-500/25 shrink-0"
           >
             <Brain className="w-4 h-4" />

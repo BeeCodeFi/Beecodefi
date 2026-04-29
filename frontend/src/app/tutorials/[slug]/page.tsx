@@ -181,7 +181,7 @@ export default function TutorialPage({ params }: { params: Promise<{ slug: strin
                 if (quizCat) {
                   return (
                     <Link
-                      href={`/quiz/${quizCat.topics[0].toLowerCase()}`}
+                      href={`/quiz?category=${quizCat.id}`}
                       className="px-4 py-2 bg-white text-emerald-700 hover:bg-emerald-50 rounded-lg text-sm font-medium transition-colors"
                     >
                       Take the Quiz →
@@ -294,7 +294,7 @@ export default function TutorialPage({ params }: { params: Promise<{ slug: strin
                 if (quizCat) {
                   return (
                     <Link
-                      href={`/quiz/${quizCat.topics[0].toLowerCase()}`}
+                      href={`/quiz?category=${quizCat.id}`}
                       className={cn(
                         "flex items-center gap-2.5 mt-4 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                         "bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30",

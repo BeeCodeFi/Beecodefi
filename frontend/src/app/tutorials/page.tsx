@@ -192,14 +192,17 @@ export default function TutorialsPage() {
                           const quizCat = getQuizCategoryForTutorial(tutorial.slug);
                           if (quizCat) {
                             return (
-                              <Link
-                                href={`/quiz/${quizCat.topics[0].toLowerCase()}`}
-                                onClick={(e) => e.stopPropagation()}
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  window.location.href = `/quiz?category=${quizCat.id}`;
+                                }}
                                 className="flex items-center gap-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-950/40 px-3 py-1.5 rounded-full border border-purple-200 dark:border-purple-800/50 transition-colors"
                               >
                                 <Brain className="w-3 h-3" />
                                 Quiz
-                              </Link>
+                              </button>
                             );
                           }
                           return null;

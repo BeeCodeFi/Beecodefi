@@ -7,6 +7,7 @@ public class QuizTopicDto
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Topic { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Difficulty { get; set; } = string.Empty;
     public int QuestionCount { get; set; }
@@ -58,6 +59,7 @@ public class QuizAttemptDto
     public int Id { get; set; }
     public string QuizTitle { get; set; } = string.Empty;
     public string Topic { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
     public int Score { get; set; }
     public int TotalQuestions { get; set; }
     public double Percentage { get; set; }

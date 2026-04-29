@@ -175,9 +175,15 @@ public class AccountController : ControllerBase
         var lessonsCompleted = await _db.TutorialProgress
             .CountAsync(p => p.UserId == userId);
 
+        // Count distinct quizzes the user has attempted (each subcategory = 1)
+        var quizzesCompleted = quizAttempts
+            .Select(q => q.QuizId)
+            .Distinct()
+            .Count();
+
         return Ok(new AccountStatsDto
         {
-            TotalQuizAttempts = quizAttempts.Count,
+            QuizzesCompleted = quizzesCompleted,
             TotalLessonsCompleted = lessonsCompleted,
             AverageQuizScore = quizAttempts.Count > 0
                 ? Math.Round(quizAttempts.Average(q => (double)q.Score / q.TotalQuestions * 100), 1)

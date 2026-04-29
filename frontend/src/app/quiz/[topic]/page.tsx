@@ -26,7 +26,11 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
         const quizTopic = topicsRes.data.find(
           (t: { topic: string }) => t.topic.toLowerCase() === topic.toLowerCase()
         );
-        if (quizTopic) setQuizId(quizTopic.id);
+        if (quizTopic) {
+          setQuizId(quizTopic.id);
+          // Store the quiz title for display
+          document.title = `${quizTopic.title} Quiz`;
+        }
 
         const { data } = await api.get<QuizQuestion[]>(`/quiz/${topic}`);
         setQuestions(data);
@@ -192,7 +196,7 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
             <span className="text-sm font-medium text-gray-500">
               Question {currentIndex + 1} of {questions.length}
             </span>
-            <span className="text-sm font-medium text-gray-500 capitalize">{topic} Quiz</span>
+            <span className="text-sm font-medium text-gray-500">{topic.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")} Quiz</span>
           </div>
           <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
             <motion.div

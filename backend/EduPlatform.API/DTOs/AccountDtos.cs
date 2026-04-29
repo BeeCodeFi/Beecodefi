@@ -31,7 +31,7 @@ public class ResetProgressDto
 
 public class AccountStatsDto
 {
-    public int TotalQuizAttempts { get; set; }
+    public int QuizzesCompleted { get; set; }
     public int TotalLessonsCompleted { get; set; }
     public double AverageQuizScore { get; set; }
     public DateTime MemberSince { get; set; }

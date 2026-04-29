@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -12,15 +13,17 @@ import {
   Trophy,
   BookOpen,
   ChevronRight,
+  ChevronDown,
   Layers,
   GraduationCap,
+  CheckCircle2,
 } from "lucide-react";
 import api from "@/lib/api";
 import { QuizTopic } from "@/types";
 import { quizCategories, type QuizCategoryMeta } from "@/data/quiz-categories";
 import { cn } from "@/lib/utils";
 
-const topicIcons: Record<string, React.ElementType> = {
+const categoryIcons: Record<string, React.ElementType> = {
   HTML: FileCode2,
   CSS: Palette,
   JavaScript: Braces,
@@ -33,9 +36,13 @@ const difficultyColor: Record<string, string> = {
 };
 
 export default function QuizPage() {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category") || "all";
+
   const [topics, setTopics] = useState<QuizTopic[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -43,11 +50,8 @@ export default function QuizPage() {
         const { data } = await api.get<QuizTopic[]>("/quiz/topics");
         setTopics(data);
       } catch {
-        setTopics([
-          { id: 1, title: "HTML Fundamentals", topic: "HTML", description: "Test your knowledge of HTML elements, attributes, forms, tables, and semantic markup.", difficulty: "Beginner", questionCount: 30, bestScore: null },
-          { id: 2, title: "CSS Mastery", topic: "CSS", description: "Challenge yourself on selectors, flexbox, grid, responsive design, and CSS specificity.", difficulty: "Intermediate", questionCount: 30, bestScore: null },
-          { id: 3, title: "JavaScript Essentials", topic: "JavaScript", description: "Put your JS skills to the test with closures, async/await, DOM, and ES6+.", difficulty: "Intermediate", questionCount: 30, bestScore: null },
-        ]);
+        // Fallback for when backend is unavailable
+        setTopics([]);
       } finally {
         setLoading(false);
       }
@@ -55,13 +59,20 @@ export default function QuizPage() {
     fetchTopics();
   }, []);
 
-  // Group topics by category in order
+  // Auto-expand a category if coming from a tutorial link
+  useEffect(() => {
+    if (initialCategory !== "all") {
+      setExpandedCategories(new Set([initialCategory]));
+    }
+  }, [initialCategory]);
+
+  // Group topics by category
   const categorized = quizCategories
     .sort((a, b) => a.order - b.order)
     .map((cat) => ({
       ...cat,
-      quizzes: topics.filter((t) =>
-        cat.topics.some((ct) => ct.toLowerCase() === t.topic.toLowerCase())
+      quizzes: topics.filter(
+        (t) => t.category.toLowerCase() === cat.categoryName.toLowerCase()
       ),
     }));
 
@@ -73,6 +84,18 @@ export default function QuizPage() {
   const totalQuizzes = topics.length;
   const totalQuestions = topics.reduce((s, t) => s + t.questionCount, 0);
   const completedQuizzes = topics.filter((t) => t.bestScore !== null).length;
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen">
@@ -156,7 +179,7 @@ export default function QuizPage() {
             {quizCategories
               .sort((a, b) => a.order - b.order)
               .map((cat) => {
-                const Icon = topicIcons[cat.topics[0]] || Brain;
+                const Icon = categoryIcons[cat.categoryName] || Brain;
                 return (
                   <button
                     key={cat.id}
@@ -195,13 +218,15 @@ export default function QuizPage() {
               ))}
             </div>
           ) : (
-            <div className="space-y-16">
+            <div className="space-y-8">
               {filteredCategories.map((category, catIndex) => (
                 <CategorySection
                   key={category.id}
                   category={category}
                   quizzes={category.quizzes}
                   catIndex={catIndex}
+                  isExpanded={expandedCategories.has(category.id)}
+                  onToggle={() => toggleCategory(category.id)}
                 />
               ))}
             </div>
@@ -243,12 +268,18 @@ function CategorySection({
   category,
   quizzes,
   catIndex,
+  isExpanded,
+  onToggle,
 }: {
   category: QuizCategoryMeta & { quizzes: QuizTopic[] };
   quizzes: QuizTopic[];
   catIndex: number;
+  isExpanded: boolean;
+  onToggle: () => void;
 }) {
-  const Icon = topicIcons[category.topics[0]] || Brain;
+  const Icon = categoryIcons[category.categoryName] || Brain;
+  const completedCount = quizzes.filter((q) => q.bestScore !== null).length;
+  const totalCount = quizzes.length;
 
   return (
     <motion.div
@@ -257,43 +288,99 @@ function CategorySection({
       viewport={{ once: true, margin: "-60px" }}
       transition={{ delay: catIndex * 0.1 }}
     >
-      {/* Category header */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold text-sm">
-          {category.order}
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            {category.title}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {category.description}
-          </p>
-        </div>
-      </div>
-
-      {/* Timeline connector */}
-      <div className="ml-5 border-l-2 border-gray-200 dark:border-gray-800 pl-9 space-y-4 pb-2">
-        {quizzes.length > 0 ? (
-          quizzes.map((quiz) => (
-            <QuizCard key={quiz.id} quiz={quiz} category={category} />
-          ))
-        ) : (
-          <div className="bg-gray-50 dark:bg-gray-900/50 border border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
-            No quizzes available for this category yet. Check back soon!
-          </div>
+      {/* Category header — clickable to expand/collapse */}
+      <button
+        onClick={onToggle}
+        className={cn(
+          "w-full bg-white dark:bg-gray-900 rounded-2xl border p-6 transition-all duration-300 hover:shadow-md",
+          completedCount === totalCount && totalCount > 0
+            ? "border-emerald-200 dark:border-emerald-900/60"
+            : "border-gray-200 dark:border-gray-800"
         )}
+      >
+        <div className="flex items-center gap-5">
+          {/* Icon */}
+          <div
+            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center shrink-0`}
+          >
+            <Icon className="w-7 h-7 text-white" />
+          </div>
 
-        {/* Study link */}
-        <Link
-          href={`/tutorials/${category.tutorialSlug}`}
-          className="inline-flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium ml-1 transition-colors"
+          {/* Info */}
+          <div className="flex-1 min-w-0 text-left">
+            <div className="flex items-center gap-3 mb-1 flex-wrap">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {category.title}
+              </h2>
+              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                {totalCount} {totalCount === 1 ? "topic" : "topics"}
+              </span>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {category.description}
+            </p>
+
+            {/* Progress bar */}
+            {totalCount > 0 && (
+              <div className="flex items-center gap-3 mt-3">
+                <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden max-w-xs">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all duration-500",
+                      completedCount === totalCount
+                        ? "bg-emerald-500"
+                        : "bg-indigo-500"
+                    )}
+                    style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                  />
+                </div>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  {completedCount}/{totalCount} completed
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Expand/collapse indicator */}
+          <div className="shrink-0">
+            {isExpanded ? (
+              <ChevronDown className="w-5 h-5 text-gray-400" />
+            ) : (
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            )}
+          </div>
+        </div>
+      </button>
+
+      {/* Subcategory quizzes — shown when expanded */}
+      {isExpanded && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.3 }}
+          className="ml-7 mt-2 border-l-2 border-gray-200 dark:border-gray-800 pl-8 space-y-3 pb-2"
         >
-          <BookOpen className="w-4 h-4" />
-          Study {category.title} tutorials first
-          <ChevronRight className="w-3 h-3" />
-        </Link>
-      </div>
+          {quizzes.length > 0 ? (
+            quizzes.map((quiz) => (
+              <QuizCard key={quiz.id} quiz={quiz} category={category} />
+            ))
+          ) : (
+            <div className="bg-gray-50 dark:bg-gray-900/50 border border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+              No quizzes available for this category yet. Check back soon!
+            </div>
+          )}
+
+          {/* Study link */}
+          <Link
+            href={`/tutorials/${category.tutorialSlug}`}
+            className="inline-flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium ml-1 transition-colors"
+          >
+            <BookOpen className="w-4 h-4" />
+            Study {category.title} tutorials first
+            <ChevronRight className="w-3 h-3" />
+          </Link>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
@@ -307,7 +394,6 @@ function QuizCard({
   quiz: QuizTopic;
   category: QuizCategoryMeta;
 }) {
-  const Icon = topicIcons[quiz.topic] || Brain;
   const completed = quiz.bestScore !== null;
   const percentage = completed && quiz.questionCount > 0
     ? Math.round((quiz.bestScore! / quiz.questionCount) * 100)
@@ -315,53 +401,55 @@ function QuizCard({
 
   return (
     <Link
-      href={`/quiz/${quiz.topic.toLowerCase()}`}
+      href={`/quiz/${quiz.topic}`}
       className={cn(
-        "group block bg-white dark:bg-gray-900 rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+        "group block bg-white dark:bg-gray-900 rounded-xl border p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
         completed
           ? "border-emerald-200 dark:border-emerald-900/60"
           : "border-gray-200 dark:border-gray-800"
       )}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-        {/* Icon */}
-        <div
-          className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
-        >
-          <Icon className="w-7 h-7 text-white" />
+      <div className="flex items-center gap-4">
+        {/* Completion indicator */}
+        <div className="shrink-0">
+          {completed ? (
+            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+          ) : (
+            <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600" />
+          )}
         </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-1 flex-wrap">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
               {quiz.title}
             </h3>
             <span
               className={cn(
-                "px-2.5 py-0.5 rounded-full text-xs font-medium border",
+                "px-2 py-0.5 rounded-full text-[10px] font-medium border",
                 difficultyColor[quiz.difficulty] || "text-gray-500 bg-gray-50 border-gray-200"
               )}
             >
               {quiz.difficulty}
             </span>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
             {quiz.description}
           </p>
-          <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+          <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 dark:text-gray-500">
             <span>{quiz.questionCount} Questions</span>
             <span>~{Math.ceil(quiz.questionCount * 1.5)} min</span>
           </div>
         </div>
 
         {/* Score / CTA */}
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           {completed ? (
             <div className="text-center">
               <div
                 className={cn(
-                  "text-2xl font-bold",
+                  "text-lg font-bold",
                   percentage >= 80
                     ? "text-emerald-500"
                     : percentage >= 60
@@ -371,14 +459,14 @@ function QuizCard({
               >
                 {percentage}%
               </div>
-              <div className="flex items-center gap-1 text-xs text-gray-400">
+              <div className="flex items-center gap-1 text-[10px] text-gray-400">
                 <Trophy className="w-3 h-3 text-amber-500" />
-                Best: {quiz.bestScore}/{quiz.questionCount}
+                {quiz.bestScore}/{quiz.questionCount}
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-medium text-sm group-hover:gap-3 transition-all">
-              Start Quiz <ArrowRight className="w-4 h-4" />
+            <div className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium text-sm group-hover:gap-2 transition-all">
+              Start <ArrowRight className="w-4 h-4" />
             </div>
           )}
         </div>
