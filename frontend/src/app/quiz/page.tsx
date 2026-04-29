@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -36,6 +36,14 @@ const difficultyColor: Record<string, string> = {
 };
 
 export default function QuizPage() {
+  return (
+    <Suspense>
+      <QuizPageContent />
+    </Suspense>
+  );
+}
+
+function QuizPageContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "all";
 
