@@ -116,7 +116,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
-                      <p className="font-medium text-gray-900 dark:text-white">Gandhinagar, India</p>
+                      <p className="font-medium text-gray-900 dark:text-white">Ranchi, India</p>
                     </div>
                   </div>
                   <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group">
@@ -134,7 +134,7 @@ export default function ContactPage() {
               {/* Map placeholder */}
               <div className="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 h-64">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117203.48174!2d72.5971!3d23.2156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c2b987c6e4d5b%3A0x495c0081e24fa498!2sGandhinagar%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14653.262!2d85.3096!3d23.3861!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f4e1003f21c24d%3A0x4059a324e0a3b9f!2sBariatu%2C%20Ranchi%2C%20Jharkhand!5e0!3m2!1sen!2sin!4v1"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

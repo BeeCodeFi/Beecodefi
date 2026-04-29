@@ -88,7 +88,7 @@ export default function RegisterPage() {
                   "w-full pl-10 pr-4 py-3 rounded-xl border bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500",
                   errors.name ? "border-red-300" : "border-gray-200 dark:border-gray-700"
                 )}
-                placeholder="Ayush Kumar"
+                placeholder="John Doe"
               />
             </div>
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
@@ -118,11 +118,12 @@ export default function RegisterPage() {
               <input
                 {...register("password")}
                 type="password"
+                autoComplete="new-password"
                 className={cn(
                   "w-full pl-10 pr-4 py-3 rounded-xl border bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500",
                   errors.password ? "border-red-300" : "border-gray-200 dark:border-gray-700"
                 )}
-                placeholder="••••••••"
+                placeholder="Min 6 characters"
               />
             </div>
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
@@ -135,11 +136,12 @@ export default function RegisterPage() {
               <input
                 {...register("confirmPassword")}
                 type="password"
+                autoComplete="new-password"
                 className={cn(
                   "w-full pl-10 pr-4 py-3 rounded-xl border bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500",
                   errors.confirmPassword ? "border-red-300" : "border-gray-200 dark:border-gray-700"
                 )}
-                placeholder="••••••••"
+                placeholder="Re-enter password"
               />
             </div>
             {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}

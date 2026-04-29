@@ -2,12 +2,20 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  profileImageUrl?: string | null;
 }
 
 export interface AuthResponse {
   token: string;
   refreshToken: string;
   user: User;
+}
+
+export interface AccountStats {
+  totalQuizAttempts: number;
+  totalLessonsCompleted: number;
+  averageQuizScore: number;
+  memberSince: string;
 }
 
 export interface QuizTopic {
@@ -70,6 +78,8 @@ export interface TutorialCategory {
   description: string;
   icon: string;
   color: string;
+  totalLessons?: number;
+  estimatedHours?: number;
   lessons: TutorialLesson[];
 }
 
@@ -78,12 +88,28 @@ export interface TutorialLesson {
   title: string;
   content: string;
   codeExamples: CodeExample[];
+  difficulty?: "beginner" | "intermediate" | "advanced";
+  estimatedMinutes?: number;
+  keyTakeaways?: string[];
+  interactiveExercises?: InteractiveExercise[];
+  mdnReference?: string;
 }
 
 export interface CodeExample {
   language: string;
   code: string;
   title?: string;
+  description?: string;
+  livePreview?: boolean;
+}
+
+export interface InteractiveExercise {
+  id: string;
+  title: string;
+  instruction: string;
+  startingCode: string;
+  expectedOutput?: string;
+  hints?: string[];
 }
 
 export interface CodingTip {

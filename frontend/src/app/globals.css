@@ -33,6 +33,41 @@
   .animate-float-delayed {
     animation: float 6s ease-in-out infinite 2s;
   }
+
+  .glass-card {
+    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl;
+  }
+
+  .glow-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .glow-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 40px -12px rgba(99, 102, 241, 0.15),
+      0 0 0 1px rgba(99, 102, 241, 0.1);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme(colors.gray.300) transparent;
+  }
+  :is(.dark) .scrollbar-thin {
+    scrollbar-color: theme(colors.gray.700) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme(colors.gray.300);
+    border-radius: 999px;
+  }
+  :is(.dark) .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme(colors.gray.700);
+  }
 }
 
 @keyframes float {

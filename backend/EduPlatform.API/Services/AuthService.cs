@@ -72,7 +72,8 @@ public class AuthService : IAuthService
             {
                 Id = user.Id,
                 Name = user.Name,
-                Email = user.Email
+                Email = user.Email,
+                ProfileImageUrl = user.ProfileImageUrl
             }
         };
     }

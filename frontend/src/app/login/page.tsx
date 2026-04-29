@@ -74,6 +74,7 @@ export default function LoginPage() {
               <input
                 {...register("email")}
                 type="email"
+                autoComplete="username"
                 className={cn(
                   "w-full pl-10 pr-4 py-3 rounded-xl border bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500",
                   errors.email ? "border-red-300" : "border-gray-200 dark:border-gray-700"
@@ -91,11 +92,12 @@ export default function LoginPage() {
               <input
                 {...register("password")}
                 type="password"
+                autoComplete="one-time-code"
                 className={cn(
                   "w-full pl-10 pr-4 py-3 rounded-xl border bg-white dark:bg-gray-950 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500",
                   errors.password ? "border-red-300" : "border-gray-200 dark:border-gray-700"
                 )}
-                placeholder="••••••••"
+                placeholder="Enter your password"
               />
             </div>
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}

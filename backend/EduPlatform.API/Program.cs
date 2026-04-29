@@ -66,6 +66,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors();
+app.UseStaticFiles(); // Serve uploaded avatars from wwwroot
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
