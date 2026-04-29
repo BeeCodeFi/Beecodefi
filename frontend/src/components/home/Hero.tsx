@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, Brain, Sparkles } from "lucide-react";
+import { tutorials } from "@/data/tutorials";
+
+const totalLessons = tutorials.reduce((sum, t) => sum + t.lessons.length, 0);
 
 export default function Hero() {
   return (
@@ -96,7 +99,7 @@ export default function Hero() {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { value: "30+", label: "Lessons" },
+              { value: `${totalLessons}+`, label: "Lessons" },
               { value: "3", label: "Quiz Topics" },
               { value: "100%", label: "Free" },
             ].map((stat) => (

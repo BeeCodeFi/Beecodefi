@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, FileCode2, Palette, Braces } from "lucide-react";
+import { tutorials as tutorialData } from "@/data/tutorials";
 
-const tutorials = [
+const tutorialMeta = [
   {
     slug: "html",
     title: "HTML",
@@ -13,7 +14,6 @@ const tutorials = [
     icon: FileCode2,
     color: "from-orange-500 to-red-500",
     bgColor: "bg-orange-50 dark:bg-orange-950/20",
-    lessons: 10,
   },
   {
     slug: "css",
@@ -23,7 +23,6 @@ const tutorials = [
     icon: Palette,
     color: "from-blue-500 to-indigo-500",
     bgColor: "bg-blue-50 dark:bg-blue-950/20",
-    lessons: 10,
   },
   {
     slug: "javascript",
@@ -33,9 +32,13 @@ const tutorials = [
     icon: Braces,
     color: "from-yellow-500 to-amber-500",
     bgColor: "bg-yellow-50 dark:bg-yellow-950/20",
-    lessons: 10,
   },
 ];
+
+const tutorials = tutorialMeta.map((meta) => ({
+  ...meta,
+  lessons: tutorialData.find((t) => t.slug === meta.slug)?.lessons.length ?? 0,
+}));
 
 export default function TutorialPreview() {
   return (
