@@ -18,7 +18,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
-        if (await _db.Users.AnyAsync(u => u.Email == dto.Email))
+        if (await _db.Users.AnyAsync(u => u.Email == dto.Email.ToLowerInvariant()))
             throw new InvalidOperationException("Email already registered");
 
         var user = new User

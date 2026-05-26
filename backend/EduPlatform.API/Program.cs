@@ -64,8 +64,8 @@ using (var scope = app.Services.CreateScope())
     await SeedData.InitializeAsync(db);
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles(); // Serve uploaded avatars from wwwroot
 app.UseAuthentication();
 app.UseAuthorization();
