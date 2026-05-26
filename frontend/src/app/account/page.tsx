@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
-import type { User as UserType, AccountStats } from "@/types";
+import type { User as UserType, AccountStats, QuizAttempt } from "@/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
 
@@ -39,6 +39,10 @@ export default function AccountPage() {
   // Stats
   const [stats, setStats] = useState<AccountStats | null>(null);
 
+  // Quiz history
+  const [quizHistory, setQuizHistory] = useState<QuizAttempt[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
   // Reset progress
   const [resetConfirm, setResetConfirm] = useState<string | null>(null);
   const [resetting, setResetting] = useState(false);
@@ -60,6 +64,7 @@ export default function AccountPage() {
       setName(user.name);
       setEmail(user.email);
       loadStats();
+      loadQuizHistory();
     }
   }, [user]);
 
@@ -69,6 +74,18 @@ export default function AccountPage() {
       setStats(data);
     } catch {
       // silently fail
+    }
+  };
+
+  const loadQuizHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const { data } = await api.get<QuizAttempt[]>("/quiz/history");
+      setQuizHistory(data);
+    } catch {
+      // silently fail
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -164,6 +181,7 @@ export default function AccountPage() {
       setResetMsg({ type: "success", text: `${type === "all" ? "All" : type.charAt(0).toUpperCase() + type.slice(1)} progress reset successfully` });
       setResetConfirm(null);
       loadStats();
+      loadQuizHistory();
     } catch {
       setResetMsg({ type: "error", text: "Failed to reset progress" });
     } finally {
@@ -423,11 +441,73 @@ export default function AccountPage() {
             </form>
           </motion.div>
 
-          {/* Reset Progress Section */}
+          {/* Quiz History Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
+            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-yellow-500" /> Quiz History
+            </h2>
+            {historyLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500" />
+              </div>
+            ) : quizHistory.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                No quiz attempts yet. Take a quiz to see your history here!
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Quiz</th>
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      <th className="text-center py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Score</th>
+                      <th className="text-center py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">%</th>
+                      <th className="text-right py-2 text-gray-500 dark:text-gray-400 font-medium">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {quizHistory.map((attempt) => (
+                      <tr key={attempt.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="py-2.5 pr-4 font-medium text-gray-900 dark:text-white">{attempt.quizTitle}</td>
+                        <td className="py-2.5 pr-4 text-gray-500 dark:text-gray-400 capitalize">{attempt.category}</td>
+                        <td className="py-2.5 pr-4 text-center text-gray-700 dark:text-gray-300">
+                          {attempt.score}/{attempt.totalQuestions}
+                        </td>
+                        <td className="py-2.5 pr-4 text-center">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            attempt.percentage >= 80
+                              ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
+                              : attempt.percentage >= 50
+                              ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300"
+                              : "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
+                          }`}>
+                            {attempt.percentage}%
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-right text-gray-400 dark:text-gray-500 text-xs">
+                          {new Date(attempt.completedAt).toLocaleDateString("en-US", {
+                            month: "short", day: "numeric", year: "numeric",
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Reset Progress Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
             className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
           >
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
@@ -487,7 +567,7 @@ export default function AccountPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6 }}
             className="bg-white dark:bg-gray-900 rounded-xl border border-red-200 dark:border-red-900 p-6"
           >
             <h2 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
