@@ -196,9 +196,6 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                         )}>
                           {video.title}
                         </p>
-                        {video.duration && (
-                          <span className="text-xs text-gray-400 mt-1 block">{video.duration}</span>
-                        )}
                       </div>
 
                       <ChevronRight className={cn(

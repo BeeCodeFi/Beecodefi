@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import {
   User, Camera, Mail, Lock, RotateCcw, Trash2, Save,
   BookOpen, Trophy, BarChart3, Calendar, AlertTriangle, Check, X, Eye, EyeOff,
+  ZoomIn, ZoomOut, Crop,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
@@ -17,6 +18,9 @@ export default function AccountPage() {
   const { user, isLoading, updateUser, logout } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const CROP_SIZE = 256;
+  const OUTPUT_SIZE = 200;
 
   // Profile form
   const [name, setName] = useState("");
@@ -35,6 +39,14 @@ export default function AccountPage() {
 
   // Avatar
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  // Crop modal
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 });
+  const [cropZoom, setCropZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   // Stats
   const [stats, setStats] = useState<AccountStats | null>(null);
@@ -130,23 +142,67 @@ export default function AccountPage() {
     }
   };
 
-  // --- Avatar Upload ---
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // --- Avatar Upload (opens crop modal) ---
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setRawImageSrc(ev.target?.result as string);
+      setCropOffset({ x: 0, y: 0 });
+      setCropZoom(1);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCropDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true);
+    const pos = "touches" in e
+      ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      : { x: e.clientX, y: e.clientY };
+    setDragStart({ x: pos.x - cropOffset.x, y: pos.y - cropOffset.y });
+  };
+
+  const handleCropDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    const pos = "touches" in e
+      ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      : { x: e.clientX, y: e.clientY };
+    setCropOffset({ x: pos.x - dragStart.x, y: pos.y - dragStart.y });
+  };
+
+  const handleCropDragEnd = () => setIsDragging(false);
+
+  const handleApplyCrop = async () => {
+    const img = imgRef.current;
+    if (!img || !rawImageSrc) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = OUTPUT_SIZE;
+    canvas.height = OUTPUT_SIZE;
+    const ctx = canvas.getContext("2d")!;
+    const initialScale = CROP_SIZE / Math.max(img.naturalWidth, img.naturalHeight);
+    const currentScale = initialScale * cropZoom;
+    const imgCenterX = CROP_SIZE / 2 + cropOffset.x;
+    const imgCenterY = CROP_SIZE / 2 + cropOffset.y;
+    const srcX = (0 - imgCenterX) / currentScale + img.naturalWidth / 2;
+    const srcY = (0 - imgCenterY) / currentScale + img.naturalHeight / 2;
+    const srcW = CROP_SIZE / currentScale;
+    const srcH = CROP_SIZE / currentScale;
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+    const base64 = canvas.toDataURL("image/jpeg", 0.88);
+    setCropModalOpen(false);
+    setRawImageSrc(null);
     setAvatarUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const { data } = await api.post<UserType>("/account/avatar", formData);
+      const { data } = await api.post<UserType>("/account/avatar", { image: base64 });
       updateUser(data);
     } catch (err: unknown) {
-      console.error("Avatar upload error:", err);
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to upload avatar";
       setProfileMsg({ type: "error", text: msg });
     } finally {
       setAvatarUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -212,7 +268,11 @@ export default function AccountPage() {
     );
   }
 
-  const avatarUrl = user.profileImageUrl ? `${API_BASE_URL}${user.profileImageUrl}` : null;
+  const avatarUrl = user.profileImageUrl
+    ? (user.profileImageUrl.startsWith("data:")
+        ? user.profileImageUrl
+        : `${API_BASE_URL}${user.profileImageUrl}`)
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
@@ -614,6 +674,98 @@ export default function AccountPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* ── Crop Modal ── */}
+      {cropModalOpen && rawImageSrc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-sm p-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Crop className="w-5 h-5 text-indigo-500" /> Adjust Photo
+              </h2>
+              <button
+                onClick={() => { setCropModalOpen(false); setRawImageSrc(null); }}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Crop viewport */}
+            <div className="flex justify-center mb-4">
+              <div
+                className="relative overflow-hidden rounded-full border-4 border-indigo-500 shadow-lg cursor-grab active:cursor-grabbing"
+                style={{ width: CROP_SIZE, height: CROP_SIZE }}
+                onMouseDown={handleCropDragStart}
+                onMouseMove={handleCropDragMove}
+                onMouseUp={handleCropDragEnd}
+                onMouseLeave={handleCropDragEnd}
+                onTouchStart={handleCropDragStart}
+                onTouchMove={handleCropDragMove}
+                onTouchEnd={handleCropDragEnd}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={imgRef}
+                  src={rawImageSrc}
+                  alt="crop preview"
+                  draggable={false}
+                  style={{
+                    position: "absolute",
+                    maxWidth: "none",
+                    width: `${CROP_SIZE * cropZoom}px`,
+                    height: `${CROP_SIZE * cropZoom}px`,
+                    objectFit: "contain",
+                    left: "50%",
+                    top: "50%",
+                    transform: `translate(calc(-50% + ${cropOffset.x}px), calc(-50% + ${cropOffset.y}px))`,
+                    userSelect: "none",
+                    pointerEvents: "none",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Zoom slider */}
+            <div className="flex items-center gap-3 mb-5">
+              <ZoomOut className="w-4 h-4 text-gray-400 shrink-0" />
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.01}
+                value={cropZoom}
+                onChange={(e) => { setCropZoom(Number(e.target.value)); }}
+                className="flex-1 accent-indigo-600"
+              />
+              <ZoomIn className="w-4 h-4 text-gray-400 shrink-0" />
+            </div>
+
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-5">
+              Drag to reposition · Slide to zoom
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setCropModalOpen(false); setRawImageSrc(null); }}
+                className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleApplyCrop}
+                className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                Apply & Upload
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

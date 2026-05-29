@@ -13,12 +13,10 @@ namespace EduPlatform.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IWebHostEnvironment _env;
 
-    public AccountController(AppDbContext db, IWebHostEnvironment env)
+    public AccountController(AppDbContext db)
     {
         _db = db;
-        _env = env;
     }
 
     private int GetUserId() =>
@@ -91,43 +89,19 @@ public class AccountController : ControllerBase
 
     // POST /api/account/avatar
     [HttpPost("avatar")]
-    public async Task<ActionResult<UserDto>> UploadAvatar(IFormFile file)
+    public async Task<ActionResult<UserDto>> UploadAvatar([FromBody] AvatarUploadDto dto)
     {
-        if (file == null || file.Length == 0)
-            return BadRequest(new { message = "No file provided" });
+        if (string.IsNullOrEmpty(dto.Image) || !dto.Image.StartsWith("data:image/"))
+            return BadRequest(new { message = "Invalid image format" });
 
-        if (file.Length > 2 * 1024 * 1024)
-            return BadRequest(new { message = "File size must be under 2MB" });
-
-        var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
-        if (!allowedTypes.Contains(file.ContentType.ToLower()))
-            return BadRequest(new { message = "Only JPEG, PNG, WebP, and GIF images are allowed" });
+        // Limit to ~300KB base64 (~220KB raw image)
+        if (dto.Image.Length > 307_200)
+            return BadRequest(new { message = "Image too large. Please use a smaller crop." });
 
         var user = await _db.Users.FindAsync(GetUserId());
         if (user == null) return NotFound();
 
-        // Delete old avatar if exists
-        if (!string.IsNullOrEmpty(user.ProfileImageUrl))
-        {
-            var oldPath = Path.Combine(_env.ContentRootPath, "wwwroot",
-                user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-            if (System.IO.File.Exists(oldPath))
-                System.IO.File.Delete(oldPath);
-        }
-
-        var uploadsDir = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", "avatars");
-        Directory.CreateDirectory(uploadsDir);
-
-        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-        var fileName = $"{user.Id}_{Guid.NewGuid():N}{ext}";
-        var filePath = Path.Combine(uploadsDir, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        user.ProfileImageUrl = $"/uploads/avatars/{fileName}";
+        user.ProfileImageUrl = dto.Image; // stored as base64 data URL directly in DB
         await _db.SaveChangesAsync();
 
         return Ok(new UserDto
@@ -146,16 +120,8 @@ public class AccountController : ControllerBase
         var user = await _db.Users.FindAsync(GetUserId());
         if (user == null) return NotFound();
 
-        if (!string.IsNullOrEmpty(user.ProfileImageUrl))
-        {
-            var oldPath = Path.Combine(_env.ContentRootPath, "wwwroot",
-                user.ProfileImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-            if (System.IO.File.Exists(oldPath))
-                System.IO.File.Delete(oldPath);
-
-            user.ProfileImageUrl = null;
-            await _db.SaveChangesAsync();
-        }
+        user.ProfileImageUrl = null;
+        await _db.SaveChangesAsync();
 
         return Ok(new { message = "Avatar removed" });
     }

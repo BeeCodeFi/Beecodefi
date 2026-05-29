@@ -76,8 +76,15 @@ export default function Navbar() {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-white font-bold">{user.name[0].toUpperCase()}</span>
+                  <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 shrink-0">
+                    {user.profileImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={user.profileImageUrl} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <span className="text-xs text-white font-bold">{user.name[0].toUpperCase()}</span>
+                      </div>
+                    )}
                   </div>
                   <span>{user.name}</span>
                   <ChevronDown className="w-4 h-4" />
