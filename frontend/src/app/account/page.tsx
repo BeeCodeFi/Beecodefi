@@ -6,11 +6,21 @@ import { motion } from "framer-motion";
 import {
   User, Camera, Mail, Lock, RotateCcw, Trash2, Save,
   BookOpen, Trophy, BarChart3, Calendar, AlertTriangle, Check, X, Eye, EyeOff,
-  ZoomIn, ZoomOut, Crop,
+  ZoomIn, ZoomOut, Crop, PlayCircle, CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
-import type { User as UserType, AccountStats, QuizAttempt } from "@/types";
+import type { User as UserType, AccountStats, QuizAttempt, CompletedCourse } from "@/types";
+
+const COURSES_STORAGE_KEY = "beeCodeFi_completedCourses";
+function loadCompletedCourses(): CompletedCourse[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
 
@@ -55,6 +65,9 @@ export default function AccountPage() {
   const [quizHistory, setQuizHistory] = useState<QuizAttempt[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
+  // Course progress (localStorage)
+  const [completedCourses, setCompletedCourses] = useState<CompletedCourse[]>([]);
+
   // Reset progress
   const [resetConfirm, setResetConfirm] = useState<string | null>(null);
   const [resetting, setResetting] = useState(false);
@@ -77,6 +90,7 @@ export default function AccountPage() {
       setEmail(user.email);
       loadStats();
       loadQuizHistory();
+      setCompletedCourses(loadCompletedCourses());
     }
   }, [user]);
 
@@ -288,11 +302,12 @@ export default function AccountPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+            className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
           >
             {[
               { icon: Trophy, label: "Quizzes Completed", value: stats.quizzesCompleted, color: "text-yellow-500" },
               { icon: BookOpen, label: "Lessons Done", value: stats.totalLessonsCompleted, color: "text-green-500" },
+              { icon: PlayCircle, label: "Courses Completed", value: completedCourses.length, color: "text-orange-500" },
               { icon: BarChart3, label: "Avg Quiz Score", value: `${stats.averageQuizScore}%`, color: "text-blue-500" },
               { icon: Calendar, label: "Member Since", value: new Date(stats.memberSince).toLocaleDateString("en-US", { month: "short", year: "numeric" }), color: "text-purple-500" },
             ].map((stat) => (
@@ -552,6 +567,65 @@ export default function AccountPage() {
                         </td>
                         <td className="py-2.5 text-right text-gray-400 dark:text-gray-500 text-xs">
                           {new Date(attempt.completedAt).toLocaleDateString("en-US", {
+                            month: "short", day: "numeric", year: "numeric",
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Course Progress Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <PlayCircle className="w-5 h-5 text-orange-500" /> Course Progress
+            </h2>
+            {completedCourses.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                No courses completed yet. Visit a course and click &quot;Mark as Complete&quot;!
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Course</th>
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Difficulty</th>
+                      <th className="text-right py-2 text-gray-500 dark:text-gray-400 font-medium">Completed On</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {completedCourses.map((course) => (
+                      <tr key={course.slug} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="py-2.5 pr-4">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                            <span className="font-medium text-gray-900 dark:text-white">{course.title}</span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 pr-4 text-gray-500 dark:text-gray-400">{course.category}</td>
+                        <td className="py-2.5 pr-4">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                            course.difficulty === "beginner"
+                              ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
+                              : course.difficulty === "intermediate"
+                              ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400"
+                              : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400"
+                          }`}>
+                            {course.difficulty}
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-right text-gray-400 dark:text-gray-500 text-xs">
+                          {new Date(course.completedAt).toLocaleDateString("en-US", {
                             month: "short", day: "numeric", year: "numeric",
                           })}
                         </td>

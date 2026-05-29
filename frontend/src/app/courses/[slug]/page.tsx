@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -12,9 +12,22 @@ import {
   Palette,
   Braces,
   ExternalLink,
+  CheckCircle2,
 } from "lucide-react";
 import { courses } from "@/data/courses";
 import { cn } from "@/lib/utils";
+import type { CompletedCourse } from "@/types";
+
+const STORAGE_KEY = "beeCodeFi_completedCourses";
+
+function getCompletedCourses(): CompletedCourse[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
 
 const iconMap: Record<string, React.ElementType> = {
   FileCode2,
@@ -32,6 +45,31 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   const { slug } = use(params);
   const course = courses.find((c) => c.slug === slug);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  useEffect(() => {
+    if (!course) return;
+    const completed = getCompletedCourses();
+    setIsCompleted(completed.some((c) => c.slug === course.slug));
+  }, [course]);
+
+  const handleMarkComplete = () => {
+    if (!course) return;
+    const completed = getCompletedCourses();
+    if (completed.some((c) => c.slug === course.slug)) return;
+    const updated: CompletedCourse[] = [
+      ...completed,
+      {
+        slug: course.slug,
+        title: course.title,
+        category: course.category,
+        difficulty: course.difficulty,
+        completedAt: new Date().toISOString(),
+      },
+    ];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setIsCompleted(true);
+  };
 
   if (!course) {
     return (
@@ -138,6 +176,19 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                   <Signal className="w-4 h-4" />
                   Subscribe to Channel
                 </a>
+                <button
+                  onClick={handleMarkComplete}
+                  disabled={isCompleted}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                    isCompleted
+                      ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 cursor-default"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                  )}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  {isCompleted ? "Course Completed!" : "Mark as Complete"}
+                </button>
               </div>
             </motion.div>
           </div>

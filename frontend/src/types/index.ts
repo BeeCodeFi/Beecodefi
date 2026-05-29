@@ -121,3 +121,11 @@ export interface CodingTip {
   language: string;
   code: string;
 }
+
+export interface CompletedCourse {
+  slug: string;
+  title: string;
+  category: string;
+  difficulty: string;
+  completedAt: string; // ISO date string
+}
