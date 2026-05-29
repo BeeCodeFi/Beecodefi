@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   PlayCircle,
-  Youtube,
   Signal,
   ChevronRight,
   FileCode2,
@@ -126,7 +125,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
                 >
-                  <Youtube className="w-4 h-4" />
+                  <PlayCircle className="w-4 h-4" />
                   Open Full Playlist
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>

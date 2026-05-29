@@ -7,7 +7,7 @@ import {
   Palette,
   Braces,
   PlayCircle,
-  Youtube,
+  Play,
   BookOpen,
   Signal,
   Sparkles,
@@ -43,7 +43,7 @@ export default function CoursesPage() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/60 dark:bg-gray-800/60 border border-red-200/50 dark:border-red-700/30 text-red-700 dark:text-red-300 text-sm font-medium mb-6 backdrop-blur-sm"
           >
-            <Youtube className="w-4 h-4" />
+            <Play className="w-4 h-4" />
             Video Courses on YouTube
           </motion.div>
 
@@ -186,7 +186,7 @@ export default function CoursesPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors shadow-md hover:shadow-lg"
             >
-              <Youtube className="w-5 h-5" />
+              <Play className="w-5 h-5" />
               Subscribe on YouTube
             </a>
           </motion.div>
