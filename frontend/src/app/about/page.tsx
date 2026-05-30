@@ -1,10 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Briefcase, GraduationCap, Code2, Mail, MapPin, Phone,
   ExternalLink, Calendar, Cpu, Database, Cloud,
-  TestTube, Sparkles
+  TestTube, Sparkles, ChevronDown
 } from "lucide-react";
 
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -35,27 +36,129 @@ const experience = [
   },
 ];
 
+const landingPages = [
+  {
+    title: "Parkash Fabrics",
+    subtitle: "Textile & Fabric Store",
+    tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
+    description: "Parkash Fabrics offers a wide range of premium fabrics and textile solutions for fashion, apparel, and home furnishing needs.",
+    color: "from-orange-500 to-red-500",
+    link: "https://parkashfabrics.vercel.app/",
+  },
+  {
+    title: "Jodh Hosiery Works",
+    subtitle: "Hosiery & Garment Manufacturer",
+    tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
+    description: "Jodh Hosiery Works is a leading manufacturer and supplier of hosiery products, uniforms, knitwear, socks, sweaters, and apparel solutions.",
+    color: "from-green-500 to-teal-500",
+    link: "https://jodhhosieryworks.vercel.app/",
+  },
+  {
+    title: "Shree Enterprises",
+    subtitle: "Industrial & Business Solutions Provider",
+    tech: ["HTML5", "Tailwind CSS", "JavaScript", "Vercel"],
+    description: "Shree Enterprises provides reliable industrial, engineering, and business solutions, delivering quality products and services to meet diverse customer requirements.",
+    color: "from-amber-500 to-yellow-500",
+    link: "https://shreeenterprises.vercel.app/",
+  },
+  {
+    title: "Trikha Weaving Factory",
+    subtitle: "Textile & Weaving Manufacturer",
+    tech: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Vercel"],
+    description: "Trikha Weaving Factory specializes in manufacturing high-quality woven and knitted fabrics, delivering reliable textile solutions for apparel and industrial applications.",
+    color: "from-rose-500 to-pink-500",
+    link: "https://trikhaweavingfactory.vercel.app/",
+  },
+  {
+    title: "Amazon Clone",
+    subtitle: "E-Commerce Web Application",
+    tech: ["HTML5", "CSS3", "Vercel"],
+    description: "A modern Amazon-inspired e-commerce platform featuring product browsing, search, shopping cart functionality, and a responsive user experience.",
+    color: "from-yellow-500 to-orange-500",
+    link: "https://amazonclone-coral-alpha.vercel.app/",
+  },
+  {
+    title: "VRV International",
+    subtitle: "Textile Exporter & International Trading Company",
+    tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
+    description: "VRV International is a global textile and apparel business specializing in quality manufacturing, sourcing, and export solutions for international markets.",
+    color: "from-sky-500 to-blue-500",
+    link: "https://vrvinternational.vercel.app/",
+  },
+  {
+    title: "Vujay Modern Loomtex",
+    subtitle: "Textile & Weaving Manufacturer",
+    tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
+    description: "Vujay Modern Loomtex is a textile manufacturing company specializing in high-quality woven fabrics, offering modern weaving solutions for apparel and home textile applications.",
+    color: "from-emerald-500 to-green-500",
+    link: "https://vujaymodernloomtex.vercel.app/",
+  },
+  {
+    title: "Woolspun",
+    subtitle: "Wool & Textile Products",
+    tech: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Vercel"],
+    description: "Woolspun is a textile-focused brand offering high-quality wool-based yarns and fabric materials designed for knitting, weaving, and apparel production.",
+    color: "from-violet-500 to-purple-500",
+    link: "https://woolspun.vercel.app/",
+  },
+  {
+    title: "Birmi Overseas",
+    subtitle: "Textile Export & International Trading Company",
+    tech: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Vercel"],
+    description: "Birmi Overseas is an international textile trading and export company providing high-quality fabrics and garments to global markets with a focus on reliability and quality.",
+    color: "from-cyan-500 to-teal-500",
+    link: "https://birmioverseas.vercel.app/",
+  },
+  {
+    title: "Monsoon Salon",
+    subtitle: "Salon & Beauty Services Website",
+    tech: ["HTML5", "Bootstrap", "JavaScript", "Vercel"],
+    description: "A modern salon website showcasing hair, beauty, and grooming services with a clean UI designed to enhance customer engagement and booking experience.",
+    color: "from-pink-500 to-fuchsia-500",
+    link: "https://monsoon-rho.vercel.app/",
+  },
+  {
+    title: "Portfolio Website",
+    subtitle: "Personal Portfolio Website",
+    tech: ["HTML5", "CSS3", "JavaScript"],
+    description: "A modern personal portfolio website showcasing projects, skills, and experience with a clean and responsive design.",
+    color: "from-indigo-500 to-blue-500",
+    link: "https://portfoliowebsite-tan-six.vercel.app/",
+  },
+];
+
 const projects = [
-  {
-    title: "Social Media Platform",
-    subtitle: "Full-Stack Web Application",
-    tech: ["Angular", "Node.js", "MongoDB", "JWT"],
-    description: "Full-stack social media platform with JWT authentication, role-based access, dynamic feeds, real-time updates, and AI-powered smart captions using OpenAI APIs.",
-    color: "from-purple-500 to-pink-500",
-  },
-  {
-    title: "Hospitality & Travel Web APP",
-    subtitle: "Multi-Framework Booking Platform",
-    tech: ["React.js", "Redux", "Zustand", "REST APIs", "Jest"],
-    description: "Feature-rich travel booking app with global state management (Zustand), REST API integration for real-time data fetching, and optimized frontend performance.",
-    color: "from-blue-500 to-cyan-500",
-  },
   {
     title: "BEECODEFI",
     subtitle: "Free Education Platform",
     tech: ["Next.js", "Tailwind CSS", "ASP.NET Core", "SQLite", "Framer Motion"],
     description: "Full-stack educational platform with interactive tutorials, topic-based quizzes, user progress tracking, and modern animations — the site you're on right now!",
     color: "from-indigo-500 to-purple-500",
+    link: "https://beecodefi-edu.vercel.app/",
+  },
+  {
+    title: "Currency Converter",
+    subtitle: "Currency Converter Web Application",
+    tech: ["HTML5", "CSS3", "JavaScript", "ExchangeRate API", "Vercel"],
+    description: "A real-time currency converter web application that allows users to instantly convert between global currencies using live exchange rates.",
+    color: "from-green-500 to-emerald-500",
+    link: "https://currency-converter-pi-peach.vercel.app/",
+  },
+  {
+    title: "YouWe Tech",
+    subtitle: "IT Services & Software Development Company Website",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Express.js", "Turborepo", "Framer Motion", "Vercel"],
+    description: "YouWe Tech is a technology solutions company offering web development, software services, and digital solutions to help businesses build modern and scalable products.",
+    color: "from-blue-500 to-indigo-500",
+    link: "https://youwe-tech.vercel.app/",
+  },
+  {
+    title: "Pitstop Detailing Studio",
+    subtitle: "Auto Detailing & Garage Management Software",
+    tech: ["React 19", "Tailwind CSS", "ASP.NET Core 8", "C#", "Gemini API", "Vercel"],
+    description: "Pitstop Detailing Studio Billbook is a management and billing system designed for auto detailing businesses to handle invoices, customers, and service records efficiently.",
+    color: "from-red-500 to-orange-500",
+    link: "https://pitstop-detailing-studio-billbook.vercel.app/admin/dashboard",
   },
 ];
 
@@ -91,6 +194,102 @@ const skillCategories = [
     skills: ["LLM Integration", "Copilot", "Claude", "OpenAI APIs", "Gen AI", "Agile (Scrum)", "Responsive Design", "SPA Architecture"],
   },
 ];
+
+function ProjectCard({ project, delay }: { project: typeof projects[0]; delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+      className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+    >
+      <a href={project.link} target="_blank" rel="noopener noreferrer" className="block">
+        <div className={`h-2 rounded-full bg-gradient-to-r ${project.color} mb-4`} />
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+          {project.title}
+          <ExternalLink className="w-4 h-4 text-indigo-500" />
+        </h3>
+        <p className="text-sm text-gray-500 mb-3">{project.subtitle}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">{project.description}</p>
+        <div className="flex flex-wrap gap-2">
+          {project.tech.map((t) => (
+            <span key={t} className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs rounded-full font-medium">
+              {t}
+            </span>
+          ))}
+        </div>
+      </a>
+    </motion.div>
+  );
+}
+
+function ProjectsSection() {
+  const [showLandingPages, setShowLandingPages] = useState(false);
+
+  return (
+    <section className="py-20 bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex items-center gap-3 mb-12"
+        >
+          <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+            <ExternalLink className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+          </div>
+          <h2 className="text-3xl font-bold">Projects</h2>
+        </motion.div>
+
+        {/* Standalone Projects */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {projects.map((project, i) => (
+            <ProjectCard key={i} project={project} delay={i * 0.1} />
+          ))}
+        </div>
+
+        {/* Landing Pages Category */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          onClick={() => setShowLandingPages(!showLandingPages)}
+          className="w-full flex items-center justify-between bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
+              <ExternalLink className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-left">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Landing Pages</h3>
+              <p className="text-sm text-gray-500">{landingPages.length} client projects</p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${showLandingPages ? "rotate-180" : ""}`} />
+        </motion.button>
+
+        <AnimatePresence>
+          {showLandingPages && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                {landingPages.map((project, i) => (
+                  <ProjectCard key={i} project={project} delay={i * 0.05} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}
 
 export default function AboutPage() {
   return (
@@ -193,46 +392,7 @@ export default function AboutPage() {
       </section>
 
       {/* Projects */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center gap-3 mb-12"
-          >
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <ExternalLink className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <h2 className="text-3xl font-bold">Projects</h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className={`h-2 rounded-full bg-gradient-to-r ${project.color} mb-4`} />
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{project.title}</h3>
-                <p className="text-sm text-gray-500 mb-3">{project.subtitle}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">{project.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((t) => (
-                    <span key={t} className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs rounded-full font-medium">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ProjectsSection />
 
       {/* Skills */}
       <section className="py-20 bg-white dark:bg-gray-950">
