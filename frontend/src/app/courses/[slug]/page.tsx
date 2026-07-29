@@ -88,10 +88,15 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   const diff = difficultyConfig[course.difficulty];
   const currentVideoId = activeVideoId ?? course.firstVideoId;
 
-  // YouTube embed URL — when a specific video is selected play it, otherwise show playlist from beginning
+  // If playlistId is a placeholder, omit the list param so embed still works
+  const hasRealPlaylist = course.playlistId && !course.playlistId.includes("placeholder");
+  const listParam = hasRealPlaylist ? `&list=${course.playlistId}` : "";
   const embedSrc = activeVideoId
-    ? `https://www.youtube.com/embed/${activeVideoId}?list=${course.playlistId}&autoplay=1&rel=0`
-    : `https://www.youtube.com/embed/${course.firstVideoId}?list=${course.playlistId}&rel=0`;
+    ? `https://www.youtube.com/embed/${activeVideoId}?autoplay=1&rel=0${listParam}`
+    : `https://www.youtube.com/embed/${course.firstVideoId}?rel=0${listParam}`;
+  const playlistUrl = hasRealPlaylist
+    ? `https://www.youtube.com/playlist?list=${course.playlistId}`
+    : `https://www.youtube.com/watch?v=${course.firstVideoId}`;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10">
@@ -158,7 +163,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <a
-                  href={`https://www.youtube.com/playlist?list=${course.playlistId}`}
+                  href={playlistUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
@@ -264,7 +269,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
               <p className="text-xs text-gray-400 dark:text-gray-500">
                 More videos being added •{" "}
                 <a
-                  href={`https://www.youtube.com/playlist?list=${course.playlistId}`}
+                  href={playlistUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-orange-500 hover:underline"

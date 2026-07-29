@@ -84,4 +84,71 @@ export const courses: Course[] = [
       },
     ],
   },
+
+  // ─── CSS Made Easy ───────────────────────────────────────────────────────
+  {
+    slug: "css-made-easy",
+    title: "CSS Made Easy",
+    tagline: "Style websites from scratch with confidence",
+    description:
+      "A beginner-friendly CSS series that takes you from zero to styling complete web pages. Learn selectors, the box model, colors, flexbox, grid, responsive design, and how to build real-world layouts — step by step.",
+    playlistId: "PLaJsz10osD4css-series-placeholder",
+    firstVideoId: "aWI2s3zxvGE",
+    difficulty: "beginner",
+    category: "CSS",
+    icon: "Palette",
+    color: "from-blue-500 to-indigo-500",
+    videos: [
+      {
+        id: "aWI2s3zxvGE",
+        title: "CSS Made Easy With AI 🤖 | Part 1 - What is CSS?",
+        description: "Introduction to CSS — what it is, why it matters, and how it brings HTML pages to life with style.",
+      },
+      {
+        id: "9JwFtjQxNlQ",
+        title: "CSS Made Easy With AI 🤖 | Part 2 - Getting Started & First Styling",
+        description: "Set up your workflow and write your first CSS rules — linking stylesheets and seeing instant results.",
+      },
+      {
+        id: "VZlW0drfvSw",
+        title: "CSS Made Easy With AI 🤖 | Part 3 - Types & Selectors",
+        description: "Learn the different ways to write CSS and how to target HTML elements precisely using selectors.",
+      },
+      {
+        id: "FUD-ZJ9cK9c",
+        title: "CSS Made Easy With AI 🤖 | Part 4 - Syntax, Comments & Colors Explained",
+        description: "Master CSS syntax, write clean comments, and explore the full range of color formats — hex, RGB, and HSL.",
+      },
+      {
+        id: "90WPgZV_8Qw",
+        title: "CSS Made Easy With AI 🤖 | Part 5 – Text Styling & Box Model 📦",
+        description: "Style text with fonts, size, spacing, and weight — then understand the box model to control every element's spacing.",
+      },
+      {
+        id: "AXeK5KnFBos",
+        title: "CSS Made Easy With AI 🤖 | Part 6 – Display, Block vs Inline & Flexbox",
+        description: "Understand display types, the difference between block and inline elements, and how to build layouts with flexbox.",
+      },
+      {
+        id: "Wi4wzCWp5qg",
+        title: "CSS Made Easy With AI 🤖 | Part 7 - Position Property & Visual Design",
+        description: "Learn CSS positioning — static, relative, absolute, fixed, and sticky — to place elements exactly where you want them.",
+      },
+      {
+        id: "UaosyOomJVo",
+        title: "CSS Made Easy With AI 🤖 | Part 8 - Responsive Design & Media Queries 📱",
+        description: "Make your websites look great on phones, tablets, and desktops using media queries and mobile-first design.",
+      },
+      {
+        id: "9Tr2uUjO-aI",
+        title: "CSS Made Easy With AI 🤖 | Part 9 - CSS Grid",
+        description: "Build powerful two-dimensional layouts with CSS Grid — rows, columns, template areas, and responsive grids.",
+      },
+      {
+        id: "IeGbHJ0cRzs",
+        title: "CSS Made Easy With AI 🤖 | Part 10 - CSS Animations & Effects",
+        description: "Bring your pages to life with CSS transitions, keyframe animations, transforms, and visual effects.",
+      },
+    ],
+  },
 ];
