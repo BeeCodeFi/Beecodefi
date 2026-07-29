@@ -58,6 +58,10 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// Startup diagnostics
+var startupLogger = app.Logger;
+var resendKey = builder.Configuration["Resend:ApiKey"];
+startupLogger.LogInformation("Resend API key configured: {Configured}", !string.IsNullOrEmpty(resendKey));
 // Seed database
 using (var scope = app.Services.CreateScope())
 {

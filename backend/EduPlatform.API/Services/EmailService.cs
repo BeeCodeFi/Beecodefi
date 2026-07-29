@@ -103,7 +103,12 @@ public class EmailService : IEmailService
 
     private async Task SendAsync(string from, string to, string subject, string html, string? replyTo = null)
     {
+        // Check config first, then fall back to direct env var (handles some hosting edge cases)
         var apiKey = _config["Resend:ApiKey"];
+        if (string.IsNullOrEmpty(apiKey))
+            apiKey = Environment.GetEnvironmentVariable("Resend__ApiKey")
+                  ?? Environment.GetEnvironmentVariable("RESEND_API_KEY");
+
         if (string.IsNullOrEmpty(apiKey))
         {
             _logger.LogWarning("Resend API key not configured. Email to {To} not sent.", to);
