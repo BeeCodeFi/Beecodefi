@@ -7,9 +7,9 @@ import { courses } from "@/data/courses";
 
 export default function CoursesPreview() {
   return (
-    <section className="py-28 bg-gray-950 relative overflow-hidden">
-      {/* Red glow accent */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-red-500/5 blur-3xl rounded-full" />
+    <section className="py-28 bg-gray-50 dark:bg-gray-950 relative overflow-hidden">
+      {/* Accent glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-red-500/5 dark:bg-red-500/5 blur-3xl rounded-full" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
@@ -66,7 +66,7 @@ export default function CoursesPreview() {
                   <motion.div
                     whileHover={{ y: -5 }}
                     transition={{ duration: 0.2 }}
-                    className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-600 transition-all duration-300"
+                    className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 shadow-sm hover:shadow-lg"
                   >
                     {/* Thumbnail */}
                     <div className="relative aspect-video overflow-hidden bg-slate-800">

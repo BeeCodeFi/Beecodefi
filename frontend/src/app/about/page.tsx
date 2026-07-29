@@ -298,8 +298,29 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="w-28 h-28 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-              <span className="text-4xl font-bold text-white">AK</span>
+            <div className="relative w-32 h-32 mx-auto mb-6">
+              {/* Animated ring */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                style={{ padding: 3 }}
+              />
+              <div className="absolute inset-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-xl">
+                <img
+                  src="/ayush.png"
+                  alt="Ayush Kumar"
+                  className="w-full h-full object-cover object-center"
+                  onError={(e) => {
+                    // Fallback to initials if image not found
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                {/* Initials fallback */}
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-3xl font-bold text-white">AK</span>
+                </div>
+              </div>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold mb-2">Ayush Kumar</h1>
             <p className="text-xl text-indigo-600 dark:text-indigo-400 font-medium mb-4">
@@ -314,7 +335,7 @@ export default function AboutPage() {
             </p>
             <div className="flex items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4" /> Bhagalpur, Bihar, India
+                <MapPin className="w-4 h-4" /> Ranchi, Jharkhand, India
               </span>
               <a href="mailto:kumaryursh@gmail.com" className="flex items-center gap-1.5 hover:text-indigo-600 transition-colors">
                 <Mail className="w-4 h-4" /> kumaryursh@gmail.com
@@ -331,6 +352,12 @@ export default function AboutPage() {
               <a href="https://linkedin.com/in/ayushku" target="_blank" rel="noopener noreferrer"
                 className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                 <LinkedinIcon className="w-5 h-5" />
+              </a>
+              <a href="https://www.youtube.com/@BeeCodeFi" target="_blank" rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors text-red-600 dark:text-red-400">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
               </a>
             </div>
           </motion.div>
