@@ -7,36 +7,71 @@ export const htmlLessons: TutorialLesson[] = [
     difficulty: "beginner",
     estimatedMinutes: 15,
     mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax",
-    content: `HTML (HyperText Markup Language) is the standard markup language for creating web pages. According to MDN Web Docs, "HTML is a markup language that tells web browsers how to structure the web pages you visit."
+    content: `Welcome to HTML! If you've ever wondered how websites are built, you're in the right place. HTML is the very first step in web development, and it's easier than you think.
 
-HTML consists of a series of **elements** which you use to enclose, wrap, or mark up different parts of content to make it appear or act in a certain way. The enclosing **tags** can make content into a hyperlink, italicize words, change font size, and more.
+## What is HTML, Really?
 
-## What is HTML?
+HTML stands for **HyperText Markup Language**. Don't let the fancy name scare you! Here's what it means in plain English:
 
-HTML is NOT a programming language — it is a **markup language** that defines the structure of your content. HTML consists of a series of elements which tell the browser how to display content.
+- **HyperText** — Text with links (you click a link, it takes you somewhere)
+- **Markup** — A way of labeling content (this is a heading, that's a paragraph)
+- **Language** — A system that browsers understand
 
-Every web page you visit is built with HTML at its core. Even complex web applications built with React, Vue, or Angular ultimately render HTML in the browser.
+Think of HTML as the skeleton of every website. When you visit YouTube, Facebook, or any website, HTML is providing the structure underneath. Everything you see — text, images, buttons, forms — starts with HTML.
 
-## Anatomy of an HTML Element
+## Is HTML a Programming Language?
 
-An HTML element consists of three parts:
-- **Opening tag** — The name of the element wrapped in angle brackets, e.g. \`<p>\`
-- **Content** — The text or nested elements inside
-- **Closing tag** — Same as opening tag but with a forward slash, e.g. \`</p>\`
+**No!** This trips up a lot of beginners. HTML is NOT a programming language. It has no logic, no loops, no if-statements. HTML is a **markup language** — it describes what content is, not what the computer should do.
 
-## Void Elements
+Programming languages (like JavaScript or Python) give instructions: "If the user clicks this button, do something." HTML just says: "This is a button."
 
-Some elements consist of a single tag and cannot contain content. These are called **void elements** (or self-closing elements). Examples include \`<br>\`, \`<img>\`, \`<input>\`, and \`<hr>\`.
+## Your First HTML Element
 
-## Tags Are Case-Insensitive
+HTML is made of **elements**. An element has three parts:
 
-Tags can be written in uppercase or lowercase, but the best practice is to write all tags in **lowercase** for consistency and readability.`,
+1. **Opening tag** — Tells the browser "this content starts here"
+2. **Content** — The actual text or stuff inside
+3. **Closing tag** — Tells the browser "this content ends here"
+
+Example:
+\`\`\`
+<p>Hello, I'm learning HTML!</p>
+\`\`\`
+
+- \`<p>\` is the opening tag ("start of a paragraph")
+- \`Hello, I'm learning HTML!\` is the content
+- \`</p>\` is the closing tag ("end of the paragraph")
+
+Notice the \`/\` in the closing tag — that's how you know it's closing.
+
+## Self-Closing Tags (No Closing Tag Needed)
+
+Some elements don't have content inside them, so they don't need a closing tag. These are called **void elements** or **self-closing tags**. Common ones:
+
+- \`<br>\` — Line break (forces text to the next line)
+- \`<img src="photo.jpg" alt="A photo">\` — Image
+- \`<input type="text">\` — Text input box
+- \`<hr>\` — Horizontal line
+
+## One Simple Rule: Write Tags in Lowercase
+
+You can write \`<P>\` or \`<p>\` — both work. But everyone writes lowercase \`<p>\`, and you should too. It's the standard.
+
+## Why Learn HTML First?
+
+Every website uses HTML — even the fanciest ones built with React or Vue. You MUST learn HTML before moving to CSS (styling) or JavaScript (interactivity). Think of it this way:
+
+- HTML = The house frame (structure)
+- CSS = The paint and furniture (looks)
+- JavaScript = The electricity and plumbing (makes things work)
+
+You can't paint walls before you build them.`,
     keyTakeaways: [
-      "HTML stands for HyperText Markup Language",
-      "HTML is a markup language, not a programming language",
-      "Elements consist of opening tags, content, and closing tags",
-      "Void elements like <br> and <img> have no closing tag",
-      "Always write tags in lowercase for best practice",
+      "HTML builds the structure of every website you visit",
+      "HTML is a markup language, NOT a programming language",
+      "Elements have three parts: opening tag, content, closing tag",
+      "Some tags like <br> and <img> are self-closing (no closing tag)",
+      "Always write tags in lowercase (<p>, not <P>)",
     ],
     codeExamples: [
       {
@@ -88,6 +123,7 @@ Tags can be written in uppercase or lowercase, but the best practice is to write
         hints: [
           "A paragraph element starts with <p> and ends with </p>",
           "Place <p> before the text and </p> after",
+          "The opening tag is <p> (no forward slash)",
         ],
       },
       {
@@ -99,6 +135,30 @@ Tags can be written in uppercase or lowercase, but the best practice is to write
         hints: [
           "Wrap just the word 'important' with <strong> tags",
           "Nesting means putting one element inside another",
+          "Opening tag goes before 'important', closing tag after",
+        ],
+      },
+      {
+        id: "intro-3",
+        title: "Add a Line Break",
+        instruction: "Add a line break (<br>) between the two sentences so they appear on separate lines.",
+        startingCode: '<p>First sentence. Second sentence.</p>',
+        expectedOutput: '<p>First sentence.<br>Second sentence.</p>',
+        hints: [
+          "The <br> tag forces content to the next line",
+          "It goes BETWEEN the two sentences",
+          "<br> doesn't need a closing tag",
+        ],
+      },
+      {
+        id: "intro-4",
+        title: "Create a Heading",
+        instruction: "Create a heading using the <h1> tag with the text 'Welcome to My Website'.",
+        startingCode: "Welcome to My Website",
+        expectedOutput: "<h1>Welcome to My Website</h1>",
+        hints: [
+          "Headings use <h1> for the opening tag and </h1> for closing",
+          "<h1> is the biggest, most important heading",
         ],
       },
     ],
