@@ -19,19 +19,15 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
 const experience = [
   {
     company: "Cybage Software",
-    role: "Full-Stack Software Engineer",
+    role: "Software Engineer, Enterprise Products Division",
     period: "Nov 2023 — Present",
     highlights: [
-      "Built and maintained scalable React-based SPAs, improving UI performance and responsiveness",
-      "Developed reusable and modular React components, reducing development time by ~15%",
-      "Designed and built RESTful APIs using Node.js and .NET, handling authentication, data persistence, and third-party integrations",
-      "Integrated REST APIs with frontend using React hooks and async workflows",
-      "Built backend services with Express.js and ASP.NET Core, implementing JWT authentication and role-based access control",
-      "Managed database design and migrations with MongoDB and SQL Server/SQLite using EF Core",
-      "Built UI prototypes using AI Agents (Copilot, Claude) and automated repetitive tasks with AI-assisted workflows",
-      "Achieved 95% test coverage using Jest, React Testing Library, and backend unit tests",
-      "Worked in Agile teams, contributing to sprint planning and feature delivery",
-      "Managed Git workflows, branching strategies, and code reviews via Pull Requests on GitHub",
+      "Architected scalable React.js and Vue.js front-end applications for enterprise financial products, improving reliability across customer-facing modules used by thousands of end users.",
+      "Engineered reusable component libraries adopted by 3+ product teams, cutting feature development effort by 15% and accelerating release cycles by 1-2 sprints on average.",
+      "Integrated REST APIs with .NET Core backend services in microservice-based architectures, ensuring secure, low-latency data flow across distributed systems.",
+      "Optimized UI performance via lazy loading, memoization, and code splitting, reducing page load times and improving Core Web Vitals across key user flows.",
+      "Achieved 95% unit/integration test coverage with Jest and React Testing Library, measurably reducing production defects and rollback incidents.",
+      "Leveraged GitHub Copilot and Claude AI to accelerate development velocity while maintaining code consistency across sprint deliverables.",
     ],
   },
 ];
@@ -310,28 +306,29 @@ export default function AboutPage() {
               Full-Stack Software Engineer
             </p>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Full-Stack Developer specializing in React.js, Node.js, .NET, and modern JavaScript ecosystems.
-              Building scalable, high-performance web applications with expertise spanning frontend architecture,
-              backend APIs, database design, and cloud deployment. Passionate about clean UI, performance optimization,
-              and delivering seamless user experiences.
+              Full Stack Software Engineer with 2+ years of experience building and shipping production web applications
+              using React.js, Vue.js, Angular, Node.js, and .NET Core. Built reusable component libraries adopted across
+              3+ product teams, integrated REST APIs within microservice architectures, and achieved 95% unit test coverage
+              on customer-facing enterprise financial products. Experienced in AWS deployment, CI/CD automation, and
+              Agile/Scrum delivery, with hands-on experience integrating LLM/OpenAI APIs into production features.
             </p>
             <div className="flex items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4" /> Gandhinagar, India
+                <MapPin className="w-4 h-4" /> Bhagalpur, Bihar, India
               </span>
               <a href="mailto:kumaryursh@gmail.com" className="flex items-center gap-1.5 hover:text-indigo-600 transition-colors">
                 <Mail className="w-4 h-4" /> kumaryursh@gmail.com
               </a>
               <span className="flex items-center gap-1.5">
-                <Phone className="w-4 h-4" /> 7004900272
+                <Phone className="w-4 h-4" /> +91-7004900272
               </span>
             </div>
             <div className="flex items-center justify-center gap-3 mt-6">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://github.com/BeeCodeFi" target="_blank" rel="noopener noreferrer"
                 className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                 <GithubIcon className="w-5 h-5" />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://linkedin.com/in/ayushku" target="_blank" rel="noopener noreferrer"
                 className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                 <LinkedinIcon className="w-5 h-5" />
               </a>
