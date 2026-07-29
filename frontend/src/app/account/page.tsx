@@ -6,10 +6,21 @@ import { motion } from "framer-motion";
 import {
   User, Camera, Mail, Lock, RotateCcw, Trash2, Save,
   BookOpen, Trophy, BarChart3, Calendar, AlertTriangle, Check, X, Eye, EyeOff,
+  ZoomIn, ZoomOut, Crop, PlayCircle, CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
-import type { User as UserType, AccountStats } from "@/types";
+import type { User as UserType, AccountStats, QuizAttempt, CompletedCourse } from "@/types";
+
+const COURSES_STORAGE_KEY = "beeCodeFi_completedCourses";
+function loadCompletedCourses(): CompletedCourse[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(COURSES_STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
 
@@ -17,6 +28,9 @@ export default function AccountPage() {
   const { user, isLoading, updateUser, logout } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const CROP_SIZE = 256;
+  const OUTPUT_SIZE = 200;
 
   // Profile form
   const [name, setName] = useState("");
@@ -36,8 +50,23 @@ export default function AccountPage() {
   // Avatar
   const [avatarUploading, setAvatarUploading] = useState(false);
 
+  // Crop modal
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 });
+  const [cropZoom, setCropZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
   // Stats
   const [stats, setStats] = useState<AccountStats | null>(null);
+
+  // Quiz history
+  const [quizHistory, setQuizHistory] = useState<QuizAttempt[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  // Course progress (localStorage)
+  const [completedCourses, setCompletedCourses] = useState<CompletedCourse[]>([]);
 
   // Reset progress
   const [resetConfirm, setResetConfirm] = useState<string | null>(null);
@@ -60,6 +89,8 @@ export default function AccountPage() {
       setName(user.name);
       setEmail(user.email);
       loadStats();
+      loadQuizHistory();
+      setCompletedCourses(loadCompletedCourses());
     }
   }, [user]);
 
@@ -69,6 +100,18 @@ export default function AccountPage() {
       setStats(data);
     } catch {
       // silently fail
+    }
+  };
+
+  const loadQuizHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const { data } = await api.get<QuizAttempt[]>("/quiz/history");
+      setQuizHistory(data);
+    } catch {
+      // silently fail
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -113,23 +156,67 @@ export default function AccountPage() {
     }
   };
 
-  // --- Avatar Upload ---
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // --- Avatar Upload (opens crop modal) ---
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setRawImageSrc(ev.target?.result as string);
+      setCropOffset({ x: 0, y: 0 });
+      setCropZoom(1);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCropDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true);
+    const pos = "touches" in e
+      ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      : { x: e.clientX, y: e.clientY };
+    setDragStart({ x: pos.x - cropOffset.x, y: pos.y - cropOffset.y });
+  };
+
+  const handleCropDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    const pos = "touches" in e
+      ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      : { x: e.clientX, y: e.clientY };
+    setCropOffset({ x: pos.x - dragStart.x, y: pos.y - dragStart.y });
+  };
+
+  const handleCropDragEnd = () => setIsDragging(false);
+
+  const handleApplyCrop = async () => {
+    const img = imgRef.current;
+    if (!img || !rawImageSrc) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = OUTPUT_SIZE;
+    canvas.height = OUTPUT_SIZE;
+    const ctx = canvas.getContext("2d")!;
+    const initialScale = CROP_SIZE / Math.max(img.naturalWidth, img.naturalHeight);
+    const currentScale = initialScale * cropZoom;
+    const imgCenterX = CROP_SIZE / 2 + cropOffset.x;
+    const imgCenterY = CROP_SIZE / 2 + cropOffset.y;
+    const srcX = (0 - imgCenterX) / currentScale + img.naturalWidth / 2;
+    const srcY = (0 - imgCenterY) / currentScale + img.naturalHeight / 2;
+    const srcW = CROP_SIZE / currentScale;
+    const srcH = CROP_SIZE / currentScale;
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+    const base64 = canvas.toDataURL("image/jpeg", 0.88);
+    setCropModalOpen(false);
+    setRawImageSrc(null);
     setAvatarUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const { data } = await api.post<UserType>("/account/avatar", formData);
+      const { data } = await api.post<UserType>("/account/avatar", { image: base64 });
       updateUser(data);
     } catch (err: unknown) {
-      console.error("Avatar upload error:", err);
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to upload avatar";
       setProfileMsg({ type: "error", text: msg });
     } finally {
       setAvatarUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -164,6 +251,7 @@ export default function AccountPage() {
       setResetMsg({ type: "success", text: `${type === "all" ? "All" : type.charAt(0).toUpperCase() + type.slice(1)} progress reset successfully` });
       setResetConfirm(null);
       loadStats();
+      loadQuizHistory();
     } catch {
       setResetMsg({ type: "error", text: "Failed to reset progress" });
     } finally {
@@ -194,7 +282,11 @@ export default function AccountPage() {
     );
   }
 
-  const avatarUrl = user.profileImageUrl ? `${API_BASE_URL}${user.profileImageUrl}` : null;
+  const avatarUrl = user.profileImageUrl
+    ? (user.profileImageUrl.startsWith("data:")
+        ? user.profileImageUrl
+        : `${API_BASE_URL}${user.profileImageUrl}`)
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
@@ -210,11 +302,12 @@ export default function AccountPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+            className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
           >
             {[
               { icon: Trophy, label: "Quizzes Completed", value: stats.quizzesCompleted, color: "text-yellow-500" },
               { icon: BookOpen, label: "Lessons Done", value: stats.totalLessonsCompleted, color: "text-green-500" },
+              { icon: PlayCircle, label: "Courses Completed", value: completedCourses.length, color: "text-orange-500" },
               { icon: BarChart3, label: "Avg Quiz Score", value: `${stats.averageQuizScore}%`, color: "text-blue-500" },
               { icon: Calendar, label: "Member Since", value: new Date(stats.memberSince).toLocaleDateString("en-US", { month: "short", year: "numeric" }), color: "text-purple-500" },
             ].map((stat) => (
@@ -423,11 +516,132 @@ export default function AccountPage() {
             </form>
           </motion.div>
 
-          {/* Reset Progress Section */}
+          {/* Quiz History Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
+            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-yellow-500" /> Quiz History
+            </h2>
+            {historyLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500" />
+              </div>
+            ) : quizHistory.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                No quiz attempts yet. Take a quiz to see your history here!
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Quiz</th>
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      <th className="text-center py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Score</th>
+                      <th className="text-center py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">%</th>
+                      <th className="text-right py-2 text-gray-500 dark:text-gray-400 font-medium">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {quizHistory.map((attempt) => (
+                      <tr key={attempt.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="py-2.5 pr-4 font-medium text-gray-900 dark:text-white">{attempt.quizTitle}</td>
+                        <td className="py-2.5 pr-4 text-gray-500 dark:text-gray-400 capitalize">{attempt.category}</td>
+                        <td className="py-2.5 pr-4 text-center text-gray-700 dark:text-gray-300">
+                          {attempt.score}/{attempt.totalQuestions}
+                        </td>
+                        <td className="py-2.5 pr-4 text-center">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            attempt.percentage >= 80
+                              ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
+                              : attempt.percentage >= 50
+                              ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300"
+                              : "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
+                          }`}>
+                            {attempt.percentage}%
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-right text-gray-400 dark:text-gray-500 text-xs">
+                          {new Date(attempt.completedAt).toLocaleDateString("en-US", {
+                            month: "short", day: "numeric", year: "numeric",
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Course Progress Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <PlayCircle className="w-5 h-5 text-orange-500" /> Course Progress
+            </h2>
+            {completedCourses.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                No courses completed yet. Visit a course and click &quot;Mark as Complete&quot;!
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Course</th>
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      <th className="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium">Difficulty</th>
+                      <th className="text-right py-2 text-gray-500 dark:text-gray-400 font-medium">Completed On</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {completedCourses.map((course) => (
+                      <tr key={course.slug} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="py-2.5 pr-4">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                            <span className="font-medium text-gray-900 dark:text-white">{course.title}</span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 pr-4 text-gray-500 dark:text-gray-400">{course.category}</td>
+                        <td className="py-2.5 pr-4">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                            course.difficulty === "beginner"
+                              ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
+                              : course.difficulty === "intermediate"
+                              ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400"
+                              : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400"
+                          }`}>
+                            {course.difficulty}
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-right text-gray-400 dark:text-gray-500 text-xs">
+                          {new Date(course.completedAt).toLocaleDateString("en-US", {
+                            month: "short", day: "numeric", year: "numeric",
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Reset Progress Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
             className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
           >
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
@@ -487,7 +701,7 @@ export default function AccountPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6 }}
             className="bg-white dark:bg-gray-900 rounded-xl border border-red-200 dark:border-red-900 p-6"
           >
             <h2 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
@@ -534,6 +748,98 @@ export default function AccountPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* ── Crop Modal ── */}
+      {cropModalOpen && rawImageSrc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-sm p-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Crop className="w-5 h-5 text-indigo-500" /> Adjust Photo
+              </h2>
+              <button
+                onClick={() => { setCropModalOpen(false); setRawImageSrc(null); }}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Crop viewport */}
+            <div className="flex justify-center mb-4">
+              <div
+                className="relative overflow-hidden rounded-full border-4 border-indigo-500 shadow-lg cursor-grab active:cursor-grabbing"
+                style={{ width: CROP_SIZE, height: CROP_SIZE }}
+                onMouseDown={handleCropDragStart}
+                onMouseMove={handleCropDragMove}
+                onMouseUp={handleCropDragEnd}
+                onMouseLeave={handleCropDragEnd}
+                onTouchStart={handleCropDragStart}
+                onTouchMove={handleCropDragMove}
+                onTouchEnd={handleCropDragEnd}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={imgRef}
+                  src={rawImageSrc}
+                  alt="crop preview"
+                  draggable={false}
+                  style={{
+                    position: "absolute",
+                    maxWidth: "none",
+                    width: `${CROP_SIZE * cropZoom}px`,
+                    height: `${CROP_SIZE * cropZoom}px`,
+                    objectFit: "contain",
+                    left: "50%",
+                    top: "50%",
+                    transform: `translate(calc(-50% + ${cropOffset.x}px), calc(-50% + ${cropOffset.y}px))`,
+                    userSelect: "none",
+                    pointerEvents: "none",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Zoom slider */}
+            <div className="flex items-center gap-3 mb-5">
+              <ZoomOut className="w-4 h-4 text-gray-400 shrink-0" />
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.01}
+                value={cropZoom}
+                onChange={(e) => { setCropZoom(Number(e.target.value)); }}
+                className="flex-1 accent-indigo-600"
+              />
+              <ZoomIn className="w-4 h-4 text-gray-400 shrink-0" />
+            </div>
+
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-5">
+              Drag to reposition · Slide to zoom
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setCropModalOpen(false); setRawImageSrc(null); }}
+                className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleApplyCrop}
+                className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                Apply & Upload
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

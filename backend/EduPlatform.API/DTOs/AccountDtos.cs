@@ -36,3 +36,9 @@ public class AccountStatsDto
     public double AverageQuizScore { get; set; }
     public DateTime MemberSince { get; set; }
 }
+
+public class AvatarUploadDto
+{
+    [Required]
+    public string Image { get; set; } = string.Empty; // base64 data URL (e.g. data:image/jpeg;base64,...)
+}

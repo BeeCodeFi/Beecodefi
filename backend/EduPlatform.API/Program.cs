@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Services
 builder.Services.AddSingleton<TokenService>();
@@ -64,8 +64,8 @@ using (var scope = app.Services.CreateScope())
     await SeedData.InitializeAsync(db);
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles(); // Serve uploaded avatars from wwwroot
 app.UseAuthentication();
 app.UseAuthorization();
