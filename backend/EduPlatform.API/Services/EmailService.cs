@@ -46,11 +46,19 @@ public class EmailService : IEmailService
 
         msg.Body = new TextPart("html") { Text = htmlContent };
 
-        using var client = new SmtpClient();
-        await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(smtpUser, smtpPass);
-        await client.SendAsync(msg);
-        await client.DisconnectAsync(true);
+        try
+        {
+            using var client = new SmtpClient();
+            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(smtpUser, smtpPass);
+            await client.SendAsync(msg);
+            await client.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send contact email from {Email}.", email);
+            throw; // Re-throw for contact — caller handles this differently
+        }
     }
 
     public async Task SendPasswordResetEmailAsync(string toEmail, string name, string resetLink)
@@ -131,10 +139,19 @@ public class EmailService : IEmailService
 
         msg.Body = new TextPart("html") { Text = htmlContent };
 
-        using var client = new SmtpClient();
-        await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(smtpUser, smtpPass);
-        await client.SendAsync(msg);
-        await client.DisconnectAsync(true);
+        try
+        {
+            using var client = new SmtpClient();
+            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(smtpUser, smtpPass);
+            await client.SendAsync(msg);
+            await client.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send password reset email to {Email}. Reset link: {Link}", toEmail, resetLink);
+            // Don't rethrow — the token is already saved, so the user can retry.
+            // A mail delivery failure should not surface as a 500 to the client.
+        }
     }
 }
