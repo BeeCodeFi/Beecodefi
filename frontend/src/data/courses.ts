@@ -92,7 +92,7 @@ export const courses: Course[] = [
     tagline: "Style websites from scratch with confidence",
     description:
       "A beginner-friendly CSS series that takes you from zero to styling complete web pages. Learn selectors, the box model, colors, flexbox, grid, responsive design, and how to build real-world layouts — step by step.",
-    playlistId: "PLaJsz10osD4css-series-placeholder",
+    playlistId: "PLaJsz10osD4YdfrOJNCLGCploY2aAQXf5",
     firstVideoId: "aWI2s3zxvGE",
     difficulty: "beginner",
     category: "CSS",
