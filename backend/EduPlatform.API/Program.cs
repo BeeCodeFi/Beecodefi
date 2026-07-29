@@ -13,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Services
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton<ITokenService>(sp => sp.GetRequiredService<TokenService>());
 builder.Services.AddScoped<IAuthService, AuthService>();

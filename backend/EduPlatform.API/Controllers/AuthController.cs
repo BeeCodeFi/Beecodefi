@@ -1,7 +1,5 @@
 using EduPlatform.API.DTOs;
 using EduPlatform.API.Services;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduPlatform.API.Controllers;
@@ -12,34 +10,27 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IConfiguration _config;
-    private readonly IWebHostEnvironment _env;
 
-    public AuthController(IAuthService authService, IConfiguration config, IWebHostEnvironment env)
+    public AuthController(IAuthService authService, IConfiguration config)
     {
         _authService = authService;
         _config = config;
-        _env = env;
     }
 
     /// <summary>
-    /// Dev-only endpoint — tests SMTP connectivity and returns the exact error if it fails.
-    /// Remove or restrict this before going to production.
+    /// Dev-only endpoint — tests Resend API connectivity and returns the exact error if it fails.
     /// </summary>
     [HttpGet("test-email")]
-    public async Task<IActionResult> TestEmail()
+    public async Task<IActionResult> TestEmail([FromServices] IEmailService emailService)
     {
-        var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
-        var port = int.Parse(_config["Smtp:Port"] ?? "587");
-        var user = _config["Smtp:Username"] ?? "";
-        var pass = _config["Smtp:Password"] ?? "";
-
         try
         {
-            using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, SecureSocketOptions.SslOnConnect);
-            await client.AuthenticateAsync(user, pass);
-            await client.DisconnectAsync(true);
-            return Ok(new { success = true, message = $"SMTP connected and authenticated as {user}" });
+            await emailService.SendPasswordResetEmailAsync(
+                "kumaryursh@gmail.com",
+                "Test User",
+                "https://beecodefi-edu.vercel.app/reset-password?token=test123"
+            );
+            return Ok(new { success = true, message = "Test email dispatched — check inbox and logs." });
         }
         catch (Exception ex)
         {

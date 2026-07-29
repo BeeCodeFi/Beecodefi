@@ -1,6 +1,6 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 
 namespace EduPlatform.API.Services;
 
@@ -8,33 +8,20 @@ public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
     private readonly ILogger<EmailService> _logger;
+    private readonly HttpClient _http;
 
-    public EmailService(IConfiguration config, ILogger<EmailService> logger)
+    private static readonly JsonSerializerOptions _json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    public EmailService(IConfiguration config, ILogger<EmailService> logger, IHttpClientFactory httpFactory)
     {
         _config = config;
         _logger = logger;
+        _http = httpFactory.CreateClient("Resend");
     }
 
     public async Task SendContactEmailAsync(string name, string email, string subject, string message)
     {
-        var smtpUser = _config["Smtp:Username"];
-        var smtpPass = _config["Smtp:Password"];
-
-        if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass) || smtpPass == "your-app-password")
-        {
-            _logger.LogWarning("SMTP not configured. Contact message from {Email} logged but not sent.", email);
-            return;
-        }
-
-        var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
-        var port = int.Parse(_config["Smtp:Port"] ?? "465");
-        var toEmail = _config["Smtp:ToEmail"] ?? "kumaryursh@gmail.com";
-
-        var msg = new MimeMessage();
-        msg.From.Add(new MailboxAddress("BEECODEFI Contact", smtpUser));
-        msg.To.Add(new MailboxAddress("Ayush Kumar", toEmail));
-        msg.Subject = $"[BEECODEFI Contact] {subject}";
-        msg.ReplyTo.Add(new MailboxAddress(name, email));
+        var toEmail = _config["Resend:ToEmail"] ?? "kumaryursh@gmail.com";
 
         var htmlContent = $@"
             <h2>New Contact Message from BEECODEFI</h2>
@@ -44,42 +31,18 @@ public class EmailService : IEmailService
             <hr/>
             <p>{System.Net.WebUtility.HtmlEncode(message)}</p>";
 
-        msg.Body = new TextPart("html") { Text = htmlContent };
-
-        try
-        {
-            using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, SecureSocketOptions.SslOnConnect);
-            await client.AuthenticateAsync(smtpUser, smtpPass);
-            await client.SendAsync(msg);
-            await client.DisconnectAsync(true);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to send contact email from {Email}.", email);
-            throw; // Re-throw for contact — caller handles this differently
-        }
+        await SendAsync(
+            from: "BEECODEFI Contact <onboarding@resend.dev>",
+            to: toEmail,
+            subject: $"[BEECODEFI Contact] {subject}",
+            html: htmlContent,
+            replyTo: email
+        );
     }
 
     public async Task SendPasswordResetEmailAsync(string toEmail, string name, string resetLink)
     {
-        var smtpUser = _config["Smtp:Username"];
-        var smtpPass = _config["Smtp:Password"];
-
-        if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass) || smtpPass == "your-app-password")
-        {
-            _logger.LogWarning("SMTP not configured. Password reset link for {Email}: {Link}", toEmail, resetLink);
-            return;
-        }
-
-        var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
-        var port = int.Parse(_config["Smtp:Port"] ?? "465");
-
-        var msg = new MimeMessage();
-        msg.From.Add(new MailboxAddress("BEECODEFI", smtpUser));
-        msg.To.Add(new MailboxAddress(name, toEmail));
-        msg.Subject = "Reset your BEECODEFI password";
-
+        var year = DateTime.UtcNow.Year;
         var htmlContent = $@"
 <!DOCTYPE html>
 <html>
@@ -91,17 +54,12 @@ public class EmailService : IEmailService
   <table width='100%' cellpadding='0' cellspacing='0' style='background:#0f172a;padding:40px 16px;'>
     <tr><td align='center'>
       <table width='100%' style='max-width:520px;background:#1e293b;border-radius:16px;overflow:hidden;border:1px solid #334155;'>
-        <!-- Header -->
         <tr>
           <td style='background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:32px 40px;text-align:center;'>
-            <div style='display:inline-flex;align-items:center;gap:10px;'>
-              <div style='width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:inline-block;line-height:40px;text-align:center;font-size:20px;'>🐝</div>
-              <span style='color:#fff;font-size:22px;font-weight:700;letter-spacing:-0.5px;'>BEECODEFI</span>
-            </div>
+            <span style='color:#fff;font-size:22px;font-weight:700;letter-spacing:-0.5px;'>🐝 BEECODEFI</span>
             <p style='color:rgba(255,255,255,0.8);margin:12px 0 0;font-size:14px;'>Free Education for Everyone</p>
           </td>
         </tr>
-        <!-- Body -->
         <tr>
           <td style='padding:40px 40px 32px;'>
             <h2 style='color:#f1f5f9;margin:0 0 12px;font-size:22px;font-weight:700;'>Reset your password</h2>
@@ -116,18 +74,16 @@ public class EmailService : IEmailService
               </a>
             </div>
             <p style='color:#64748b;font-size:13px;line-height:1.6;margin:0;'>
-              If the button doesn't work, copy and paste this link into your browser:<br>
+              If the button doesn't work, copy and paste this link:<br>
               <a href='{resetLink}' style='color:#818cf8;word-break:break-all;'>{resetLink}</a>
             </p>
           </td>
         </tr>
-        <!-- Footer -->
         <tr>
           <td style='padding:20px 40px 32px;border-top:1px solid #334155;'>
             <p style='color:#475569;font-size:12px;line-height:1.6;margin:0;text-align:center;'>
               If you didn't request a password reset, you can safely ignore this email.<br>
-              Your password will remain unchanged.<br><br>
-              &copy; {DateTime.UtcNow.Year} BEECODEFI. All rights reserved.
+              &copy; {year} BEECODEFI. All rights reserved.
             </p>
           </td>
         </tr>
@@ -137,21 +93,52 @@ public class EmailService : IEmailService
 </body>
 </html>";
 
-        msg.Body = new TextPart("html") { Text = htmlContent };
+        await SendAsync(
+            from: "BEECODEFI <onboarding@resend.dev>",
+            to: toEmail,
+            subject: "Reset your BEECODEFI password",
+            html: htmlContent
+        );
+    }
+
+    private async Task SendAsync(string from, string to, string subject, string html, string? replyTo = null)
+    {
+        var apiKey = _config["Resend:ApiKey"];
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            _logger.LogWarning("Resend API key not configured. Email to {To} not sent.", to);
+            return;
+        }
+
+        var payload = new Dictionary<string, object>
+        {
+            ["from"] = from,
+            ["to"] = new[] { to },
+            ["subject"] = subject,
+            ["html"] = html
+        };
+        if (!string.IsNullOrEmpty(replyTo))
+            payload["reply_to"] = replyTo;
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails")
+        {
+            Content = new StringContent(JsonSerializer.Serialize(payload, _json), Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
         try
         {
-            using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, SecureSocketOptions.SslOnConnect);
-            await client.AuthenticateAsync(smtpUser, smtpPass);
-            await client.SendAsync(msg);
-            await client.DisconnectAsync(true);
+            var response = await _http.SendAsync(request);
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                _logger.LogError("Resend API error {Status} for {To}: {Body}", (int)response.StatusCode, to, body);
+            else
+                _logger.LogInformation("Email sent via Resend to {To}. Response: {Body}", to, body);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send password reset email to {Email}. Reset link: {Link}", toEmail, resetLink);
-            // Don't rethrow — the token is already saved, so the user can retry.
-            // A mail delivery failure should not surface as a 500 to the client.
+            _logger.LogError(ex, "Failed to call Resend API for {To}.", to);
         }
     }
 }
