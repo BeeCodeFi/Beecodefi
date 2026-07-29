@@ -1,5 +1,7 @@
 using EduPlatform.API.DTOs;
 using EduPlatform.API.Services;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduPlatform.API.Controllers;
@@ -10,11 +12,39 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IConfiguration _config;
+    private readonly IWebHostEnvironment _env;
 
-    public AuthController(IAuthService authService, IConfiguration config)
+    public AuthController(IAuthService authService, IConfiguration config, IWebHostEnvironment env)
     {
         _authService = authService;
         _config = config;
+        _env = env;
+    }
+
+    /// <summary>
+    /// Dev-only endpoint — tests SMTP connectivity and returns the exact error if it fails.
+    /// Remove or restrict this before going to production.
+    /// </summary>
+    [HttpGet("test-email")]
+    public async Task<IActionResult> TestEmail()
+    {
+        var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
+        var port = int.Parse(_config["Smtp:Port"] ?? "587");
+        var user = _config["Smtp:Username"] ?? "";
+        var pass = _config["Smtp:Password"] ?? "";
+
+        try
+        {
+            using var client = new SmtpClient();
+            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(user, pass);
+            await client.DisconnectAsync(true);
+            return Ok(new { success = true, message = $"SMTP connected and authenticated as {user}" });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new { success = false, error = ex.GetType().Name, message = ex.Message });
+        }
     }
 
     [HttpPost("register")]
