@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
         try
         {
             using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.ConnectAsync(host, port, SecureSocketOptions.SslOnConnect);
             await client.AuthenticateAsync(user, pass);
             await client.DisconnectAsync(true);
             return Ok(new { success = true, message = $"SMTP connected and authenticated as {user}" });

@@ -27,7 +27,7 @@ public class EmailService : IEmailService
         }
 
         var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
-        var port = int.Parse(_config["Smtp:Port"] ?? "587");
+        var port = int.Parse(_config["Smtp:Port"] ?? "465");
         var toEmail = _config["Smtp:ToEmail"] ?? "kumaryursh@gmail.com";
 
         var msg = new MimeMessage();
@@ -49,7 +49,7 @@ public class EmailService : IEmailService
         try
         {
             using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.ConnectAsync(host, port, SecureSocketOptions.SslOnConnect);
             await client.AuthenticateAsync(smtpUser, smtpPass);
             await client.SendAsync(msg);
             await client.DisconnectAsync(true);
@@ -73,7 +73,7 @@ public class EmailService : IEmailService
         }
 
         var host = _config["Smtp:Host"] ?? "smtp.gmail.com";
-        var port = int.Parse(_config["Smtp:Port"] ?? "587");
+        var port = int.Parse(_config["Smtp:Port"] ?? "465");
 
         var msg = new MimeMessage();
         msg.From.Add(new MailboxAddress("BEECODEFI", smtpUser));
@@ -142,7 +142,7 @@ public class EmailService : IEmailService
         try
         {
             using var client = new SmtpClient();
-            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.ConnectAsync(host, port, SecureSocketOptions.SslOnConnect);
             await client.AuthenticateAsync(smtpUser, smtpPass);
             await client.SendAsync(msg);
             await client.DisconnectAsync(true);
