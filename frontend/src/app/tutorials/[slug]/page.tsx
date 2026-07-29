@@ -512,8 +512,8 @@ export default function TutorialPage({
           </motion.main>
         </AnimatePresence>
 
-        {/* RIGHT: table of contents */}
-        <div className="hidden xl:block w-56 shrink-0 px-4 py-10">
+        {/* RIGHT: table of contents — sticky column that stays fixed while content scrolls */}
+        <div className="hidden xl:flex xl:flex-col w-56 shrink-0 sticky top-[108px] h-[calc(100vh-108px)] px-4 py-8 overflow-y-auto scrollbar-thin">
           <TableOfContents content={lesson.content} />
         </div>
       </div>

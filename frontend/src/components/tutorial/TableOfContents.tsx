@@ -10,7 +10,7 @@ interface TocItem {
 }
 
 interface TableOfContentsProps {
-  content: string; // raw lesson markdown content
+  content: string;
 }
 
 function extractHeadings(content: string): TocItem[] {
@@ -36,11 +36,8 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the first heading that is intersecting (topmost visible)
         const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length > 0) {
-          setActiveId(visible[0].target.id);
-        }
+        if (visible.length > 0) setActiveId(visible[0].target.id);
       },
       { rootMargin: "-20% 0px -70% 0px", threshold: 0 }
     );
@@ -56,36 +53,39 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
   if (headings.length < 2) return null;
 
   return (
-    <div className="hidden xl:block w-52 shrink-0">
-      <div className="sticky top-[88px]">
-        <div className="flex items-center gap-2 mb-3">
-          <List className="w-3.5 h-3.5 text-gray-400" />
-          <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-            On this page
-          </span>
-        </div>
-        <nav className="space-y-0.5">
-          {headings.map(({ id, text }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActiveId(id);
-              }}
-              className={cn(
-                "block text-xs py-1 px-2 rounded-lg transition-all duration-150 leading-snug",
-                activeId === id
-                  ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 font-semibold"
-                  : "text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900"
-              )}
-            >
-              {text}
-            </a>
-          ))}
-        </nav>
+    <>
+      {/* Label */}
+      <div className="flex items-center gap-2 mb-3">
+        <List className="w-3.5 h-3.5 text-gray-400" />
+        <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+          On this page
+        </span>
       </div>
-    </div>
+
+      {/* Links */}
+      <nav className="space-y-0.5">
+        {headings.map(({ id, text }) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              document
+                .getElementById(id)
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              setActiveId(id);
+            }}
+            className={cn(
+              "block text-xs py-1.5 px-2.5 rounded-lg transition-all duration-150 leading-snug",
+              activeId === id
+                ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 font-semibold"
+                : "text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900"
+            )}
+          >
+            {text}
+          </a>
+        ))}
+      </nav>
+    </>
   );
 }
