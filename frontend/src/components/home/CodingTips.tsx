@@ -48,62 +48,68 @@ export default function CodingTips() {
         </motion.div>
 
         <div className="relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg overflow-hidden"
-            >
-              <div className="p-6 sm:p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {tip.title}
-                  </h3>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${languageColors[tip.language] || ""}`}>
-                    {tip.language.toUpperCase()}
-                  </span>
+          {/* Fixed-height wrapper prevents layout shift between tips */}
+          <div className="min-h-[340px] sm:min-h-[360px]">
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40, position: "absolute" as const, width: "100%" }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg overflow-hidden"
+              >
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      {tip.title}
+                    </h3>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${languageColors[tip.language] || ""}`}>
+                      {tip.language.toUpperCase()}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">{tip.tip}</p>
+                  {/* Fixed height code block — scrolls if content is long */}
+                  <div className="bg-gray-950 rounded-xl overflow-hidden">
+                    <div className="p-4 sm:p-6 overflow-x-auto h-[120px] sm:h-[130px] overflow-y-auto scrollbar-thin">
+                      <pre className="text-sm text-gray-300 font-mono leading-relaxed">
+                        <code>{tip.code}</code>
+                      </pre>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">{tip.tip}</p>
-                <div className="bg-gray-950 rounded-xl p-4 sm:p-6 overflow-x-auto">
-                  <pre className="text-sm text-gray-300 font-mono leading-relaxed">
-                    <code>{tip.code}</code>
-                  </pre>
-                </div>
-              </div>
 
-              {/* Navigation */}
-              <div className="flex items-center justify-between px-6 sm:px-8 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-800">
-                <button
-                  onClick={prev}
-                  className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <div className="flex gap-2">
-                  {codingTips.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentIndex(i)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        i === currentIndex
-                          ? "bg-indigo-600 w-6"
-                          : "bg-gray-300 dark:bg-gray-600"
-                      }`}
-                    />
-                  ))}
+                {/* Navigation */}
+                <div className="flex items-center justify-between px-6 sm:px-8 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-800">
+                  <button
+                    onClick={prev}
+                    className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <div className="flex gap-2">
+                    {codingTips.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentIndex(i)}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          i === currentIndex
+                            ? "bg-indigo-600 w-6"
+                            : "bg-gray-300 dark:bg-gray-600 w-2"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={next}
+                    className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={next}
-                  className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>
