@@ -298,7 +298,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="relative w-32 h-32 mx-auto mb-6">
+            <div className="relative w-36 h-36 mx-auto mb-6">
               {/* Animated ring */}
               <motion.div
                 className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600"
@@ -310,7 +310,7 @@ export default function AboutPage() {
                 <img
                   src="/ayush.png"
                   alt="Ayush Kumar"
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-top"
                   onError={(e) => {
                     // Fallback to initials if image not found
                     (e.currentTarget as HTMLImageElement).style.display = "none";
