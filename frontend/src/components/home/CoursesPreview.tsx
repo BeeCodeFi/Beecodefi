@@ -19,16 +19,16 @@ export default function CoursesPreview() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold uppercase tracking-widest mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 text-xs font-semibold uppercase tracking-widest mb-4">
               Video Courses
             </span>
-            <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
               Watch &{" "}
-              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-red-500 to-orange-500 dark:from-red-400 dark:to-orange-400 bg-clip-text text-transparent">
                 Learn
               </span>
             </h2>
-            <p className="text-slate-400 mt-3 max-w-lg">
+            <p className="text-gray-600 dark:text-slate-400 mt-3 max-w-lg">
               Full series on YouTube — watch right here on the site or open the playlist. All free, all yours.
             </p>
           </motion.div>
