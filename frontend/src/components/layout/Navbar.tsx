@@ -1,19 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Code2, LogIn, UserPlus, LogOut, User, ChevronDown, Sun, Moon, Settings } from "lucide-react";
+import { Menu, X, Code2, LogIn, UserPlus, LogOut, User, ChevronDown, Sun, Moon, Settings, Search, Flame } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import GlobalSearch from "@/components/search/GlobalSearch";
+import { useStreak } from "@/hooks/useStreak";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/tutorials", label: "Tutorials" },
   { href: "/courses", label: "Courses" },
   { href: "/quiz", label: "Quiz" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
@@ -21,16 +24,34 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const streak = useStreak();
 
-  // Avoid hydration mismatch
   useEffect(() => { setMounted(true); }, []);
 
+  // Press "/" to open search globally
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const tag = (e.target as HTMLElement).tagName;
+    if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+      e.preventDefault();
+      setSearchOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
+    <>
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -61,8 +82,28 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Theme Toggle + Auth Buttons / User Menu */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Theme Toggle + Search + Streak + Auth */}
+          <div className="hidden md:flex items-center gap-2">
+            {/* Search */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700"
+              aria-label="Search"
+            >
+              <Search className="w-4 h-4" />
+              <span className="text-xs hidden lg:inline">Search</span>
+              <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">/</kbd>
+            </button>
+
+            {/* Streak */}
+            {mounted && streak.current > 0 && (
+              <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 text-orange-600 dark:text-orange-400 text-xs font-bold" title={`${streak.current} day streak! Longest: ${streak.longest}`}>
+                <Flame className="w-3.5 h-3.5" />
+                {streak.current}
+              </div>
+            )}
+
+            {/* Theme */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -224,6 +265,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+      </nav>
+    </>
   );
 }

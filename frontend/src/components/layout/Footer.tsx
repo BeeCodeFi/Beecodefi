@@ -33,9 +33,11 @@ const footerLinks = {
     { href: "/quiz?topic=javascript",  label: "JS Quiz"   },
   ],
   Company: [
-    { href: "/about",   label: "About"   },
-    { href: "/courses", label: "Courses" },
-    { href: "/contact", label: "Contact" },
+    { href: "/about",     label: "About"     },
+    { href: "/roadmap",   label: "Roadmap"   },
+    { href: "/bookmarks", label: "Bookmarks" },
+    { href: "/courses",   label: "Courses"   },
+    { href: "/contact",   label: "Contact"   },
   ],
 };
 

@@ -1,9 +1,9 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, X, Zap, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Zap, BookOpen, Bookmark, BookmarkCheck } from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -17,8 +17,11 @@ import TutorialSidebar from "@/components/tutorial/TutorialSidebar";
 import ReadingProgressBar from "@/components/tutorial/ReadingProgressBar";
 import TableOfContents from "@/components/tutorial/TableOfContents";
 import LessonNavHeader from "@/components/tutorial/LessonNavHeader";
+import Certificate from "@/components/tutorial/Certificate";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
+import { useBookmarks } from "@/hooks/useBookmarks";
+import { useStreak } from "@/hooks/useStreak";
 
 // ─── Inline markdown helpers ────────────────────────────────────────────────
 
@@ -162,6 +165,9 @@ export default function TutorialPage({
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [courseComplete, setCourseComplete] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  useStreak(); // ping streak on lesson view
 
   const tutorial = tutorials.find((t) => t.slug === slug);
 
@@ -222,8 +228,9 @@ export default function TutorialPage({
       .catch(() => {});
   }, [slug, tutorial]);
 
-  const markCompleted = (index: number) => {
-    setCompletedLessons((prev) => {
+  // ── Keyboard shortcuts ─── moved below lesson/hasNext/hasPrev declarations
+
+  const markCompleted = (index: number) => {    setCompletedLessons((prev) => {
       const next = new Set(prev);
       next.add(index);
       localStorage.setItem(
@@ -273,6 +280,7 @@ export default function TutorialPage({
       goToLesson(currentLessonIndex + 1);
     } else {
       setCourseComplete(true);
+      setShowCertificate(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -281,12 +289,41 @@ export default function TutorialPage({
     if (hasPrev) goToLesson(currentLessonIndex - 1);
   };
 
+  // ── Keyboard shortcuts: J/K = next/prev, B = bookmark ────────────────
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "j" || e.key === "ArrowRight") { if (hasNext) goNext(); }
+      if (e.key === "k" || e.key === "ArrowLeft")  { if (hasPrev) goPrev(); }
+      if (e.key === "b") {
+        if (tutorial) toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title });
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [currentLessonIndex]);
+
   const quizKey = `${slug}/${lesson.slug}`;
   const quizQuestions = lessonQuizzes[quizKey];
   const quizCategory = getQuizCategoryForTutorial(slug);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      {/* Certificate modal */}
+      <AnimatePresence>
+        {showCertificate && tutorial && (
+          <Certificate
+            name="Learner"
+            trackTitle={tutorial.title}
+            lessonsCount={tutorial.lessons.length}
+            completedAt={new Date().toISOString()}
+            onClose={() => setShowCertificate(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Scroll-driven reading progress line at very top of viewport */}
       <ReadingProgressBar />
 
@@ -391,10 +428,25 @@ export default function TutorialPage({
               </span>
             </div>
 
-            {/* Lesson title */}
-            <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight leading-tight">
-              {lesson.title}
-            </h1>
+            {/* Lesson title + Bookmark */}
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
+                {lesson.title}
+              </h1>
+              <button
+                onClick={() => toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title })}
+                title={isBookmarked(slug, lesson.slug) ? "Remove bookmark (B)" : "Bookmark this lesson (B)"}
+                className={`shrink-0 mt-1 p-2 rounded-xl border transition-all ${
+                  isBookmarked(slug, lesson.slug)
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400"
+                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-400 hover:text-indigo-500 hover:border-indigo-300"
+                }`}
+              >
+                {isBookmarked(slug, lesson.slug)
+                  ? <BookmarkCheck className="w-5 h-5" />
+                  : <Bookmark className="w-5 h-5" />}
+              </button>
+            </div>
 
             {/* Meta badges */}
             <LessonMeta
