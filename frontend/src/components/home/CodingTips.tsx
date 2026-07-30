@@ -49,7 +49,7 @@ export default function CodingTips() {
 
         <div className="relative">
           {/* Fixed-height wrapper prevents layout shift between tips */}
-          <div className="min-h-[340px] sm:min-h-[360px]">
+          <div className="min-h-[420px] sm:min-h-[440px]">
             <AnimatePresence mode="popLayout">
               <motion.div
                 key={currentIndex}
@@ -71,7 +71,7 @@ export default function CodingTips() {
                   <p className="text-gray-600 dark:text-gray-400 mb-6">{tip.tip}</p>
                   {/* Fixed height code block — scrolls if content is long */}
                   <div className="bg-gray-950 rounded-xl overflow-hidden">
-                    <div className="p-4 sm:p-6 overflow-x-auto h-[120px] sm:h-[130px] overflow-y-auto scrollbar-thin">
+                    <div className="p-4 sm:p-6 overflow-x-auto h-[180px] sm:h-[200px] overflow-y-auto scrollbar-thin">
                       <pre className="text-sm text-gray-300 font-mono leading-relaxed">
                         <code>{tip.code}</code>
                       </pre>
