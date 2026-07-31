@@ -8,6 +8,7 @@ interface StreakData {
   lastActiveDate: string; // ISO date string YYYY-MM-DD
 }
 
+const EMPTY: StreakData = { current: 0, longest: 0, lastActiveDate: "" };
 const KEY = "beecodefi_streak";
 
 function today() {
@@ -19,25 +20,33 @@ function daysBetween(a: string, b: string) {
 }
 
 function load(): StreakData {
-  if (typeof window === "undefined") return { current: 0, longest: 0, lastActiveDate: "" };
-  try { return JSON.parse(localStorage.getItem(KEY) ?? "null") ?? { current: 0, longest: 0, lastActiveDate: "" }; }
-  catch { return { current: 0, longest: 0, lastActiveDate: "" }; }
+  if (typeof window === "undefined") return EMPTY;
+  try { return JSON.parse(localStorage.getItem(KEY) ?? "null") ?? EMPTY; }
+  catch { return EMPTY; }
 }
 
 function save(data: StreakData) {
   localStorage.setItem(KEY, JSON.stringify(data));
 }
 
-/** Call ping() whenever the user does anything (view a lesson, take a quiz, etc.) */
-export function useStreak() {
-  const [streak, setStreak] = useState<StreakData>({ current: 0, longest: 0, lastActiveDate: "" });
+/**
+ * Tracks daily learning streak. Only activates when the user is logged in.
+ * @param isLoggedIn pass !!user from useAuth()
+ */
+export function useStreak(isLoggedIn: boolean) {
+  const [streak, setStreak] = useState<StreakData>(EMPTY);
 
   useEffect(() => {
+    // Do nothing if the user is not logged in
+    if (!isLoggedIn) {
+      setStreak(EMPTY);
+      return;
+    }
+
     const data = load();
     const t = today();
 
     if (!data.lastActiveDate) {
-      // First ever visit
       const next = { current: 1, longest: 1, lastActiveDate: t };
       save(next); setStreak(next); return;
     }
@@ -45,12 +54,10 @@ export function useStreak() {
     const diff = daysBetween(data.lastActiveDate, t);
 
     if (diff === 0) {
-      // Already logged today — just load
       setStreak(data); return;
     }
 
     if (diff === 1) {
-      // Consecutive day — extend streak
       const next = { current: data.current + 1, longest: Math.max(data.longest, data.current + 1), lastActiveDate: t };
       save(next); setStreak(next); return;
     }
@@ -58,7 +65,7 @@ export function useStreak() {
     // Streak broken
     const next = { current: 1, longest: data.longest, lastActiveDate: t };
     save(next); setStreak(next);
-  }, []);
+  }, [isLoggedIn]);
 
   return streak;
 }
