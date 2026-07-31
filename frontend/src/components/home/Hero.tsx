@@ -279,6 +279,24 @@ function closestSnippetIndex(fromIndex: number, positions: SnippetPosition[]) {
   return closestIndex;
 }
 
+function createBeeArc(start: SnippetPosition, target: SnippetPosition) {
+  const startLeft = parseFloat(start.left);
+  const startTop = parseFloat(start.top);
+  const targetLeft = parseFloat(target.left);
+  const targetTop = parseFloat(target.top);
+  const controlLeft = (startLeft + targetLeft) / 2;
+  const controlTop = Math.max(4, (startTop + targetTop) / 2 - 18);
+  const samples = [0, 0.16, 0.33, 0.5, 0.67, 0.84, 1];
+
+  return samples.map((t) => {
+    const inverse = 1 - t;
+    return {
+      left: `${inverse * inverse * startLeft + 2 * inverse * t * controlLeft + t * t * targetLeft}%`,
+      top: `calc(${inverse * inverse * startTop + 2 * inverse * t * controlTop + t * t * targetTop}% - 2.6rem)`,
+    };
+  });
+}
+
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -318,12 +336,7 @@ export default function Hero() {
 
   const beeStartPosition = snippetPositions[beeOrigin];
   const beeTargetPosition = snippetPositions[beeTarget];
-  const beeArcLeft = `${
-    (parseFloat(beeStartPosition.left) + parseFloat(beeTargetPosition.left)) / 2
-  }%`;
-  const beeArcTop = `${
-    (parseFloat(beeStartPosition.top) + parseFloat(beeTargetPosition.top)) / 2
-  }%`;
+  const beeArc = createBeeArc(beeStartPosition, beeTargetPosition);
 
   return (
     <section
@@ -424,25 +437,21 @@ export default function Hero() {
         className="absolute text-5xl hidden xl:block select-none pointer-events-none"
         animate={{
           left: isBeeFlying
-            ? [beeStartPosition.left, beeArcLeft, beeTargetPosition.left]
+            ? beeArc.map((point) => point.left)
             : beeTargetPosition.left,
           top: isBeeFlying
-            ? [
-                `calc(${beeStartPosition.top} - 2.6rem)`,
-                `calc(${beeArcTop} - 7rem)`,
-                `calc(${beeTargetPosition.top} - 2.6rem)`,
-              ]
+            ? beeArc.map((point) => point.top)
             : `calc(${beeTargetPosition.top} - 2.6rem)`,
           rotate: isBeeFlying
-            ? [0, beeTarget % 2 === 0 ? -14 : 14, beeTarget % 2 === 0 ? -6 : 6]
+            ? [0, -8, 12, -10, 9, -5, beeTarget % 2 === 0 ? -6 : 6]
             : beeTarget % 2 === 0
               ? -6
               : 6,
         }}
         transition={{
           duration: isBeeFlying ? 2.4 : 0.4,
-          times: isBeeFlying ? [0, 0.5, 1] : undefined,
-          ease: isBeeFlying ? ["easeIn", "easeInOut", "easeOut"] : "easeOut",
+          times: isBeeFlying ? [0, 0.16, 0.33, 0.5, 0.67, 0.84, 1] : undefined,
+          ease: isBeeFlying ? "linear" : "easeOut",
         }}
       >
         <motion.span
