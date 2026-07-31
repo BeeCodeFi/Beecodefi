@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
@@ -31,10 +32,19 @@ export const metadata: Metadata = {
   title: "BEECODEFI — Free Web Dev Education for Everyone",
   description:
     "Learn HTML, CSS, JavaScript and more with free interactive tutorials, video courses and quizzes. BEECODEFI provides world-class web development education — completely free.",
-  keywords: ["web development", "HTML", "CSS", "JavaScript", "tutorials", "quizzes", "free education"],
+  keywords: [
+    "web development",
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "tutorials",
+    "quizzes",
+    "free education",
+  ],
   openGraph: {
     title: "BEECODEFI — Free Web Dev Education",
-    description: "Interactive tutorials, video courses, and quizzes. 100% free, no paywall.",
+    description:
+      "Interactive tutorials, video courses, and quizzes. 100% free, no paywall.",
     type: "website",
   },
 };
@@ -45,32 +55,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${dmSans.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${dmSans.variable} h-full antialiased`}
+    >
       <head>
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
+      >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>
             <ToastProvider>
-            {/* Skip to content — visible on focus for keyboard users */}
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-xl focus:font-semibold focus:text-sm focus:shadow-lg"
-            >
-              Skip to content
-            </a>
-            {/* Custom cursor — hidden automatically on touch */}
-            <CustomCursor />
-            <CursorTrail />
-            <Navbar />
-            <main className="flex-1 pt-16" id="main-content">
-              <PageTransition>
-                {children}
-              </PageTransition>
-            </main>
-            <Footer />
-            <OnboardingTour />
+              {/* Skip to content — visible on focus for keyboard users */}
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-xl focus:font-semibold focus:text-sm focus:shadow-lg"
+              >
+                Skip to content
+              </a>
+              {/* Custom cursor — hidden automatically on touch */}
+              <CustomCursor />
+              <CursorTrail />
+              <Navbar />
+              <main className="flex-1 pt-16" id="main-content">
+                <PageTransition>{children}</PageTransition>
+              </main>
+              <Footer />
+              <OnboardingTour />
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>

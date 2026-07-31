@@ -3,7 +3,7 @@
 interface ErrorLog {
   message: string;
   stack?: string;
-  componentStack?: string;
+  componentStack?: string | null;
   timestamp: string;
   url: string;
   userAgent: string;
@@ -15,8 +15,8 @@ interface ErrorLog {
  */
 export const logError = (
   error: Error,
-  errorInfo?: { componentStack?: string },
-  context?: Record<string, any>
+  errorInfo?: { componentStack?: string | null },
+  context?: Record<string, any>,
 ) => {
   const errorLog: ErrorLog = {
     message: error.message,
