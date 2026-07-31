@@ -14,6 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     public DbSet<TutorialProgress> TutorialProgress => Set<TutorialProgress>();
+    public DbSet<Badge> Badges => Set<Badge>();
+    public DbSet<UserBadge> UserBadges => Set<UserBadge>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,6 +76,27 @@ public class AppDbContext : DbContext
         {
             entity.Property(c => c.Email).HasMaxLength(256);
             entity.Property(c => c.Subject).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<Badge>(entity =>
+        {
+            entity.HasIndex(b => b.Requirement).IsUnique();
+            entity.Property(b => b.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<UserBadge>(entity =>
+        {
+            entity.HasOne(ub => ub.User)
+                .WithMany()
+                .HasForeignKey(ub => ub.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(ub => ub.Badge)
+                .WithMany(b => b.UserBadges)
+                .HasForeignKey(ub => ub.BadgeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ub => new { ub.UserId, ub.BadgeId }).IsUnique();
         });
     }
 }
