@@ -300,6 +300,28 @@ function TutorialPageContent({
     }
   };
 
+  const markIncomplete = (index: number) => {
+    setCompletedLessons((prev) => {
+      const next = new Set(prev);
+      next.delete(index);
+      localStorage.setItem(
+        `tutorial-progress-${slug}`,
+        JSON.stringify([...next])
+      );
+      return next;
+    });
+    if (tutorial) {
+      const lessonSlug = tutorial.lessons[index]?.slug;
+      if (lessonSlug) {
+        api
+          .delete(`/progress/unmark?tutorialSlug=${slug}&lessonSlug=${lessonSlug}`)
+          .catch(() => {});
+      }
+      const lessonTitle = tutorial.lessons[index]?.title;
+      if (lessonTitle) info("Lesson marked incomplete", lessonTitle);
+    }
+  };
+
   // ── Not found ────────────────────────────────────────────────────────────
   if (!tutorial) {
     return (
@@ -485,11 +507,31 @@ function TutorialPageContent({
               </span>
             </div>
 
-            {/* Lesson title + Bookmark */}
+            {/* Lesson title + Bookmark + Completion Status */}
             <div className="flex items-start justify-between gap-4 mb-4">
-              <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
-                {lesson.title}
-              </h1>
+              <div className="flex-1">
+                <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
+                  {lesson.title}
+                </h1>
+                {/* Completion status badge */}
+                {completedLessons.has(currentLessonIndex) && (
+                  <div className="flex items-center gap-2 mt-3">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800/60">
+                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Completed
+                    </span>
+                    <button
+                      onClick={() => markIncomplete(currentLessonIndex)}
+                      className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors"
+                      title="Mark as incomplete"
+                    >
+                      Mark incomplete
+                    </button>
+                  </div>
+                )}
+              </div>
               {/* Bookmark — logged-in only */}
               {user && (
               <button
