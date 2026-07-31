@@ -46,6 +46,27 @@ public class ProgressController : ControllerBase
         return Ok(new { message = "Progress saved" });
     }
 
+    [HttpDelete("unmark")]
+    public async Task<IActionResult> UnmarkComplete([FromQuery] string tutorialSlug, [FromQuery] string lessonSlug)
+    {
+        if (string.IsNullOrWhiteSpace(tutorialSlug) || string.IsNullOrWhiteSpace(lessonSlug))
+            return BadRequest(new { message = "Tutorial slug and lesson slug are required" });
+
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var matchingProgress = await _db.TutorialProgress
+            .Where(p => p.UserId == userId && p.TutorialSlug == tutorialSlug && p.LessonSlug == lessonSlug)
+            .ToListAsync();
+
+        if (matchingProgress.Count == 0)
+            return Ok(new { message = "Progress already removed" });
+
+        _db.TutorialProgress.RemoveRange(matchingProgress);
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Progress removed" });
+    }
+
     [HttpGet]
     public async Task<ActionResult<List<ProgressDto>>> GetProgress()
     {
