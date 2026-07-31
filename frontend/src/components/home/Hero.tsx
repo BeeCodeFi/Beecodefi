@@ -230,7 +230,10 @@ export default function Hero() {
 
       {/* ── Content ────────────────────────────────────────────── */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          
+          {/* Left: Text Content */}
+          <div className="text-center lg:text-left">
 
           {/* Badge */}
           <motion.div
@@ -249,8 +252,8 @@ export default function Hero() {
           </motion.div>
 
           {/* ── Word-by-word headline reveal ── */}
-          <div className="text-5xl sm:text-6xl lg:text-[5.5rem] font-extrabold tracking-tight leading-tight mb-6 text-gray-900 dark:text-white overflow-hidden">
-            <div className="flex flex-wrap justify-center gap-x-4">
+          <div className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-gray-900 dark:text-white overflow-hidden">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-4">
               <WordReveal text="Learn" delay={0.1} />
               {/* Typing word */}
               <motion.span
@@ -275,9 +278,9 @@ export default function Hero() {
           </div>
 
           {/* Subtitle — staggered word reveal */}
-          <div className="text-lg sm:text-xl text-gray-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed overflow-hidden">
+          <div className="text-base sm:text-lg text-gray-600 dark:text-slate-400 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed overflow-hidden">
             <WordReveal
-              text="Interactive tutorials, video courses, and quizzes for web development."
+              text="Interactive tutorials, video courses, and quizzes for web development. Learn by doing with hands-on coding exercises."
               delay={0.55}
               className="text-gray-600 dark:text-slate-400"
             />
@@ -288,7 +291,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
+            className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-12"
           >
             {resumeLesson ? (
               <MagneticLink href={`/tutorials/${resumeLesson.slug}?lesson=${resumeLesson.lessonSlug}`}
@@ -326,27 +329,130 @@ export default function Hero() {
               <Play className="w-4 h-4 text-red-500" />
               Watch Courses
             </MagneticLink>
-
-            <MagneticLink href="/quiz"
-              className="group flex items-center gap-2.5 px-8 py-4 cursor-pointer
-                bg-white dark:bg-white/5 text-gray-800 dark:text-white font-semibold rounded-xl
-                border border-gray-200 dark:border-white/10
-                hover:bg-gray-50 dark:hover:bg-white/10
-                hover:border-purple-300 dark:hover:border-white/20 transition-all duration-300 shadow-sm"
-            >
-              <Brain className="w-4 h-4 text-purple-500" />
-              Take a Quiz
-            </MagneticLink>
           </motion.div>
 
-          {/* ── Staggered stats ── */}
+          {/* ── Staggered pill tags ── */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 1.4 } } }}
+            className="flex flex-wrap items-center justify-center lg:justify-start gap-3"
+          >
+            {[
+              { label: "HTML",          color: "border-orange-400/40 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/5"   },
+              { label: "CSS",           color: "border-blue-400/40   text-blue-600   dark:text-blue-400   bg-blue-50   dark:bg-blue-500/5"     },
+              { label: "JavaScript",    color: "border-yellow-400/40 text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/5"   },
+              { label: "Tutorials",     color: "border-indigo-400/40 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/5"   },
+              { label: "Video Courses", color: "border-red-400/40    text-red-600    dark:text-red-400    bg-red-50    dark:bg-red-500/5"       },
+              { label: "Quizzes",       color: "border-purple-400/40 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/5"   },
+            ].map((p) => (
+              <motion.span key={p.label}
+                variants={{ hidden: { opacity: 0, scale: 0.7, y: 10 }, visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300 } } }}
+                whileHover={{ scale: 1.08, transition: { duration: 0.15 } }}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold border ${p.color} backdrop-blur-sm cursor-default`}
+              >
+                {p.label}
+              </motion.span>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Right: Hero Illustration */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="hidden lg:block relative"
+        >
+          {/* Modern 3D mockup of coding workspace */}
+          <div className="relative aspect-square max-w-lg mx-auto">
+            {/* Main screen/editor mockup */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black rounded-3xl shadow-2xl p-6 border border-slate-700/50 overflow-hidden">
+              {/* Browser chrome */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                <div className="flex-1 bg-slate-700/50 rounded-md px-3 py-1 text-xs text-slate-400">localhost:3000</div>
+              </div>
+              
+              {/* Code editor content */}
+              <div className="space-y-2 text-sm font-mono">
+                <div className="text-purple-400">&lt;<span className="text-blue-400">html</span>&gt;</div>
+                <div className="pl-4 text-orange-400">&lt;<span className="text-blue-400">body</span>&gt;</div>
+                <div className="pl-8"><span className="text-gray-500">&lt;</span><span className="text-pink-400">h1</span><span className="text-gray-500">&gt;</span><span className="text-green-300">Learn Web Dev</span><span className="text-gray-500">&lt;/</span><span className="text-pink-400">h1</span><span className="text-gray-500">&gt;</span></div>
+                <div className="pl-8"><span className="text-gray-500">&lt;</span><span className="text-pink-400">p</span><span className="text-gray-500">&gt;</span><span className="text-slate-300">with BeeCodeFi</span><span className="text-gray-500">&lt;/</span><span className="text-pink-400">p</span><span className="text-gray-500">&gt;</span></div>
+                <div className="pl-4 text-orange-400">&lt;/<span className="text-blue-400">body</span>&gt;</div>
+                <div className="text-purple-400">&lt;/<span className="text-blue-400">html</span>&gt;</div>
+              </div>
+
+              {/* Floating elements */}
+              <motion.div
+                className="absolute top-20 right-8 bg-indigo-500/20 border border-indigo-400/30 rounded-lg px-3 py-2 backdrop-blur-sm"
+                animate={{ y: [-5, 5, -5] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <div className="text-xs text-indigo-300 font-semibold">✨ Interactive</div>
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-20 right-12 bg-green-500/20 border border-green-400/30 rounded-lg px-3 py-2 backdrop-blur-sm"
+                animate={{ y: [5, -5, 5] }}
+                transition={{ duration: 3.5, repeat: Infinity }}
+              >
+                <div className="text-xs text-green-300 font-semibold">✓ Hands-On</div>
+              </motion.div>
+
+              <motion.div
+                className="absolute bottom-32 left-8 bg-purple-500/20 border border-purple-400/30 rounded-lg px-3 py-2 backdrop-blur-sm"
+                animate={{ x: [-3, 3, -3] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <div className="text-xs text-purple-300 font-semibold">🎯 Quizzes</div>
+              </motion.div>
+            </div>
+
+            {/* Floating bee */}
+            <motion.div
+              className="absolute -top-8 -right-8 text-6xl"
+              animate={{ rotate: [0, 10, -10, 0], y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            >
+              🐝
+            </motion.div>
+
+            {/* Stats cards */}
+            <motion.div
+              className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 border border-gray-200 dark:border-slate-700"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.2 }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                  50+
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 dark:text-slate-400">Lessons</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">Available Now</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        </div>
+
+          {/* ── Staggered stats (moved below the grid) ── */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
             className="grid grid-cols-2 sm:grid-cols-4 gap-px
               bg-gray-200/60 dark:bg-white/5 rounded-2xl overflow-hidden
-              border border-gray-200/60 dark:border-white/10 shadow-sm"
+              border border-gray-200/60 dark:border-white/10 shadow-sm mt-16"
           >
             {[
               { value: 50, suffix: "+", label: "Lessons",    icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400" },
@@ -370,32 +476,6 @@ export default function Hero() {
               </motion.div>
             ))}
           </motion.div>
-
-          {/* ── Staggered pill tags ── */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 1.4 } } }}
-            className="mt-12 flex flex-wrap items-center justify-center gap-3"
-          >
-            {[
-              { label: "HTML",          color: "border-orange-400/40 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/5"   },
-              { label: "CSS",           color: "border-blue-400/40   text-blue-600   dark:text-blue-400   bg-blue-50   dark:bg-blue-500/5"     },
-              { label: "JavaScript",    color: "border-yellow-400/40 text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/5"   },
-              { label: "Tutorials",     color: "border-indigo-400/40 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/5"   },
-              { label: "Video Courses", color: "border-red-400/40    text-red-600    dark:text-red-400    bg-red-50    dark:bg-red-500/5"       },
-              { label: "Quizzes",       color: "border-purple-400/40 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/5"   },
-            ].map((p) => (
-              <motion.span key={p.label}
-                variants={{ hidden: { opacity: 0, scale: 0.7, y: 10 }, visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300 } } }}
-                whileHover={{ scale: 1.08, transition: { duration: 0.15 } }}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold border ${p.color} backdrop-blur-sm cursor-default`}
-              >
-                {p.label}
-              </motion.span>
-            ))}
-          </motion.div>
-        </div>
       </div>
 
       {/* ── Scroll cue ── */}
