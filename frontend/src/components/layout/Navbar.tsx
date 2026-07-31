@@ -107,7 +107,7 @@ export default function Navbar() {
         initial={{ y: -4 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between h-16">
 
             {/* Logo */}
@@ -126,7 +126,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-0.5">
+            <div className="hidden md:flex items-center gap-1.5">
               {navLinks.map((link) => {
                 const active = pathname === link.href;
                 return (
@@ -135,7 +135,7 @@ export default function Navbar() {
                     href={link.href}
                     data-cursor-grow
                     className={cn(
-                      "relative px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
+                      "relative px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-200",
                       active
                         ? "text-indigo-600 dark:text-indigo-400"
                         : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
@@ -157,7 +157,7 @@ export default function Navbar() {
             </div>
 
             {/* Right — Search + Streak + Theme + Auth */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-3">
               {/* Search */}
               <motion.button
                 whileTap={{ scale: 0.94 }}
@@ -206,7 +206,7 @@ export default function Navbar() {
                     whileTap={{ scale: 0.96 }}
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     data-tour="user-menu"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
                     data-cursor-grow
                   >
                     <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 dark:border-white/10 shrink-0 shadow-sm">
@@ -219,7 +219,7 @@ export default function Navbar() {
                         </div>
                       )}
                     </div>
-                    <span>{user.name}</span>
+                    <span className="whitespace-nowrap">{user.name}</span>
                     <motion.span animate={{ rotate: showUserMenu ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <ChevronDown className="w-4 h-4" />
                     </motion.span>
