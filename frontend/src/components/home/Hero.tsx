@@ -239,10 +239,12 @@ const snippets = [
 
 type SnippetPosition = { left: string; top: string };
 
-const initialSnippetPositions: SnippetPosition[] = snippets.map(({ left, top }) => ({
-  left,
-  top,
-}));
+const initialSnippetPositions: SnippetPosition[] = snippets.map(
+  ({ left, top }) => ({
+    left,
+    top,
+  }),
+);
 
 function randomSnippetPosition(): SnippetPosition {
   let left = 4 + Math.round(Math.random() * 82);
@@ -264,7 +266,8 @@ function closestSnippetIndex(fromIndex: number, positions: SnippetPosition[]) {
 
   positions.forEach((position, index) => {
     if (index === fromIndex) return;
-    const horizontalDistance = parseFloat(position.left) - parseFloat(from.left);
+    const horizontalDistance =
+      parseFloat(position.left) - parseFloat(from.left);
     const verticalDistance = parseFloat(position.top) - parseFloat(from.top);
     const distance = Math.hypot(horizontalDistance, verticalDistance);
     if (distance < closestDistance) {
@@ -284,32 +287,43 @@ export default function Hero() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const resumeLesson = useContinueLearning();
-  const [activeSnippet, setActiveSnippet] = useState<number | null>(0);
+  const [activeSnippet, setActiveSnippet] = useState(0);
   const [beeTarget, setBeeTarget] = useState(0);
-  const [snippetPositions, setSnippetPositions] = useState(initialSnippetPositions);
+  const [beeOrigin, setBeeOrigin] = useState(0);
+  const [isBeeFlying, setIsBeeFlying] = useState(false);
+  const [snippetPositions, setSnippetPositions] = useState(
+    initialSnippetPositions,
+  );
 
   useEffect(() => {
-    if (activeSnippet === null) {
-      const arrivalTimer = setTimeout(() => {
-        setActiveSnippet(beeTarget);
-      }, 1500);
-
-      return () => clearTimeout(arrivalTimer);
-    }
-
     const nextSnippet = closestSnippetIndex(activeSnippet, snippetPositions);
     const fadeOutTimer = setTimeout(() => {
-      setActiveSnippet(null);
+      setBeeOrigin(activeSnippet);
       setBeeTarget(nextSnippet);
       setSnippetPositions((current) =>
         current.map((position, index) =>
           index === nextSnippet ? randomSnippetPosition() : position,
         ),
       );
+      setIsBeeFlying(true);
+      setActiveSnippet(nextSnippet);
     }, 3600);
+    const landingTimer = setTimeout(() => setIsBeeFlying(false), 2400);
 
-    return () => clearTimeout(fadeOutTimer);
-  }, [activeSnippet, beeTarget, snippetPositions]);
+    return () => {
+      clearTimeout(fadeOutTimer);
+      clearTimeout(landingTimer);
+    };
+  }, [activeSnippet, snippetPositions]);
+
+  const beeStartPosition = snippetPositions[beeOrigin];
+  const beeTargetPosition = snippetPositions[beeTarget];
+  const beeArcLeft = `${
+    (parseFloat(beeStartPosition.left) + parseFloat(beeTargetPosition.left)) / 2
+  }%`;
+  const beeArcTop = `${
+    (parseFloat(beeStartPosition.top) + parseFloat(beeTargetPosition.top)) / 2
+  }%`;
 
   return (
     <section
@@ -409,13 +423,26 @@ export default function Hero() {
       <motion.div
         className="absolute text-5xl hidden xl:block select-none pointer-events-none"
         animate={{
-          left: snippetPositions[beeTarget].left,
-          top: `calc(${snippetPositions[beeTarget].top} - 3.25rem)`,
-          rotate: beeTarget % 2 === 0 ? -6 : 6,
+          left: isBeeFlying
+            ? [beeStartPosition.left, beeArcLeft, beeTargetPosition.left]
+            : beeTargetPosition.left,
+          top: isBeeFlying
+            ? [
+                `calc(${beeStartPosition.top} - 2.6rem)`,
+                `calc(${beeArcTop} - 7rem)`,
+                `calc(${beeTargetPosition.top} - 2.6rem)`,
+              ]
+            : `calc(${beeTargetPosition.top} - 2.6rem)`,
+          rotate: isBeeFlying
+            ? [0, beeTarget % 2 === 0 ? -14 : 14, beeTarget % 2 === 0 ? -6 : 6]
+            : beeTarget % 2 === 0
+              ? -6
+              : 6,
         }}
         transition={{
-          duration: activeSnippet === null ? 1.5 : 0.4,
-          ease: "easeInOut",
+          duration: isBeeFlying ? 2.4 : 0.4,
+          times: isBeeFlying ? [0, 0.5, 1] : undefined,
+          ease: isBeeFlying ? ["easeIn", "easeInOut", "easeOut"] : "easeOut",
         }}
       >
         <motion.span
