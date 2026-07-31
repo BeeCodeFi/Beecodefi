@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Code2, LogIn, UserPlus, LogOut, User, ChevronDown, Sun, Moon, Settings, Search, Flame } from "lucide-react";
+import { Menu, X, Code2, LogIn, UserPlus, LogOut, User, ChevronDown, Sun, Moon, Settings, Search, Flame, Target } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -231,6 +231,11 @@ export default function Navbar() {
                         transition={{ duration: 0.15, ease: "easeOut" }}
                         className="absolute right-0 mt-2 w-52 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/60 dark:border-white/8 py-2 overflow-hidden"
                       >
+                        <Link href="/dashboard"
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
+                          onClick={() => setShowUserMenu(false)}>
+                          <Target className="w-4 h-4" /> My Learning
+                        </Link>
                         <Link href="/quiz/history"
                           className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
                           onClick={() => setShowUserMenu(false)}>
