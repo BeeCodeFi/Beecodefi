@@ -15,12 +15,17 @@ var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrEmpty(connectionString) || connectionString.Contains("PLACEHOLDER"))
 {
-    throw new InvalidOperationException("ConnectionStrings__DefaultConnection environment variable is required");
+    var errorMsg = "ConnectionStrings__DefaultConnection environment variable is required. " +
+                   "Please set it in your Render dashboard to your PostgreSQL connection string. " +
+                   "Format: Host=myhost;Database=mydb;Username=user;Password=pass;SSL Mode=Require;Trust Server Certificate=true";
+    throw new InvalidOperationException(errorMsg);
 }
 
 if (string.IsNullOrEmpty(jwtKey) || jwtKey.Contains("PLACEHOLDER") || jwtKey.Length < 32)
 {
-    throw new InvalidOperationException("Jwt__Key environment variable is required (minimum 32 characters)");
+    var errorMsg = "Jwt__Key environment variable is required (minimum 32 characters). " +
+                   "Generate a secure key using: openssl rand -base64 32";
+    throw new InvalidOperationException(errorMsg);
 }
 
 // Database
