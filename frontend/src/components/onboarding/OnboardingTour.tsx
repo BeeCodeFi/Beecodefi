@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Joyride, Step, EventData, STATUS, ACTIONS, EVENTS } from "react-joyride";
+import {
+  Joyride,
+  type Step,
+  type EventData,
+  STATUS,
+  ACTIONS,
+  EVENTS,
+} from "react-joyride";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 
@@ -29,7 +36,8 @@ export default function OnboardingTour() {
         <div>
           <h2 className="text-xl font-bold mb-2">Welcome to BeeCodeFi! 🎉</h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Let's take a quick tour to help you get started with your learning journey.
+            Let&apos;s take a quick tour to help you get started with your
+            learning journey.
           </p>
         </div>
       ),
@@ -42,7 +50,8 @@ export default function OnboardingTour() {
         <div>
           <h3 className="font-bold mb-1">📚 Interactive Tutorials</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Start here! Learn HTML, CSS, and JavaScript with hands-on lessons and live code examples.
+            Start here! Learn HTML, CSS, and JavaScript with hands-on lessons
+            and live code examples.
           </p>
         </div>
       ),
@@ -54,7 +63,8 @@ export default function OnboardingTour() {
         <div>
           <h3 className="font-bold mb-1">🎥 Video Courses</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Watch comprehensive video courses to deepen your understanding of web development.
+            Watch comprehensive video courses to deepen your understanding of
+            web development.
           </p>
         </div>
       ),
@@ -66,7 +76,8 @@ export default function OnboardingTour() {
         <div>
           <h3 className="font-bold mb-1">🎯 Test Your Knowledge</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Take quizzes after each tutorial section to reinforce what you've learned.
+            Take quizzes after each tutorial section to reinforce what
+            you&apos;ve learned.
           </p>
         </div>
       ),
@@ -78,7 +89,8 @@ export default function OnboardingTour() {
         <div>
           <h3 className="font-bold mb-1">🏆 Leaderboard</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Compete with other learners! Earn points by completing quizzes and lessons.
+            Compete with other learners! Earn points by completing quizzes and
+            lessons.
           </p>
         </div>
       ),
@@ -90,7 +102,11 @@ export default function OnboardingTour() {
         <div>
           <h3 className="font-bold mb-1">🔍 Quick Search</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs">/</kbd> to quickly search for any lesson or topic.
+            Press{" "}
+            <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs">
+              /
+            </kbd>{" "}
+            to quickly search for any lesson or topic.
           </p>
         </div>
       ),
@@ -102,7 +118,8 @@ export default function OnboardingTour() {
         <div>
           <h3 className="font-bold mb-1">👤 Your Profile</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Access your dashboard, track progress, view bookmarks, and manage your account here.
+            Access your dashboard, track progress, view bookmarks, and manage
+            your account here.
           </p>
         </div>
       ),
@@ -112,12 +129,14 @@ export default function OnboardingTour() {
       target: "body",
       content: (
         <div>
-          <h2 className="text-xl font-bold mb-2">You're All Set! 🚀</h2>
+          <h2 className="text-xl font-bold mb-2">You&apos;re All Set! 🚀</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-3">
-            Start learning by clicking on "Tutorials" and pick your first lesson. Good luck!
+            Start learning by clicking on &quot;Tutorials&quot; and pick your
+            first lesson. Good luck!
           </p>
           <p className="text-xs text-gray-500">
-            Tip: Complete lessons daily to maintain your streak and unlock badges! 🔥
+            Tip: Complete lessons daily to maintain your streak and unlock
+            badges! 🔥
           </p>
         </div>
       ),
@@ -128,7 +147,7 @@ export default function OnboardingTour() {
   const handleJoyrideCallback = (data: EventData) => {
     const { status, action, index, type } = data;
 
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       // Mark tour as completed
       localStorage.setItem("hasSeenOnboardingTour", "true");
       setRun(false);
@@ -153,7 +172,7 @@ export default function OnboardingTour() {
         textColor: "#374151",
         zIndex: 10000,
         showProgress: true,
-        buttons: ['back', 'close', 'primary', 'skip'],
+        buttons: ["back", "close", "primary", "skip"],
       }}
       styles={{
         buttonPrimary: {

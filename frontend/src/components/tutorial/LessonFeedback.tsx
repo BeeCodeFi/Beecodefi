@@ -5,8 +5,16 @@ import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 import api from "@/lib/api";
 
-export default function LessonFeedback({ tutorialSlug, lessonSlug }: { tutorialSlug: string; lessonSlug: string }) {
-  const [feedbackState, setFeedbackState] = useState<"idle" | "yes" | "no">("idle");
+export default function LessonFeedback({
+  tutorialSlug,
+  lessonSlug,
+}: {
+  tutorialSlug: string;
+  lessonSlug: string;
+}) {
+  const [feedbackState, setFeedbackState] = useState<"idle" | "yes" | "no">(
+    "idle",
+  );
   const { success } = useToast();
 
   const handleFeedback = async (type: "yes" | "no") => {

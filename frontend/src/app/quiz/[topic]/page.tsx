@@ -62,27 +62,6 @@ export default function QuizSessionPage({
     fetchQuestions();
   }, [topic]);
 
-  useEffect(() => {
-    if (state === "playing" && isTimedMode && timeLeft > 0) {
-      const timerId = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerId);
-            handleSubmit(); // Auto submit when time is up
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timerId);
-    }
-  }, [state, isTimedMode, timeLeft]);
-
-  const handleAnswer = (questionId: number, answerId: number) => {
-    if (state === "review") return;
-    setAnswers((prev) => ({ ...prev, [questionId]: answerId }));
-  };
-
   const handleSubmit = async () => {
     try {
       const { data } = await api.post<QuizResult>("/quiz/submit", {
@@ -95,6 +74,27 @@ export default function QuizSessionPage({
       // Fallback: calculate locally
       setState("results");
     }
+  };
+
+  useEffect(() => {
+    if (state === "playing" && isTimedMode && timeLeft > 0) {
+      const timerId = window.setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            window.clearInterval(timerId);
+            void handleSubmit(); // Auto submit when time is up
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => window.clearInterval(timerId);
+    }
+  }, [state, isTimedMode, timeLeft, handleSubmit]);
+
+  const handleAnswer = (questionId: number, answerId: number) => {
+    if (state === "review") return;
+    setAnswers((prev) => ({ ...prev, [questionId]: answerId }));
   };
 
   const handleRetry = () => {

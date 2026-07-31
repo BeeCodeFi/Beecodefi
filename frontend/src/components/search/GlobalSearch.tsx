@@ -3,7 +3,16 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, FileCode2, Palette, Braces, BookOpen, Brain, ArrowRight } from "lucide-react";
+import {
+  Search,
+  X,
+  FileCode2,
+  Palette,
+  Braces,
+  BookOpen,
+  Brain,
+  ArrowRight,
+} from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 
 interface SearchResult {
@@ -72,41 +81,66 @@ export default function GlobalSearch({ open, onClose }: Props) {
 
   // Focus input when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+    if (!open) return;
+
+    const resetSearch = () => {
       setQuery("");
       setResults([]);
       setSelected(0);
-    }
+    };
+
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 50);
+    resetSearch();
+
+    return () => window.clearTimeout(focusTimer);
   }, [open]);
 
   // Search
   useEffect(() => {
-    if (!query.trim()) { setResults([]); return; }
+    if (!query.trim()) {
+      queueMicrotask(() => setResults([]));
+      return;
+    }
+
     const q = query.toLowerCase();
     const filtered = INDEX.filter(
       (r) =>
         r.title.toLowerCase().includes(q) ||
         r.subtitle.toLowerCase().includes(q) ||
-        r.category.toLowerCase().includes(q)
+        r.category.toLowerCase().includes(q),
     ).slice(0, 8);
-    setResults(filtered);
-    setSelected(0);
+    queueMicrotask(() => {
+      setResults(filtered);
+      setSelected(0);
+    });
   }, [query]);
 
-  const navigate = useCallback((href: string) => {
-    router.push(href);
-    onClose();
-  }, [router, onClose]);
+  const navigate = useCallback(
+    (href: string) => {
+      router.push(href);
+      onClose();
+    },
+    [router, onClose],
+  );
 
   // Keyboard navigation
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { onClose(); return; }
-      if (e.key === "ArrowDown") { e.preventDefault(); setSelected((s) => Math.min(s + 1, results.length - 1)); }
-      if (e.key === "ArrowUp")   { e.preventDefault(); setSelected((s) => Math.max(s - 1, 0)); }
-      if (e.key === "Enter" && results[selected]) navigate(results[selected].href);
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelected((s) => Math.min(s + 1, results.length - 1));
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelected((s) => Math.max(s - 1, 0));
+      }
+      if (e.key === "Enter" && results[selected])
+        navigate(results[selected].href);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -150,7 +184,10 @@ export default function GlobalSearch({ open, onClose }: Props) {
                   className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 text-sm outline-none"
                 />
                 {query && (
-                  <button onClick={() => setQuery("")} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                  <button
+                    onClick={() => setQuery("")}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -173,18 +210,30 @@ export default function GlobalSearch({ open, onClose }: Props) {
                             : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
                         }`}
                       >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                          selected === i ? "bg-indigo-100 dark:bg-indigo-900/50" : "bg-gray-100 dark:bg-gray-800"
-                        }`}>
+                        <div
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                            selected === i
+                              ? "bg-indigo-100 dark:bg-indigo-900/50"
+                              : "bg-gray-100 dark:bg-gray-800"
+                          }`}
+                        >
                           <r.icon className={`w-4 h-4 ${r.iconColor}`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{r.title}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{r.subtitle}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {r.title}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {r.subtitle}
+                          </p>
                         </div>
-                        <ArrowRight className={`w-4 h-4 shrink-0 transition-colors ${
-                          selected === i ? "text-indigo-500" : "text-gray-300 dark:text-gray-600"
-                        }`} />
+                        <ArrowRight
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            selected === i
+                              ? "text-indigo-500"
+                              : "text-gray-300 dark:text-gray-600"
+                          }`}
+                        />
                       </button>
                     </li>
                   ))}
@@ -195,16 +244,36 @@ export default function GlobalSearch({ open, onClose }: Props) {
               {query && results.length === 0 && (
                 <div className="py-12 text-center text-gray-400">
                   <Search className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">No results for <strong className="text-gray-600 dark:text-gray-300">"{query}"</strong></p>
+                  <p className="text-sm">
+                    No results for{" "}
+                    <strong className="text-gray-600 dark:text-gray-300">
+                      &quot;{query}&quot;
+                    </strong>
+                  </p>
                 </div>
               )}
 
               {/* Hint */}
               {!query && (
                 <div className="px-4 py-3 text-xs text-gray-400 dark:text-gray-500 flex items-center gap-4">
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">↑↓</kbd> Navigate</span>
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">↵</kbd> Open</span>
-                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">ESC</kbd> Close</span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">
+                      ↑↓
+                    </kbd>{" "}
+                    Navigate
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">
+                      ↵
+                    </kbd>{" "}
+                    Open
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px]">
+                      ESC
+                    </kbd>{" "}
+                    Close
+                  </span>
                 </div>
               )}
             </div>

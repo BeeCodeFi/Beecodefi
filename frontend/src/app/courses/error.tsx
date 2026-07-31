@@ -25,7 +25,8 @@ export default function CoursesError({
           Failed to load courses
         </h1>
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed">
-          We couldn't load the course list. Please try again or check our tutorials instead.
+          We couldn&apos;t load the course list. Please try again or check our
+          tutorials instead.
         </p>
         <div className="flex items-center justify-center gap-3">
           <button

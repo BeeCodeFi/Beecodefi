@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   motion,
   useMotionValue,
@@ -31,35 +30,42 @@ function useContinueLearning() {
 
   useEffect(() => {
     if (isLoading) return;
-    // Find the most recently viewed tutorial that isn't fully complete
-    let best: typeof resume = null;
-    for (const track of tutorials) {
-      const savedIdx = localStorage.getItem(getUserStorageKey(user?.id, `tutorial-lesson-${track.slug}`));
-      const progressRaw = localStorage.getItem(
-        getUserStorageKey(user?.id, `tutorial-progress-${track.slug}`),
-      );
-      if (savedIdx === null) continue;
-      const idx = parseInt(savedIdx, 10);
-      if (isNaN(idx) || idx < 0) continue;
-      const lesson = track.lessons[idx];
-      if (!lesson) continue;
-      const completed: number[] = progressRaw ? JSON.parse(progressRaw) : [];
-      const progress = Math.round(
-        (completed.length / track.lessons.length) * 100,
-      );
-      // Only show if not 100% done
-      if (progress < 100) {
-        best = {
-          slug: track.slug,
-          lessonSlug: lesson.slug,
-          trackTitle: track.title,
-          lessonTitle: lesson.title,
-          progress,
-        };
-        break;
+
+    const resolveResume = () => {
+      // Find the most recently viewed tutorial that isn't fully complete
+      let best: typeof resume = null;
+      for (const track of tutorials) {
+        const savedIdx = localStorage.getItem(
+          getUserStorageKey(user?.id, `tutorial-lesson-${track.slug}`),
+        );
+        const progressRaw = localStorage.getItem(
+          getUserStorageKey(user?.id, `tutorial-progress-${track.slug}`),
+        );
+        if (savedIdx === null) continue;
+        const idx = parseInt(savedIdx, 10);
+        if (isNaN(idx) || idx < 0) continue;
+        const lesson = track.lessons[idx];
+        if (!lesson) continue;
+        const completed: number[] = progressRaw ? JSON.parse(progressRaw) : [];
+        const progress = Math.round(
+          (completed.length / track.lessons.length) * 100,
+        );
+        // Only show if not 100% done
+        if (progress < 100) {
+          best = {
+            slug: track.slug,
+            lessonSlug: lesson.slug,
+            trackTitle: track.title,
+            lessonTitle: lesson.title,
+            progress,
+          };
+          break;
+        }
       }
-    }
-    setResume(best);
+      setResume(best);
+    };
+
+    queueMicrotask(resolveResume);
   }, [isLoading, user?.id]);
 
   return resume;
@@ -139,8 +145,11 @@ function TypingWord() {
     else if (deleting && displayed.length > 0)
       t = setTimeout(() => setDisp(displayed.slice(0, -1)), 55);
     else {
-      setDel(false);
-      setWi((i) => (i + 1) % WORDS.length);
+      const nextIndex = (wi + 1) % WORDS.length;
+      queueMicrotask(() => {
+        setDel(false);
+        setWi(nextIndex);
+      });
     }
     return () => clearTimeout(t);
   }, [displayed, deleting, wi]);

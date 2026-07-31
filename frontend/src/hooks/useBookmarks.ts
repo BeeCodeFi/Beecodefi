@@ -15,12 +15,20 @@ interface Bookmark {
 
 function loadBookmarks(userId: number | null | undefined): Bookmark[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem(getUserStorageKey(userId, "bookmarks")) ?? "[]"); }
-  catch { return []; }
+  try {
+    return JSON.parse(
+      localStorage.getItem(getUserStorageKey(userId, "bookmarks")) ?? "[]",
+    );
+  } catch {
+    return [];
+  }
 }
 
 function saveBookmarks(userId: number | null | undefined, bm: Bookmark[]) {
-  localStorage.setItem(getUserStorageKey(userId, "bookmarks"), JSON.stringify(bm));
+  localStorage.setItem(
+    getUserStorageKey(userId, "bookmarks"),
+    JSON.stringify(bm),
+  );
 }
 
 export function useBookmarks() {
@@ -29,23 +37,34 @@ export function useBookmarks() {
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading) setBookmarks(loadBookmarks(user?.id));
+    if (isLoading) return;
+    queueMicrotask(() => setBookmarks(loadBookmarks(user?.id)));
   }, [isLoading, user?.id]);
 
   const isBookmarked = useCallback(
     (tutorialSlug: string, lessonSlug: string) =>
-      bookmarks.some((b) => b.tutorialSlug === tutorialSlug && b.lessonSlug === lessonSlug),
-    [bookmarks]
+      bookmarks.some(
+        (b) => b.tutorialSlug === tutorialSlug && b.lessonSlug === lessonSlug,
+      ),
+    [bookmarks],
   );
 
   const toggleBookmark = useCallback(
     (bm: Omit<Bookmark, "savedAt">) => {
       setBookmarks((prev) => {
         const exists = prev.some(
-          (b) => b.tutorialSlug === bm.tutorialSlug && b.lessonSlug === bm.lessonSlug
+          (b) =>
+            b.tutorialSlug === bm.tutorialSlug &&
+            b.lessonSlug === bm.lessonSlug,
         );
         const next = exists
-          ? prev.filter((b) => !(b.tutorialSlug === bm.tutorialSlug && b.lessonSlug === bm.lessonSlug))
+          ? prev.filter(
+              (b) =>
+                !(
+                  b.tutorialSlug === bm.tutorialSlug &&
+                  b.lessonSlug === bm.lessonSlug
+                ),
+            )
           : [...prev, { ...bm, savedAt: new Date().toISOString() }];
         saveBookmarks(user?.id, next);
 
@@ -53,13 +72,16 @@ export function useBookmarks() {
         if (exists) {
           info("Bookmark removed", bm.lessonTitle);
         } else {
-          success("Lesson bookmarked!", `${bm.lessonTitle} saved · press B to toggle`);
+          success(
+            "Lesson bookmarked!",
+            `${bm.lessonTitle} saved · press B to toggle`,
+          );
         }
 
         return next;
       });
     },
-    [info, success, user?.id]
+    [info, success, user?.id],
   );
 
   const clearBookmarks = useCallback(() => {

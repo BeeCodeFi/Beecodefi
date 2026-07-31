@@ -36,12 +36,27 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 const difficultyConfig: Record<string, { label: string; color: string }> = {
-  beginner: { label: "Beginner", color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30" },
-  intermediate: { label: "Intermediate", color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30" },
-  advanced: { label: "Advanced", color: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30" },
+  beginner: {
+    label: "Beginner",
+    color:
+      "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30",
+  },
+  intermediate: {
+    label: "Intermediate",
+    color:
+      "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30",
+  },
+  advanced: {
+    label: "Advanced",
+    color: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30",
+  },
 };
 
-export default function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function CourseDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = use(params);
   const course = courses.find((c) => c.slug === slug);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
@@ -50,7 +65,9 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   useEffect(() => {
     if (!course) return;
     const completed = getCompletedCourses();
-    setIsCompleted(completed.some((c) => c.slug === course.slug));
+    queueMicrotask(() =>
+      setIsCompleted(completed.some((c) => c.slug === course.slug)),
+    );
   }, [course]);
 
   const handleMarkComplete = () => {
@@ -89,7 +106,8 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   const currentVideoId = activeVideoId ?? course.firstVideoId;
 
   // If playlistId is a placeholder, omit the list param so embed still works
-  const hasRealPlaylist = course.playlistId && !course.playlistId.includes("placeholder");
+  const hasRealPlaylist =
+    course.playlistId && !course.playlistId.includes("placeholder");
   const listParam = hasRealPlaylist ? `&list=${course.playlistId}` : "";
   const embedSrc = activeVideoId
     ? `https://www.youtube.com/embed/${activeVideoId}?autoplay=1&rel=0${listParam}`
@@ -101,9 +119,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Breadcrumb */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
           <Link
             href="/courses"
             className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
@@ -113,10 +134,8 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Left: Video Player + Info */}
           <div className="lg:col-span-2 space-y-6">
-
             {/* Player */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -141,16 +160,21 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
               className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
             >
               <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r ${course.color} text-white`}>
+                <span
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r ${course.color} text-white`}
+                >
                   <Icon className="w-3.5 h-3.5" />
                   {course.category}
                 </span>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${diff.color}`}>
+                <span
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full ${diff.color}`}
+                >
                   {diff.label}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 ml-auto">
                   <PlayCircle className="w-3.5 h-3.5" />
-                  {course.videos.length} {course.videos.length === 1 ? "video" : "videos"}
+                  {course.videos.length}{" "}
+                  {course.videos.length === 1 ? "video" : "videos"}
                 </span>
               </div>
 
@@ -188,7 +212,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                     "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                     isCompleted
                       ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 cursor-default"
-                      : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white",
                   )}
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -206,9 +230,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden h-fit"
           >
             <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900 dark:text-white">Course Videos</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">
+                Course Videos
+              </h2>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {course.videos.length} {course.videos.length === 1 ? "lesson" : "lessons"}
+                {course.videos.length}{" "}
+                {course.videos.length === 1 ? "lesson" : "lessons"}
               </span>
             </div>
 
@@ -223,7 +250,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                         "w-full flex items-start gap-3 px-5 py-4 text-left transition-colors",
                         isActive
                           ? "bg-orange-50 dark:bg-orange-950/30"
-                          : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          : "hover:bg-gray-50 dark:hover:bg-gray-800/50",
                       )}
                     >
                       {/* Thumbnail */}
@@ -244,20 +271,26 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                         <span className="text-xs text-gray-400 dark:text-gray-500 mb-0.5 block">
                           Part {i + 1}
                         </span>
-                        <p className={cn(
-                          "text-sm font-medium leading-snug line-clamp-2",
-                          isActive
-                            ? "text-orange-600 dark:text-orange-400"
-                            : "text-gray-800 dark:text-gray-200"
-                        )}>
+                        <p
+                          className={cn(
+                            "text-sm font-medium leading-snug line-clamp-2",
+                            isActive
+                              ? "text-orange-600 dark:text-orange-400"
+                              : "text-gray-800 dark:text-gray-200",
+                          )}
+                        >
                           {video.title}
                         </p>
                       </div>
 
-                      <ChevronRight className={cn(
-                        "w-4 h-4 shrink-0 mt-1 transition-colors",
-                        isActive ? "text-orange-500" : "text-gray-300 dark:text-gray-600"
-                      )} />
+                      <ChevronRight
+                        className={cn(
+                          "w-4 h-4 shrink-0 mt-1 transition-colors",
+                          isActive
+                            ? "text-orange-500"
+                            : "text-gray-300 dark:text-gray-600",
+                        )}
+                      />
                     </button>
                   </li>
                 );

@@ -16,17 +16,29 @@ function today() {
 }
 
 function daysBetween(a: string, b: string) {
-  return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86_400_000);
+  return Math.round(
+    (new Date(b).getTime() - new Date(a).getTime()) / 86_400_000,
+  );
 }
 
 function load(userId: number | null | undefined): StreakData {
   if (typeof window === "undefined") return EMPTY;
-  try { return JSON.parse(localStorage.getItem(getUserStorageKey(userId, "streak")) ?? "null") ?? EMPTY; }
-  catch { return EMPTY; }
+  try {
+    return (
+      JSON.parse(
+        localStorage.getItem(getUserStorageKey(userId, "streak")) ?? "null",
+      ) ?? EMPTY
+    );
+  } catch {
+    return EMPTY;
+  }
 }
 
 function save(userId: number | null | undefined, data: StreakData) {
-  localStorage.setItem(getUserStorageKey(userId, "streak"), JSON.stringify(data));
+  localStorage.setItem(
+    getUserStorageKey(userId, "streak"),
+    JSON.stringify(data),
+  );
 }
 
 /**
@@ -39,34 +51,48 @@ export function useStreak(_legacyIsLoggedIn?: boolean) {
   const userId = user?.id;
 
   useEffect(() => {
-    // Do nothing if the user is not logged in
-    if (userId == null) {
-      setStreak(EMPTY);
-      return;
-    }
+    const syncStreak = () => {
+      // Do nothing if the user is not logged in
+      if (userId == null) {
+        setStreak(EMPTY);
+        return;
+      }
 
-    const data = load(userId);
-    const t = today();
+      const data = load(userId);
+      const t = today();
 
-    if (!data.lastActiveDate) {
-      const next = { current: 1, longest: 1, lastActiveDate: t };
-      save(userId, next); setStreak(next); return;
-    }
+      if (!data.lastActiveDate) {
+        const next = { current: 1, longest: 1, lastActiveDate: t };
+        save(userId, next);
+        setStreak(next);
+        return;
+      }
 
-    const diff = daysBetween(data.lastActiveDate, t);
+      const diff = daysBetween(data.lastActiveDate, t);
 
-    if (diff === 0) {
-      setStreak(data); return;
-    }
+      if (diff === 0) {
+        setStreak(data);
+        return;
+      }
 
-    if (diff === 1) {
-      const next = { current: data.current + 1, longest: Math.max(data.longest, data.current + 1), lastActiveDate: t };
-      save(userId, next); setStreak(next); return;
-    }
+      if (diff === 1) {
+        const next = {
+          current: data.current + 1,
+          longest: Math.max(data.longest, data.current + 1),
+          lastActiveDate: t,
+        };
+        save(userId, next);
+        setStreak(next);
+        return;
+      }
 
-    // Streak broken
-    const next = { current: 1, longest: data.longest, lastActiveDate: t };
-    save(userId, next); setStreak(next);
+      // Streak broken
+      const next = { current: 1, longest: data.longest, lastActiveDate: t };
+      save(userId, next);
+      setStreak(next);
+    };
+
+    queueMicrotask(syncStreak);
   }, [userId]);
 
   return streak;

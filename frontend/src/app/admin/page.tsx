@@ -300,8 +300,9 @@ export default function AdminPage() {
                         {formatDate(item.createdAt)}
                       </span>
                     </div>
-                      <p className="text-xs text-gray-500 mt-1 break-words line-clamp-3">
-                        <span className="font-medium">{item.name}</span> · {item.message}
+                    <p className="text-xs text-gray-500 mt-1 break-words line-clamp-3">
+                      <span className="font-medium">{item.name}</span> ·{" "}
+                      {item.message}
                     </p>
                   </div>
                 ))
@@ -313,29 +314,49 @@ export default function AdminPage() {
         <section className="mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
-              <h2 className="font-semibold text-gray-900 dark:text-white">Lesson helpfulness</h2>
-              <p className="text-sm text-gray-500 mt-1">What learners say about individual lessons</p>
+              <h2 className="font-semibold text-gray-900 dark:text-white">
+                Lesson helpfulness
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                What learners say about individual lessons
+              </p>
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-500">
-              <span className="inline-flex items-center gap-1"><ThumbsUp className="w-3.5 h-3.5 text-emerald-500" /> Helpful</span>
-              <span className="inline-flex items-center gap-1"><ThumbsDown className="w-3.5 h-3.5 text-rose-500" /> Needs work</span>
+              <span className="inline-flex items-center gap-1">
+                <ThumbsUp className="w-3.5 h-3.5 text-emerald-500" /> Helpful
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <ThumbsDown className="w-3.5 h-3.5 text-rose-500" /> Needs work
+              </span>
             </div>
           </div>
           {analytics.lessonFeedback.length === 0 ? (
-            <p className="text-sm text-gray-500">No lesson feedback has been submitted yet.</p>
+            <p className="text-sm text-gray-500">
+              No lesson feedback has been submitted yet.
+            </p>
           ) : (
             <div className="space-y-4">
               {analytics.lessonFeedback.slice(0, 8).map((item) => {
                 const total = item.helpful + item.notHelpful;
                 const helpfulPercent = total ? (item.helpful / total) * 100 : 0;
                 return (
-                  <div key={`${item.tutorialSlug}-${item.lessonSlug}`} className="min-w-0">
+                  <div
+                    key={`${item.tutorialSlug}-${item.lessonSlug}`}
+                    className="min-w-0"
+                  >
                     <div className="flex items-center justify-between gap-4 text-sm mb-1">
-                      <span className="truncate text-gray-700 dark:text-gray-300">{item.lessonSlug}</span>
-                      <span className="shrink-0 text-xs text-gray-500">{item.helpful} / {item.notHelpful}</span>
+                      <span className="truncate text-gray-700 dark:text-gray-300">
+                        {item.lessonSlug}
+                      </span>
+                      <span className="shrink-0 text-xs text-gray-500">
+                        {item.helpful} / {item.notHelpful}
+                      </span>
                     </div>
                     <div className="h-2 rounded-full bg-rose-100 dark:bg-rose-950/40 overflow-hidden">
-                      <div className="h-full rounded-full bg-emerald-500" style={{ width: `${helpfulPercent}%` }} />
+                      <div
+                        className="h-full rounded-full bg-emerald-500"
+                        style={{ width: `${helpfulPercent}%` }}
+                      />
                     </div>
                   </div>
                 );

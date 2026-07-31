@@ -1,7 +1,21 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { User, Camera, Mail, Lock, RotateCcw, Trash2, Save, Check, X, Eye, EyeOff, AlertTriangle, MousePointer2 } from "lucide-react";
+import {
+  User,
+  Camera,
+  Mail,
+  Lock,
+  RotateCcw,
+  Trash2,
+  Save,
+  Check,
+  X,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+  MousePointer2,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { getUserStorageKey } from "@/lib/userStorage";
@@ -25,7 +39,10 @@ export default function SettingsTab({
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [profileSaving, setProfileSaving] = useState(false);
-  const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [profileMsg, setProfileMsg] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Password form
   const [currentPassword, setCurrentPassword] = useState("");
@@ -34,7 +51,10 @@ export default function SettingsTab({
   const [showCurrentPw, setShowCurrentPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
-  const [passwordMsg, setPasswordMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [passwordMsg, setPasswordMsg] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Accessibility
   const [disableCustomCursor, setDisableCustomCursor] = useState(false);
@@ -45,7 +65,10 @@ export default function SettingsTab({
   // Reset progress
   const [resetConfirm, setResetConfirm] = useState<string | null>(null);
   const [resetting, setResetting] = useState(false);
-  const [resetMsg, setResetMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [resetMsg, setResetMsg] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Delete account
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -55,7 +78,7 @@ export default function SettingsTab({
   useEffect(() => {
     const saved = localStorage.getItem("beecodefi_custom_cursor");
     if (saved === "disabled") {
-      setDisableCustomCursor(true);
+      queueMicrotask(() => setDisableCustomCursor(true));
     }
   }, []);
 
@@ -80,10 +103,21 @@ export default function SettingsTab({
       updateUser(data);
       setProfileMsg({ type: "success", text: "Profile updated successfully" });
       success("Profile updated", "Your name and email have been saved");
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || "Failed to update profile";
-      setProfileMsg({ type: "error", text: msg });
-      toastError("Update failed", msg);
+    } catch (err: unknown) {
+      const msg =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: { data?: { message?: string } } })
+          .response === "object" &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : "Failed to update profile";
+      const safeMessage = msg ?? "Failed to update profile";
+      setProfileMsg({ type: "error", text: safeMessage });
+      toastError("Update failed", safeMessage);
     } finally {
       setProfileSaving(false);
     }
@@ -99,14 +133,28 @@ export default function SettingsTab({
     setPasswordMsg(null);
     try {
       await api.put("/account/password", { currentPassword, newPassword });
-      setPasswordMsg({ type: "success", text: "Password changed successfully" });
+      setPasswordMsg({
+        type: "success",
+        text: "Password changed successfully",
+      });
       success("Password changed", "Your new password is now active");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || "Failed to change password";
-      setPasswordMsg({ type: "error", text: msg });
+    } catch (err: unknown) {
+      const msg =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: { data?: { message?: string } } })
+          .response === "object" &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : "Failed to change password";
+      const safeMessage = msg ?? "Failed to change password";
+      setPasswordMsg({ type: "error", text: safeMessage });
     } finally {
       setPasswordSaving(false);
     }
@@ -122,7 +170,7 @@ export default function SettingsTab({
       try {
         const { data } = await api.post("/account/avatar", { image: base64 });
         updateUser(data);
-      } catch (err: any) {
+      } catch {
         setProfileMsg({ type: "error", text: "Failed to upload avatar" });
       } finally {
         setAvatarUploading(false);
@@ -151,14 +199,19 @@ export default function SettingsTab({
         const keysToRemove: string[] = [];
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
-          if (key?.startsWith(getUserStorageKey(user?.id, "tutorial-progress-"))) {
+          if (
+            key?.startsWith(getUserStorageKey(user?.id, "tutorial-progress-"))
+          ) {
             keysToRemove.push(key);
           }
         }
         keysToRemove.forEach((key) => localStorage.removeItem(key));
       }
 
-      setResetMsg({ type: "success", text: `${type === "all" ? "All" : type} progress reset successfully` });
+      setResetMsg({
+        type: "success",
+        text: `${type === "all" ? "All" : type} progress reset successfully`,
+      });
       setResetConfirm(null);
       reloadStats();
     } catch {
@@ -171,20 +224,37 @@ export default function SettingsTab({
   const handleDeleteAccount = async () => {
     setDeleting(true);
     try {
-      await api.delete("/account", { data: { currentPassword: deletePassword, newPassword: "unused" } });
+      await api.delete("/account", {
+        data: { currentPassword: deletePassword, newPassword: "unused" },
+      });
       logout();
       window.location.href = "/";
-    } catch (err: any) {
-      setProfileMsg({ type: "error", text: err?.response?.data?.message || "Failed to delete account" });
+    } catch (err: unknown) {
+      const msg =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: { data?: { message?: string } } })
+          .response === "object" &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : "Failed to delete account";
+      const safeMessage = msg ?? "Failed to delete account";
+      setProfileMsg({
+        type: "error",
+        text: safeMessage,
+      });
     } finally {
       setDeleting(false);
     }
   };
 
   const avatarUrl = user?.profileImageUrl
-    ? (user.profileImageUrl.startsWith("data:")
-        ? user.profileImageUrl
-        : `${API_BASE_URL}${user.profileImageUrl}`)
+    ? user.profileImageUrl.startsWith("data:")
+      ? user.profileImageUrl
+      : `${API_BASE_URL}${user.profileImageUrl}`
     : null;
 
   return (
@@ -206,7 +276,9 @@ export default function SettingsTab({
               />
             ) : (
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">{user?.name[0].toUpperCase()}</span>
+                <span className="text-2xl font-bold text-white">
+                  {user?.name[0].toUpperCase()}
+                </span>
               </div>
             )}
             <button
@@ -225,8 +297,12 @@ export default function SettingsTab({
             />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">{avatarUploading ? "Uploading..." : "Profile Photo"}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">JPEG, PNG, WebP, or GIF. Max 2MB.</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              {avatarUploading ? "Uploading..." : "Profile Photo"}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              JPEG, PNG, WebP, or GIF. Max 2MB.
+            </p>
             <div className="flex gap-2">
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -249,7 +325,9 @@ export default function SettingsTab({
 
         <form onSubmit={handleProfileUpdate} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Full Name
+            </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -262,7 +340,9 @@ export default function SettingsTab({
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -276,8 +356,14 @@ export default function SettingsTab({
           </div>
 
           {profileMsg && (
-            <div className={`flex items-center gap-2 text-sm p-3 rounded-lg ${profileMsg.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400"}`}>
-              {profileMsg.type === "success" ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            <div
+              className={`flex items-center gap-2 text-sm p-3 rounded-lg ${profileMsg.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400"}`}
+            >
+              {profileMsg.type === "success" ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <X className="w-4 h-4" />
+              )}
               {profileMsg.text}
             </div>
           )}
@@ -300,13 +386,19 @@ export default function SettingsTab({
         </h2>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">Disable Custom Cursor</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Turn off the animated cursor trail effect (requires reload).</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
+              Disable Custom Cursor
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Turn off the animated cursor trail effect (requires reload).
+            </p>
           </div>
           <button
             onClick={handleToggleCursor}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              disableCustomCursor ? "bg-indigo-600" : "bg-gray-200 dark:bg-gray-700"
+              disableCustomCursor
+                ? "bg-indigo-600"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             <span
@@ -325,7 +417,9 @@ export default function SettingsTab({
         </h2>
         <form onSubmit={handlePasswordChange} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Current Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -335,14 +429,24 @@ export default function SettingsTab({
                 className="w-full pl-10 pr-10 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                 required
               />
-              <button type="button" onClick={() => setShowCurrentPw(!showCurrentPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                {showCurrentPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              <button
+                type="button"
+                onClick={() => setShowCurrentPw(!showCurrentPw)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                {showCurrentPw ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                New Password
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
@@ -353,13 +457,23 @@ export default function SettingsTab({
                   className="w-full pl-10 pr-10 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   required
                 />
-                <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <button
+                  type="button"
+                  onClick={() => setShowNewPw(!showNewPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showNewPw ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Confirm New Password
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
@@ -375,8 +489,14 @@ export default function SettingsTab({
           </div>
 
           {passwordMsg && (
-            <div className={`flex items-center gap-2 text-sm p-3 rounded-lg ${passwordMsg.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400"}`}>
-              {passwordMsg.type === "success" ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            <div
+              className={`flex items-center gap-2 text-sm p-3 rounded-lg ${passwordMsg.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400"}`}
+            >
+              {passwordMsg.type === "success" ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <X className="w-4 h-4" />
+              )}
               {passwordMsg.text}
             </div>
           )}
@@ -397,26 +517,55 @@ export default function SettingsTab({
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
           <RotateCcw className="w-5 h-5 text-orange-500" /> Reset Progress
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Reset your learning progress. This cannot be undone.</p>
-        
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+          Reset your learning progress. This cannot be undone.
+        </p>
+
         {resetMsg && (
-          <div className={`flex items-center gap-2 text-sm p-3 rounded-lg mb-4 ${resetMsg.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400"}`}>
-            {resetMsg.type === "success" ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+          <div
+            className={`flex items-center gap-2 text-sm p-3 rounded-lg mb-4 ${resetMsg.type === "success" ? "bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400"}`}
+          >
+            {resetMsg.type === "success" ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <X className="w-4 h-4" />
+            )}
             {resetMsg.text}
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {["tutorial", "quiz", "all"].map((type) => (
-            <div key={type} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-              <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">{type} Progress</p>
+            <div
+              key={type}
+              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+            >
+              <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                {type} Progress
+              </p>
               {resetConfirm === type ? (
                 <div className="flex gap-2 mt-3">
-                  <button onClick={() => handleReset(type)} disabled={resetting} className="flex-1 text-xs px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg">Confirm</button>
-                  <button onClick={() => setResetConfirm(null)} className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200">Cancel</button>
+                  <button
+                    onClick={() => handleReset(type)}
+                    disabled={resetting}
+                    className="flex-1 text-xs px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    onClick={() => setResetConfirm(null)}
+                    className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
                 </div>
               ) : (
-                <button onClick={() => setResetConfirm(type)} className="w-full mt-3 text-xs px-3 py-1.5 bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900">Reset</button>
+                <button
+                  onClick={() => setResetConfirm(type)}
+                  className="w-full mt-3 text-xs px-3 py-1.5 bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900"
+                >
+                  Reset
+                </button>
               )}
             </div>
           ))}
@@ -428,21 +577,45 @@ export default function SettingsTab({
         <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" /> Danger Zone
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Permanently delete your account and all associated data.</p>
-        
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Permanently delete your account and all associated data.
+        </p>
+
         {!showDeleteConfirm ? (
-          <button onClick={() => setShowDeleteConfirm(true)} className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg hover:bg-red-100 dark:hover:bg-red-900 border border-red-200 dark:border-red-800 transition-colors">
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg hover:bg-red-100 dark:hover:bg-red-900 border border-red-200 dark:border-red-800 transition-colors"
+          >
             <Trash2 className="w-4 h-4" /> Delete Account
           </button>
         ) : (
           <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg p-4 space-y-3">
-            <p className="text-sm text-red-700 dark:text-red-300 font-medium">Enter your password to confirm:</p>
-            <input type="password" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} placeholder="Current password" className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none" />
+            <p className="text-sm text-red-700 dark:text-red-300 font-medium">
+              Enter your password to confirm:
+            </p>
+            <input
+              type="password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              placeholder="Current password"
+              className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
+            />
             <div className="flex gap-2">
-              <button onClick={handleDeleteAccount} disabled={deleting || !deletePassword} className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg disabled:opacity-50">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleting || !deletePassword}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg disabled:opacity-50"
+              >
                 <Trash2 className="w-4 h-4" /> Confirm Delete
               </button>
-              <button onClick={() => { setShowDeleteConfirm(false); setDeletePassword(""); }} disabled={deleting} className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeletePassword("");
+                }}
+                disabled={deleting}
+                className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
                 Cancel
               </button>
             </div>

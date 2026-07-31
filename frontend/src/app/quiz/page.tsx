@@ -31,9 +31,12 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 const difficultyColor: Record<string, string> = {
-  Beginner: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800",
-  Intermediate: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800",
-  Advanced: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800",
+  Beginner:
+    "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800",
+  Intermediate:
+    "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800",
+  Advanced:
+    "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800",
 };
 
 export default function QuizPage() {
@@ -52,7 +55,9 @@ function QuizPageContent() {
   const [loading, setLoading] = useState(true);
   const [apiDown, setApiDown] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -74,7 +79,7 @@ function QuizPageContent() {
   // Auto-expand a category if coming from a tutorial link
   useEffect(() => {
     if (initialCategory !== "all") {
-      setExpandedCategories(new Set([initialCategory]));
+      queueMicrotask(() => setExpandedCategories(new Set([initialCategory])));
     }
   }, [initialCategory]);
 
@@ -84,7 +89,7 @@ function QuizPageContent() {
     .map((cat) => ({
       ...cat,
       quizzes: topics.filter(
-        (t) => t.category.toLowerCase() === cat.categoryName.toLowerCase()
+        (t) => t.category.toLowerCase() === cat.categoryName.toLowerCase(),
       ),
     }));
 
@@ -116,8 +121,9 @@ function QuizPageContent() {
         <div className="sticky top-16 z-40 flex items-center gap-3 px-4 py-3 bg-amber-50 dark:bg-amber-950/50 border-b border-amber-200 dark:border-amber-800/60">
           <WifiOff className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
           <p className="text-sm text-amber-800 dark:text-amber-300 flex-1">
-            <span className="font-semibold">Quiz server is offline.</span>{" "}
-            Quiz topics and score tracking are unavailable. Check your connection or try again later.
+            <span className="font-semibold">Quiz server is offline.</span> Quiz
+            topics and score tracking are unavailable. Check your connection or
+            try again later.
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -165,17 +171,23 @@ function QuizPageContent() {
             className="flex items-center justify-center gap-8 sm:gap-12 text-sm"
           >
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalQuizzes}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {totalQuizzes}
+              </p>
               <p className="text-gray-500">Quizzes</p>
             </div>
             <div className="w-px h-8 bg-gray-200 dark:bg-gray-700" />
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalQuestions}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {totalQuestions}
+              </p>
               <p className="text-gray-500">Questions</p>
             </div>
             <div className="w-px h-8 bg-gray-200 dark:bg-gray-700" />
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{completedQuizzes}/{totalQuizzes}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {completedQuizzes}/{totalQuizzes}
+              </p>
               <p className="text-gray-500">Completed</p>
             </div>
           </motion.div>
@@ -198,7 +210,7 @@ function QuizPageContent() {
                 "px-5 py-2.5 rounded-xl text-sm font-medium transition-all border",
                 activeCategory === "all"
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/25"
-                  : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700"
+                  : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700",
               )}
             >
               <span className="flex items-center gap-2">
@@ -217,7 +229,7 @@ function QuizPageContent() {
                       "px-5 py-2.5 rounded-xl text-sm font-medium transition-all border",
                       activeCategory === cat.id
                         ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/25"
-                        : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700"
+                        : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700",
                     )}
                   >
                     <span className="flex items-center gap-2">
@@ -274,8 +286,9 @@ function QuizPageContent() {
                 Learn Before You Quiz
               </h3>
               <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-6">
-                Each quiz is designed to complement our tutorials. Study the material first,
-                then test your knowledge to see how well you&apos;ve learned.
+                Each quiz is designed to complement our tutorials. Study the
+                material first, then test your knowledge to see how well
+                you&apos;ve learned.
               </p>
               <Link
                 href="/tutorials"
@@ -324,7 +337,7 @@ function CategorySection({
           "w-full bg-white dark:bg-gray-900 rounded-2xl border p-6 transition-all duration-300 hover:shadow-md",
           completedCount === totalCount && totalCount > 0
             ? "border-emerald-200 dark:border-emerald-900/60"
-            : "border-gray-200 dark:border-gray-800"
+            : "border-gray-200 dark:border-gray-800",
         )}
       >
         <div className="flex items-center gap-5">
@@ -358,7 +371,7 @@ function CategorySection({
                       "h-full rounded-full transition-all duration-500",
                       completedCount === totalCount
                         ? "bg-emerald-500"
-                        : "bg-indigo-500"
+                        : "bg-indigo-500",
                     )}
                     style={{ width: `${(completedCount / totalCount) * 100}%` }}
                   />
@@ -424,9 +437,10 @@ function QuizCard({
   category: QuizCategoryMeta;
 }) {
   const completed = quiz.bestScore !== null;
-  const percentage = completed && quiz.questionCount > 0
-    ? Math.round((quiz.bestScore! / quiz.questionCount) * 100)
-    : 0;
+  const percentage =
+    completed && quiz.questionCount > 0
+      ? Math.round((quiz.bestScore! / quiz.questionCount) * 100)
+      : 0;
 
   return (
     <Link
@@ -435,7 +449,7 @@ function QuizCard({
         "group block bg-white dark:bg-gray-900 rounded-xl border p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
         completed
           ? "border-emerald-200 dark:border-emerald-900/60"
-          : "border-gray-200 dark:border-gray-800"
+          : "border-gray-200 dark:border-gray-800",
       )}
     >
       <div className="flex items-center gap-4">
@@ -457,7 +471,8 @@ function QuizCard({
             <span
               className={cn(
                 "px-2 py-0.5 rounded-full text-[10px] font-medium border",
-                difficultyColor[quiz.difficulty] || "text-gray-500 bg-gray-50 border-gray-200"
+                difficultyColor[quiz.difficulty] ||
+                  "text-gray-500 bg-gray-50 border-gray-200",
               )}
             >
               {quiz.difficulty}
@@ -483,7 +498,7 @@ function QuizCard({
                     ? "text-emerald-500"
                     : percentage >= 60
                       ? "text-amber-500"
-                      : "text-red-500"
+                      : "text-red-500",
                 )}
               >
                 {percentage}%

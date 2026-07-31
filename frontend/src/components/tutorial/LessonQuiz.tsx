@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain,
@@ -11,6 +11,8 @@ import {
   Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getUserStorageKey } from "@/lib/userStorage";
+import { useAuth } from "@/context/AuthContext";
 
 export interface LessonQuizQuestion {
   id: string;
@@ -24,17 +26,43 @@ export interface LessonQuizQuestion {
 interface Props {
   questions: LessonQuizQuestion[];
   lessonTitle: string;
+  storageKey: string;
 }
 
-export default function LessonQuiz({ questions, lessonTitle }: Props) {
+interface SavedResult {
+  score: number;
+  total: number;
+}
+
+export default function LessonQuiz({
+  questions,
+  lessonTitle,
+  storageKey,
+}: Props) {
+  const { user, isLoading: authLoading } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
+  const [bestResult, setBestResult] = useState<SavedResult | null>(null);
+
+  useEffect(() => {
+    if (authLoading) return;
+    queueMicrotask(() => {
+      try {
+        const saved = localStorage.getItem(
+          getUserStorageKey(user?.id, `lesson-quiz-${storageKey}`),
+        );
+        setBestResult(saved ? JSON.parse(saved) : null);
+      } catch {
+        setBestResult(null);
+      }
+    });
+  }, [authLoading, storageKey, user?.id]);
 
   const q = questions[currentIndex];
   const isLast = currentIndex === questions.length - 1;
@@ -55,6 +83,18 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
 
   const handleNext = () => {
     if (isLast) {
+      const nextResult = { score, total: questions.length };
+      setBestResult((previous) => {
+        const best =
+          !previous || nextResult.score > previous.score
+            ? nextResult
+            : previous;
+        localStorage.setItem(
+          getUserStorageKey(user?.id, `lesson-quiz-${storageKey}`),
+          JSON.stringify(best),
+        );
+        return best;
+      });
       setFinished(true);
       return;
     }
@@ -85,7 +125,7 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
                   ? "bg-emerald-100 dark:bg-emerald-950/40"
                   : percentage >= 50
                     ? "bg-amber-100 dark:bg-amber-950/40"
-                    : "bg-red-100 dark:bg-red-950/40"
+                    : "bg-red-100 dark:bg-red-950/40",
               )}
             >
               <Trophy
@@ -95,7 +135,7 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
                     ? "text-emerald-500"
                     : percentage >= 50
                       ? "text-amber-500"
-                      : "text-red-500"
+                      : "text-red-500",
                 )}
               />
             </div>
@@ -105,6 +145,11 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
               {lessonTitle}
             </p>
+            {bestResult && (
+              <p className="text-xs text-indigo-500 dark:text-indigo-400 mb-2">
+                Best score: {bestResult.score}/{bestResult.total}
+              </p>
+            )}
             <p
               className={cn(
                 "text-4xl font-bold mb-2",
@@ -112,7 +157,7 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
                   ? "text-emerald-500"
                   : percentage >= 50
                     ? "text-amber-500"
-                    : "text-red-500"
+                    : "text-red-500",
               )}
             >
               {score}/{questions.length}
@@ -162,7 +207,7 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
                   : "bg-red-400"
                 : i === currentIndex
                   ? "bg-indigo-500"
-                  : "bg-gray-200 dark:bg-gray-800"
+                  : "bg-gray-200 dark:bg-gray-800",
             )}
           />
         ))}
@@ -218,7 +263,7 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
                   disabled={revealed}
                   className={cn(
                     "w-full text-left p-3.5 rounded-xl border-2 transition-all text-sm font-medium flex items-center gap-3",
-                    optionStyle
+                    optionStyle,
                   )}
                 >
                   <span className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold shrink-0">
@@ -265,7 +310,7 @@ export default function LessonQuiz({ questions, lessonTitle }: Props) {
                   "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all",
                   selectedIndex !== null
                     ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                    : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed",
                 )}
               >
                 Check Answer

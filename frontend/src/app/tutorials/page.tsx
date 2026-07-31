@@ -45,30 +45,37 @@ function ContinueLearningCard() {
 
   useEffect(() => {
     if (isLoading) return;
-    // Get last visited lesson from localStorage
-    const lastLesson = localStorage.getItem(getUserStorageKey(user?.id, "lastVisitedLesson"));
-    if (lastLesson) {
-      try {
-        const data = JSON.parse(lastLesson);
-        const tutorial = tutorials.find((t) => t.slug === data.tutorialSlug);
-        if (tutorial) {
-          const lessonIndex = tutorial.lessons.findIndex(
-            (l) => l.slug === data.lessonSlug,
-          );
-          const percent = Math.round(
-            ((lessonIndex + 1) / tutorial.lessons.length) * 100,
-          );
-          setProgress({
-            slug: tutorial.slug,
-            lessonSlug: data.lessonSlug,
-            title: tutorial.title,
-            percent,
-          });
+
+    const resolveProgress = () => {
+      // Get last visited lesson from localStorage
+      const lastLesson = localStorage.getItem(
+        getUserStorageKey(user?.id, "lastVisitedLesson"),
+      );
+      if (lastLesson) {
+        try {
+          const data = JSON.parse(lastLesson);
+          const tutorial = tutorials.find((t) => t.slug === data.tutorialSlug);
+          if (tutorial) {
+            const lessonIndex = tutorial.lessons.findIndex(
+              (l) => l.slug === data.lessonSlug,
+            );
+            const percent = Math.round(
+              ((lessonIndex + 1) / tutorial.lessons.length) * 100,
+            );
+            setProgress({
+              slug: tutorial.slug,
+              lessonSlug: data.lessonSlug,
+              title: tutorial.title,
+              percent,
+            });
+          }
+        } catch {
+          // Invalid data, ignore
         }
-      } catch {
-        // Invalid data, ignore
       }
-    }
+    };
+
+    queueMicrotask(resolveProgress);
   }, [isLoading, user?.id]);
 
   if (!progress) return null;

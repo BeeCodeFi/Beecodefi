@@ -21,24 +21,24 @@ const YoutubeIcon = ({ className }: { className?: string }) => (
 
 const footerLinks = {
   Learn: [
-    { href: "/tutorials",            label: "Tutorials"   },
-    { href: "/tutorials/html",       label: "HTML"        },
-    { href: "/tutorials/css",        label: "CSS"         },
-    { href: "/tutorials/javascript", label: "JavaScript"  },
+    { href: "/tutorials", label: "Tutorials" },
+    { href: "/tutorials/html", label: "HTML" },
+    { href: "/tutorials/css", label: "CSS" },
+    { href: "/tutorials/javascript", label: "JavaScript" },
   ],
   Practice: [
-    { href: "/quiz",                      label: "Quizzes"   },
-    { href: "/quiz?category=html",        label: "HTML Quiz" },
-    { href: "/quiz?category=css",         label: "CSS Quiz"  },
-    { href: "/quiz?category=javascript",  label: "JS Quiz"   },
+    { href: "/quiz", label: "Quizzes" },
+    { href: "/quiz?category=html", label: "HTML Quiz" },
+    { href: "/quiz?category=css", label: "CSS Quiz" },
+    { href: "/quiz?category=javascript", label: "JS Quiz" },
   ],
   Company: [
-    { href: "/about",     label: "About"     },
-    { href: "/roadmap",   label: "Roadmap"   },
-    { href: "/contact",   label: "Contact"   },
-    { href: "/faq",       label: "FAQ"       },
-    { href: "/privacy",   label: "Privacy"   },
-    { href: "/terms",     label: "Terms"     },
+    { href: "/about", label: "About" },
+    { href: "/roadmap", label: "Roadmap" },
+    { href: "/contact", label: "Contact" },
+    { href: "/faq", label: "FAQ" },
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
   ],
   Community: [
     { href: "https://github.com/BeeCodeFi", label: "GitHub", external: true },
@@ -52,7 +52,6 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Top section: brand left, nav columns right */}
         <div className="flex flex-col md:flex-row gap-10 md:gap-16">
-
           {/* Brand — fixed width */}
           <div className="shrink-0 md:w-64">
             <Link href="/" className="flex items-center gap-2 mb-4">
@@ -64,23 +63,42 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
-              Free education for everyone. Learn web development with interactive tutorials, video courses, and quizzes.
+              Free education for everyone. Learn web development with
+              interactive tutorials, video courses, and quizzes.
             </p>
             <div className="flex items-center gap-2">
-              <a href="https://github.com/BeeCodeFi" target="_blank" rel="noopener noreferrer" title="GitHub"
-                className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+              <a
+                href="https://github.com/BeeCodeFi"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="GitHub"
+                className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+              >
                 <GithubIcon className="w-5 h-5" />
               </a>
-              <a href="https://www.linkedin.com/in/ayushku" target="_blank" rel="noopener noreferrer" title="LinkedIn"
-                className="p-2 rounded-lg text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors">
+              <a
+                href="https://www.linkedin.com/in/ayushku"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="LinkedIn"
+                className="p-2 rounded-lg text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
+              >
                 <LinkedinIcon className="w-5 h-5" />
               </a>
-              <a href="https://www.youtube.com/@BeeCodeFi" target="_blank" rel="noopener noreferrer" title="YouTube"
-                className="p-2 rounded-lg text-gray-500 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+              <a
+                href="https://www.youtube.com/@BeeCodeFi"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="YouTube"
+                className="p-2 rounded-lg text-gray-500 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+              >
                 <YoutubeIcon className="w-5 h-5" />
               </a>
-              <a href="mailto:kumaryursh@gmail.com" title="Email"
-                className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+              <a
+                href="mailto:kumaryursh@gmail.com"
+                title="Email"
+                className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+              >
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -90,12 +108,14 @@ export default function Footer() {
           <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-16 md:pl-32 lg:pl-40">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                  {title}
+                </h3>
                 <ul className="space-y-2">
                   {links.map((link) => (
                     <li key={link.href}>
-                      {(link as any).external ? (
-                        <a 
+                      {"external" in link && link.external ? (
+                        <a
                           href={link.href}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -104,8 +124,10 @@ export default function Footer() {
                           {link.label}
                         </a>
                       ) : (
-                        <Link href={link.href}
-                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        <Link
+                          href={link.href}
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
                           {link.label}
                         </Link>
                       )}
@@ -125,8 +147,12 @@ export default function Footer() {
           {/* Right — fills same space as nav columns */}
           <p className="text-sm text-gray-500 dark:text-gray-500 flex items-center gap-1.5 flex-1 sm:justify-end">
             Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> by{" "}
-            <a href="https://www.linkedin.com/in/ayushku" target="_blank" rel="noopener noreferrer"
-              className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+            <a
+              href="https://www.linkedin.com/in/ayushku"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+            >
               Ayush
             </a>
           </p>

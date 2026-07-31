@@ -4,9 +4,18 @@ import { useEffect, useRef, useState } from "react";
 
 // A broad, high-contrast palette keeps each new stroke visually distinct.
 const COLORS = [
-  "#ff6b35", "#ff3d81", "#f43f5e", "#ec4899",
-  "#a855f7", "#7c3aed", "#3b82f6", "#06b6d4",
-  "#14b8a6", "#22c55e", "#eab308", "#f97316",
+  "#ff6b35",
+  "#ff3d81",
+  "#f43f5e",
+  "#ec4899",
+  "#a855f7",
+  "#7c3aed",
+  "#3b82f6",
+  "#06b6d4",
+  "#14b8a6",
+  "#22c55e",
+  "#eab308",
+  "#f97316",
 ];
 
 class Point {
@@ -30,8 +39,12 @@ export default function CursorTrail() {
   useEffect(() => {
     // Detect touch device — hide cursor trail entirely
     const checkTouch = () => {
-      const isCustomCursorDisabled = localStorage.getItem("beecodefi_custom_cursor") === "disabled";
-      if (window.matchMedia("(pointer: coarse)").matches || isCustomCursorDisabled) {
+      const isCustomCursorDisabled =
+        localStorage.getItem("beecodefi_custom_cursor") === "disabled";
+      if (
+        window.matchMedia("(pointer: coarse)").matches ||
+        isCustomCursorDisabled
+      ) {
         setIsTouch(true);
       }
     };
@@ -45,7 +58,7 @@ export default function CursorTrail() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let points: Point[] = [];
+    const points: Point[] = [];
     let animationFrameId: number;
     let lastMoveTime = 0;
     let currentColor = COLORS[Math.floor(Math.random() * COLORS.length)];
@@ -71,7 +84,7 @@ export default function CursorTrail() {
         currentColor = newColor;
       }
       lastMoveTime = now;
-      
+
       points.push(new Point(e.clientX, e.clientY, currentColor));
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
@@ -94,7 +107,7 @@ export default function CursorTrail() {
 
         // The older the point, the thinner and more transparent it gets
         const life = 1 - p.age / 80;
-        
+
         ctx.beginPath();
         // A thick brush look — connecting to the previous point
         if (i > 0) {
@@ -104,17 +117,17 @@ export default function CursorTrail() {
           ctx.moveTo(p.x, p.y);
         }
         ctx.lineTo(p.x, p.y);
-        
+
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.lineWidth = 24 * life; // Thick start, tapers off
-        
+
         // Convert hex to rgb for opacity
         const hex = p.color;
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
-        
+
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${life * 0.5})`;
         ctx.stroke();
       }

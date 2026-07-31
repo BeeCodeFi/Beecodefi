@@ -4,24 +4,54 @@ import { useState, useEffect } from "react";
 import { getErrorLogs, clearErrorLogs } from "@/lib/errorTracking";
 import { AlertTriangle, Trash2, Info } from "lucide-react";
 
+interface DebugErrorEntry {
+  message: string;
+  stack?: string;
+  componentStack?: string | null;
+  timestamp: string;
+  url: string;
+}
+
+interface SystemInfo {
+  userAgent: string;
+  platform: string;
+  language: string;
+  online: boolean;
+  cookiesEnabled: boolean;
+  screenResolution: string;
+  viewport: string;
+  url: string;
+}
+
 export default function DebugPage() {
-  const [errors, setErrors] = useState<any[]>([]);
-  const [systemInfo, setSystemInfo] = useState<any>({});
+  const [errors, setErrors] = useState<DebugErrorEntry[]>([]);
+  const [systemInfo, setSystemInfo] = useState<SystemInfo>({
+    userAgent: "",
+    platform: "",
+    language: "",
+    online: false,
+    cookiesEnabled: false,
+    screenResolution: "",
+    viewport: "",
+    url: "",
+  });
 
   useEffect(() => {
-    // Load error logs
-    setErrors(getErrorLogs());
+    queueMicrotask(() => {
+      // Load error logs
+      setErrors(getErrorLogs());
 
-    // Collect system info
-    setSystemInfo({
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-      language: navigator.language,
-      online: navigator.onLine,
-      cookiesEnabled: navigator.cookieEnabled,
-      screenResolution: `${window.screen.width}x${window.screen.height}`,
-      viewport: `${window.innerWidth}x${window.innerHeight}`,
-      url: window.location.href,
+      // Collect system info
+      setSystemInfo({
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        online: navigator.onLine,
+        cookiesEnabled: navigator.cookieEnabled,
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        url: window.location.href,
+      });
     });
   }, []);
 

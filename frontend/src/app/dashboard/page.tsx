@@ -71,7 +71,9 @@ export default function UnifiedDashboardPage() {
     });
     setTutorialProgress(progress);
 
-    const lastLesson = localStorage.getItem(getUserStorageKey(user?.id, "lastVisitedLesson"));
+    const lastLesson = localStorage.getItem(
+      getUserStorageKey(user?.id, "lastVisitedLesson"),
+    );
     if (lastLesson) {
       try {
         const data = JSON.parse(lastLesson);
@@ -100,7 +102,7 @@ export default function UnifiedDashboardPage() {
     if (!isLoading && !user) {
       router.push("/login");
     } else if (user) {
-      loadProgress();
+      queueMicrotask(() => loadProgress());
     }
   }, [user, isLoading, router]);
 

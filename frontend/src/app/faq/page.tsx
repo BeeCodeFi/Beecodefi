@@ -104,7 +104,10 @@ export default function FAQPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
-              Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">Questions</span>
+              Frequently Asked{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">
+                Questions
+              </span>
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400">
               Everything you need to know about learning with BeeCodeFi.
@@ -122,7 +125,7 @@ export default function FAQPage() {
               Still have questions?
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              We're here to help you on your coding journey.
+              We&apos;re here to help you on your coding journey.
             </p>
             <a
               href="/contact"

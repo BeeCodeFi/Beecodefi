@@ -1,7 +1,20 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, KeyboardEvent } from "react";
-import { RotateCcw, Maximize2, Minimize2, Copy, Check, RefreshCw } from "lucide-react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  type KeyboardEvent,
+} from "react";
+import {
+  RotateCcw,
+  Maximize2,
+  Minimize2,
+  Copy,
+  Check,
+  RefreshCw,
+} from "lucide-react";
 
 interface LiveCodeEditorProps {
   initialCode: string;
@@ -10,7 +23,12 @@ interface LiveCodeEditorProps {
   description?: string;
 }
 
-export default function LiveCodeEditor({ initialCode, language, title, description }: LiveCodeEditorProps) {
+export default function LiveCodeEditor({
+  initialCode,
+  language,
+  title,
+  description,
+}: LiveCodeEditorProps) {
   const [code, setCode] = useState(initialCode);
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -19,24 +37,33 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
   const [fontSize, setFontSize] = useState(14);
   const [showLineNumbers, setShowLineNumbers] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceRef = useRef<number | null>(null);
   const isModified = code !== initialCode;
   const isHtml = language === "html";
 
-  // Trigger a brief "updating" flash in the preview header on each code change
   useEffect(() => {
-    if (!isHtml) return;
-    setIsUpdating(true);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => setIsUpdating(false), 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [code, isHtml]);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [code]);
+
+  const handleCodeChange = useCallback(
+    (nextCode: string) => {
+      setCode(nextCode);
+      if (!isHtml) return;
+
+      setIsUpdating(true);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = window.setTimeout(() => setIsUpdating(false), 400);
+    },
+    [isHtml],
+  );
 
   const handleReset = useCallback(() => {
     setCode(initialCode);
@@ -51,7 +78,8 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
     if (e.key === "Tab") {
       e.preventDefault();
       const indent = "  ";
-      const newValue = value.slice(0, selectionStart) + indent + value.slice(selectionEnd);
+      const newValue =
+        value.slice(0, selectionStart) + indent + value.slice(selectionEnd);
       setCode(newValue);
       // Move cursor after the indent
       requestAnimationFrame(() => {
@@ -60,11 +88,21 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
     }
 
     // Auto-close brackets/quotes
-    const pairs: Record<string, string> = { "{": "}", "(": ")", "[": "]", '"': '"', "'": "'" };
+    const pairs: Record<string, string> = {
+      "{": "}",
+      "(": ")",
+      "[": "]",
+      '"': '"',
+      "'": "'",
+    };
     if (pairs[e.key] && selectionStart === selectionEnd) {
       e.preventDefault();
       const close = pairs[e.key];
-      const newValue = value.slice(0, selectionStart) + e.key + close + value.slice(selectionEnd);
+      const newValue =
+        value.slice(0, selectionStart) +
+        e.key +
+        close +
+        value.slice(selectionEnd);
       setCode(newValue);
       requestAnimationFrame(() => {
         ta.selectionStart = ta.selectionEnd = selectionStart + 1;
@@ -77,10 +115,7 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     if (code.includes("<!DOCTYPE") || code.includes("<html")) {
       // Inject base href so relative image paths resolve from the app root
-      return code.replace(
-        /<head([^>]*)>/i,
-        `<head$1><base href="${origin}/">`
-      );
+      return code.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}/">`);
     }
     return `<!DOCTYPE html>
 <html lang="en">
@@ -118,7 +153,9 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
   const lines = code.split("\n");
 
   return (
-    <div className={`rounded-2xl overflow-hidden border border-gray-700/60 my-6 bg-[#0d1117] shadow-xl shadow-black/20 transition-all duration-200 ${expanded ? "fixed inset-3 z-50" : ""}`}>
+    <div
+      className={`rounded-2xl overflow-hidden border border-gray-700/60 my-6 bg-[#0d1117] shadow-xl shadow-black/20 transition-all duration-200 ${expanded ? "fixed inset-3 z-50" : ""}`}
+    >
       {/* Title bar */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-[#161b22] border-b border-gray-700/60">
         <div className="flex items-center gap-3">
@@ -128,9 +165,16 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
             <div className="w-3 h-3 rounded-full bg-[#febc2e] hover:brightness-110" />
             <div className="w-3 h-3 rounded-full bg-[#28c840] hover:brightness-110" />
           </div>
-          <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
-            {title || language}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+              {title || language}
+            </span>
+            {description && (
+              <span className="text-[10px] text-gray-500 mt-0.5">
+                {description}
+              </span>
+            )}
+          </div>
           {isModified && (
             <span className="flex items-center gap-1 text-[10px] text-amber-400 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -156,8 +200,14 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
             onClick={handleCopy}
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-400 transition-colors px-2 py-1.5 rounded-md hover:bg-indigo-400/10"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{copied ? "Copied!" : "Copy"}</span>
+            {copied ? (
+              <Check className="w-3.5 h-3.5 text-green-400" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+            <span className="hidden sm:inline">
+              {copied ? "Copied!" : "Copy"}
+            </span>
           </button>
           {isHtml && (
             <button
@@ -165,7 +215,11 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
               className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-400 transition-colors px-2 py-1.5 rounded-md hover:bg-indigo-400/10"
               title={expanded ? "Minimize" : "Expand"}
             >
-              {expanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              {expanded ? (
+                <Minimize2 className="w-3.5 h-3.5" />
+              ) : (
+                <Maximize2 className="w-3.5 h-3.5" />
+              )}
             </button>
           )}
         </div>
@@ -173,19 +227,44 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
 
       <div className={isHtml ? "grid grid-cols-1 lg:grid-cols-2" : ""}>
         {/* ── Code editor pane ── */}
-        <div className={isHtml ? "border-b lg:border-b-0 lg:border-r border-gray-700/60 flex flex-col" : ""}>
+        <div
+          className={
+            isHtml
+              ? "border-b lg:border-b-0 lg:border-r border-gray-700/60 flex flex-col"
+              : ""
+          }
+        >
           {isHtml && (
             <div className="flex items-center justify-between px-3 py-1.5 bg-[#161b22] border-b border-gray-700/40">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">editor</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">
+                editor
+              </span>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
                   <span className="text-[10px] text-gray-500">Size:</span>
-                  <button onClick={() => setFontSize(f => Math.max(10, f - 1))} className="text-gray-400 hover:text-white px-1.5 py-0.5 bg-gray-800 rounded text-xs">-</button>
-                  <span className="text-[10px] text-gray-300 w-4 text-center">{fontSize}</span>
-                  <button onClick={() => setFontSize(f => Math.min(24, f + 1))} className="text-gray-400 hover:text-white px-1.5 py-0.5 bg-gray-800 rounded text-xs">+</button>
+                  <button
+                    onClick={() => setFontSize((f) => Math.max(10, f - 1))}
+                    className="text-gray-400 hover:text-white px-1.5 py-0.5 bg-gray-800 rounded text-xs"
+                  >
+                    -
+                  </button>
+                  <span className="text-[10px] text-gray-300 w-4 text-center">
+                    {fontSize}
+                  </span>
+                  <button
+                    onClick={() => setFontSize((f) => Math.min(24, f + 1))}
+                    className="text-gray-400 hover:text-white px-1.5 py-0.5 bg-gray-800 rounded text-xs"
+                  >
+                    +
+                  </button>
                 </div>
                 <label className="flex items-center gap-1.5 cursor-pointer">
-                  <input type="checkbox" checked={showLineNumbers} onChange={(e) => setShowLineNumbers(e.target.checked)} className="rounded border-gray-700 bg-gray-800 text-indigo-500 w-3 h-3" />
+                  <input
+                    type="checkbox"
+                    checked={showLineNumbers}
+                    onChange={(e) => setShowLineNumbers(e.target.checked)}
+                    className="rounded border-gray-700 bg-gray-800 text-indigo-500 w-3 h-3"
+                  />
                   <span className="text-[10px] text-gray-400">Lines</span>
                 </label>
               </div>
@@ -195,7 +274,11 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
           {/* Line numbers + textarea */}
           <div
             className={`flex items-start overflow-auto bg-[#0d1117] ${
-              expanded ? "h-[calc(100vh-10rem)]" : isHtml ? "h-64 sm:h-80" : "h-56 sm:h-72"
+              expanded
+                ? "h-[calc(100vh-10rem)]"
+                : isHtml
+                  ? "h-64 sm:h-80"
+                  : "h-56 sm:h-72"
             }`}
           >
             {/* Line numbers */}
@@ -215,7 +298,7 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
             <textarea
               ref={textareaRef}
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => handleCodeChange(e.target.value)}
               onKeyDown={handleKeyDown}
               spellCheck={false}
               autoComplete="off"
@@ -229,7 +312,9 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
 
           {/* Status bar */}
           <div className="flex items-center justify-between px-3 py-1 bg-[#161b22] border-t border-gray-700/40 text-[10px] text-gray-600">
-            <span>{lines.length} lines · {code.length} chars</span>
+            <span>
+              {lines.length} lines · {code.length} chars
+            </span>
             <span className="uppercase tracking-wider">{language}</span>
           </div>
         </div>
@@ -238,8 +323,12 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
         {isHtml && (
           <div className="flex flex-col">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-[#161b22] border-b border-gray-700/40">
-              <div className={`w-2 h-2 rounded-full transition-colors duration-200 ${isUpdating ? "bg-amber-400 animate-pulse" : "bg-green-400"}`} />
-              <span className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${isUpdating ? "text-amber-400" : "text-green-400"}`}>
+              <div
+                className={`w-2 h-2 rounded-full transition-colors duration-200 ${isUpdating ? "bg-amber-400 animate-pulse" : "bg-green-400"}`}
+              />
+              <span
+                className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-200 ${isUpdating ? "text-amber-400" : "text-green-400"}`}
+              >
                 {isUpdating ? "updating…" : "live preview"}
               </span>
               <button
@@ -250,7 +339,9 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
                 <RefreshCw className="w-3 h-3" />
               </button>
             </div>
-            <div className={`bg-white ${expanded ? "h-[calc(100vh-10rem)]" : "h-64 sm:h-80"} relative`}>
+            <div
+              className={`bg-white ${expanded ? "h-[calc(100vh-10rem)]" : "h-64 sm:h-80"} relative`}
+            >
               <iframe
                 key={previewKey}
                 srcDoc={getPreviewHtml()}

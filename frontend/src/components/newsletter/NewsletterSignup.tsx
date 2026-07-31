@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import api from "@/lib/api";
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setStatus("error");
@@ -25,11 +27,14 @@ export default function NewsletterSignup() {
       await api.post("/contact", {
         name: "Newsletter Subscriber",
         email,
-        message: "Please notify me when React and Next.js tutorials are launched!",
+        message:
+          "Please notify me when React and Next.js tutorials are launched!",
       });
 
       setStatus("success");
-      setMessage("Thanks! We'll notify you when React & Next.js tutorials launch 🚀");
+      setMessage(
+        "Thanks! We'll notify you when React & Next.js tutorials launch 🚀",
+      );
       setEmail("");
 
       // Reset after 5 seconds
@@ -37,9 +42,21 @@ export default function NewsletterSignup() {
         setStatus("idle");
         setMessage("");
       }, 5000);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: unknown }).response === "object" &&
+        (error as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+          ? (error as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : "Something went wrong. Please try again.";
+
+      const safeMessage = message ?? "Something went wrong. Please try again.";
       setStatus("error");
-      setMessage(error.response?.data?.message || "Something went wrong. Please try again.");
+      setMessage(safeMessage);
 
       setTimeout(() => {
         setStatus("idle");

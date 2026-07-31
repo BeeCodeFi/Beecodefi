@@ -14,6 +14,21 @@ import {
   Trophy,
 } from "lucide-react";
 
+interface TutorialProgressItem {
+  slug: string;
+  title: string;
+  completed: number;
+  total: number;
+  percent: number;
+}
+
+interface RecentLessonItem {
+  tutorialSlug: string;
+  lessonSlug: string;
+  lessonTitle: string;
+  tutorialTitle: string;
+}
+
 export default function OverviewTab({
   streak,
   bookmarksCount,
@@ -22,12 +37,18 @@ export default function OverviewTab({
 }: {
   streak: { current: number; longest: number };
   bookmarksCount: number;
-  tutorialProgress: any[];
-  recentLessons: any[];
+  tutorialProgress: TutorialProgressItem[];
+  recentLessons: RecentLessonItem[];
 }) {
-  const totalLessonsCompleted = tutorialProgress.reduce((sum, t) => sum + t.completed, 0);
+  const totalLessonsCompleted = tutorialProgress.reduce(
+    (sum, t) => sum + t.completed,
+    0,
+  );
   const totalLessons = tutorialProgress.reduce((sum, t) => sum + t.total, 0);
-  const overallProgress = totalLessons > 0 ? Math.round((totalLessonsCompleted / totalLessons) * 100) : 0;
+  const overallProgress =
+    totalLessons > 0
+      ? Math.round((totalLessonsCompleted / totalLessons) * 100)
+      : 0;
 
   return (
     <div>
@@ -45,8 +66,12 @@ export default function OverviewTab({
               <Target className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Overall Progress</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{overallProgress}%</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Overall Progress
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {overallProgress}%
+              </p>
             </div>
           </div>
           <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -72,8 +97,12 @@ export default function OverviewTab({
               <Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Current Streak</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{streak.current} days</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Current Streak
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {streak.current} days
+              </p>
             </div>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -93,8 +122,12 @@ export default function OverviewTab({
               <Bookmark className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Saved Lessons</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{bookmarksCount}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Saved Lessons
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {bookmarksCount}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -111,8 +144,12 @@ export default function OverviewTab({
               <Trophy className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Ready for Quiz?</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">Test Skill</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Ready for Quiz?
+              </p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">
+                Test Skill
+              </p>
             </div>
           </div>
         </motion.div>
@@ -193,7 +230,9 @@ export default function OverviewTab({
                     <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
                       {lesson.lessonTitle}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{lesson.tutorialTitle}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {lesson.tutorialTitle}
+                    </p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-1 transition-all shrink-0" />
                 </Link>
@@ -214,7 +253,9 @@ export default function OverviewTab({
 
           {/* Quick Actions */}
           <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">
+              Quick Actions
+            </h3>
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/tutorials"

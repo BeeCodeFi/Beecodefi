@@ -25,7 +25,8 @@ export default function TutorialError({
           Failed to load lesson
         </h1>
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed">
-          We couldn't load this lesson. The tutorial might not exist or there was a loading error.
+          We couldn&apos;t load this lesson. The tutorial might not exist or
+          there was a loading error.
         </p>
         <div className="flex items-center justify-center gap-3">
           <button

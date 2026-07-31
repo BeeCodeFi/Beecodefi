@@ -16,7 +16,7 @@ interface ErrorLog {
 export const logError = (
   error: Error,
   errorInfo?: { componentStack?: string | null },
-  context?: Record<string, any>,
+  context?: Record<string, unknown>,
 ) => {
   const errorLog: ErrorLog = {
     message: error.message,
@@ -43,7 +43,7 @@ export const logError = (
       // Keep only last 10 errors
       if (errors.length > 10) errors.shift();
       localStorage.setItem("error_logs", JSON.stringify(errors));
-    } catch (e) {
+    } catch {
       // Ignore localStorage errors
     }
 
@@ -60,7 +60,10 @@ export const logError = (
 /**
  * Log a warning (non-fatal issue)
  */
-export const logWarning = (message: string, context?: Record<string, any>) => {
+export const logWarning = (
+  message: string,
+  context?: Record<string, unknown>,
+) => {
   if (process.env.NODE_ENV === "development") {
     console.warn("Warning:", message, context);
   }

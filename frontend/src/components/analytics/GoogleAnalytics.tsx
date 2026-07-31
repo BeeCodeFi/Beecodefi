@@ -14,8 +14,10 @@ export default function GoogleAnalytics() {
   useEffect(() => {
     if (!GA_MEASUREMENT_ID || typeof window === "undefined") return;
 
-    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "");
-    
+    const url =
+      pathname +
+      (searchParams?.toString() ? `?${searchParams.toString()}` : "");
+
     // Send pageview to Google Analytics
     if (window.gtag) {
       window.gtag("config", GA_MEASUREMENT_ID, {
@@ -61,7 +63,7 @@ declare global {
     gtag: (
       command: string,
       targetId: string,
-      config?: Record<string, any>
+      config?: Record<string, unknown>,
     ) => void;
   }
 }

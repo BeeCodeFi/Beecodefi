@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useCallback, Suspense } from "react";
+import { use, useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -221,20 +221,24 @@ function TutorialPageContent({
 
   // Reset scroll progress when lesson changes
   useEffect(() => {
-    setScrollProgress(0);
-    window.scrollTo({ top: 0 });
+    queueMicrotask(() => {
+      setScrollProgress(0);
+      window.scrollTo({ top: 0 });
+    });
   }, [currentLessonIndex]);
 
   // ── Load + sync progress ─────────────────────────────────────────────────
   useEffect(() => {
     if (!tutorial) return;
 
-    const stored = localStorage.getItem(getUserStorageKey(user?.id, `tutorial-progress-${slug}`));
+    const stored = localStorage.getItem(
+      getUserStorageKey(user?.id, `tutorial-progress-${slug}`),
+    );
     let localIndices = new Set<number>();
     if (stored) {
       try {
         localIndices = new Set(JSON.parse(stored));
-        setCompletedLessons(localIndices);
+        queueMicrotask(() => setCompletedLessons(localIndices));
       } catch {
         /* ignore */
       }
@@ -246,16 +250,18 @@ function TutorialPageContent({
         (l) => l.slug === lessonParam,
       );
       if (paramIdx !== -1) {
-        setCurrentLessonIndex(paramIdx);
+        queueMicrotask(() => setCurrentLessonIndex(paramIdx));
         return;
       }
     }
 
-    const savedIndex = localStorage.getItem(getUserStorageKey(user?.id, `tutorial-lesson-${slug}`));
+    const savedIndex = localStorage.getItem(
+      getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
+    );
     if (savedIndex !== null) {
       const idx = parseInt(savedIndex, 10);
       if (!isNaN(idx) && idx >= 0 && idx < tutorial.lessons.length) {
-        setCurrentLessonIndex(idx);
+        queueMicrotask(() => setCurrentLessonIndex(idx));
       }
     }
 
@@ -293,7 +299,7 @@ function TutorialPageContent({
         }
       })
       .catch(() => {});
-  }, [slug, tutorial, user?.id]);
+  }, [lessonParam, slug, tutorial, user?.id]);
 
   // ── Keyboard shortcuts ─── moved below lesson/hasNext/hasPrev declarations
 
@@ -344,6 +350,83 @@ function TutorialPageContent({
     }
   };
 
+  const lesson = tutorial?.lessons[currentLessonIndex];
+  const hasPrev = currentLessonIndex > 0;
+  const hasNext = tutorial
+    ? currentLessonIndex < tutorial.lessons.length - 1
+    : false;
+
+  const goToLesson = (index: number) => {
+    setCurrentLessonIndex(index);
+    localStorage.setItem(
+      getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
+      String(index),
+    );
+    setSidebarOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Update URL so the lesson is shareable / bookmarkable
+    const lessonSlug = tutorial?.lessons[index]?.slug;
+    if (lessonSlug) {
+      router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
+        scroll: false,
+      });
+    }
+  };
+
+  const goNext = () => {
+    markCompleted(currentLessonIndex);
+    if (hasNext) {
+      goToLesson(currentLessonIndex + 1);
+    } else if (tutorial) {
+      setCourseComplete(true);
+      setShowCertificate(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      info("🎉 Course complete!", `You finished the ${tutorial.title} track`);
+    }
+  };
+
+  const goPrev = () => {
+    if (hasPrev) goToLesson(currentLessonIndex - 1);
+  };
+
+  // ── Keyboard shortcuts: J/K = next/prev, B = bookmark ────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "j" || e.key === "ArrowRight") {
+        if (hasNext) goNext();
+      }
+      if (e.key === "k" || e.key === "ArrowLeft") {
+        if (hasPrev) goPrev();
+      }
+      if (e.key === "b") {
+        if (tutorial && user && lesson) {
+          toggleBookmark({
+            tutorialSlug: slug,
+            lessonSlug: lesson.slug,
+            lessonTitle: lesson.title,
+            trackTitle: tutorial.title,
+          });
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [
+    currentLessonIndex,
+    goNext,
+    goPrev,
+    hasNext,
+    hasPrev,
+    lesson?.slug,
+    lesson?.title,
+    slug,
+    toggleBookmark,
+    tutorial,
+    user,
+  ]);
+
   // ── Not found ────────────────────────────────────────────────────────────
   if (!tutorial) {
     return (
@@ -358,68 +441,8 @@ function TutorialPageContent({
     );
   }
 
-  const lesson = tutorial.lessons[currentLessonIndex];
-  const hasPrev = currentLessonIndex > 0;
-  const hasNext = currentLessonIndex < tutorial.lessons.length - 1;
-
-  const goToLesson = (index: number) => {
-    setCurrentLessonIndex(index);
-    localStorage.setItem(getUserStorageKey(user?.id, `tutorial-lesson-${slug}`), String(index));
-    setSidebarOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    // Update URL so the lesson is shareable / bookmarkable
-    const lessonSlug = tutorial.lessons[index]?.slug;
-    if (lessonSlug) {
-      router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
-        scroll: false,
-      });
-    }
-  };
-
-  const goNext = () => {
-    markCompleted(currentLessonIndex);
-    if (hasNext) {
-      goToLesson(currentLessonIndex + 1);
-    } else {
-      setCourseComplete(true);
-      setShowCertificate(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      info("🎉 Course complete!", `You finished the ${tutorial.title} track`);
-    }
-  };
-
-  const goPrev = () => {
-    if (hasPrev) goToLesson(currentLessonIndex - 1);
-  };
-
-  // ── Keyboard shortcuts: J/K = next/prev, B = bookmark ────────────────
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-      if (e.key === "j" || e.key === "ArrowRight") {
-        if (hasNext) goNext();
-      }
-      if (e.key === "k" || e.key === "ArrowLeft") {
-        if (hasPrev) goPrev();
-      }
-      if (e.key === "b") {
-        if (tutorial && user)
-          toggleBookmark({
-            tutorialSlug: slug,
-            lessonSlug: lesson.slug,
-            lessonTitle: lesson.title,
-            trackTitle: tutorial.title,
-          });
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [currentLessonIndex]);
-
-  const quizKey = `${slug}/${lesson.slug}`;
-  const quizQuestions = lessonQuizzes[quizKey];
+  const quizKey = lesson ? `${slug}/${lesson.slug}` : `${slug}/undefined`;
+  const quizQuestions = lesson ? lessonQuizzes[quizKey] : undefined;
   const quizCategory = getQuizCategoryForTutorial(slug);
 
   return (
@@ -485,7 +508,7 @@ function TutorialPageContent({
 
       {/* ── Sticky lesson nav header (below main site nav) ── */}
       <LessonNavHeader
-        lessonTitle={lesson.title}
+        lessonTitle={lesson?.title ?? "Lesson"}
         lessonIndex={currentLessonIndex}
         totalLessons={tutorial.lessons.length}
         hasPrev={hasPrev}
@@ -544,7 +567,7 @@ function TutorialPageContent({
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex-1">
                 <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
-                  {lesson.title}
+                  {lesson?.title ?? "Lesson"}
                 </h1>
                 {/* Completion status badge */}
                 {completedLessons.has(currentLessonIndex) && (
@@ -574,7 +597,7 @@ function TutorialPageContent({
                 )}
               </div>
               {/* Bookmark — logged-in only */}
-              {user && (
+              {user && lesson && (
                 <button
                   onClick={() =>
                     toggleBookmark({
@@ -606,18 +629,18 @@ function TutorialPageContent({
 
             {/* Meta badges */}
             <LessonMeta
-              difficulty={lesson.difficulty}
-              estimatedMinutes={lesson.estimatedMinutes}
-              mdnReference={lesson.mdnReference}
+              difficulty={lesson?.difficulty ?? "beginner"}
+              estimatedMinutes={lesson?.estimatedMinutes ?? 0}
+              mdnReference={lesson?.mdnReference}
             />
 
             {/* ── Lesson body ── */}
             <div className="mt-6">
-              <LessonContent content={lesson.content} />
+              <LessonContent content={lesson?.content ?? ""} />
             </div>
 
             {/* ── Code examples ── */}
-            {lesson.codeExamples.length > 0 && (
+            {lesson?.codeExamples && lesson.codeExamples.length > 0 && (
               <div className="mt-8 space-y-2">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -638,12 +661,12 @@ function TutorialPageContent({
             )}
 
             {/* ── Key takeaways ── */}
-            {lesson.keyTakeaways && lesson.keyTakeaways.length > 0 && (
+            {lesson?.keyTakeaways && lesson.keyTakeaways.length > 0 && (
               <KeyTakeaways takeaways={lesson.keyTakeaways} />
             )}
 
             {/* ── Practice exercises ── */}
-            {lesson.interactiveExercises &&
+            {lesson?.interactiveExercises &&
               lesson.interactiveExercises.length > 0 && (
                 <div className="mt-10">
                   <div className="flex items-center gap-2.5 mb-5">
@@ -667,16 +690,19 @@ function TutorialPageContent({
               )}
 
             {/* ── Inline lesson quiz ── */}
-            {quizQuestions && quizQuestions.length > 0 && (
+            {quizQuestions && quizQuestions.length > 0 && lesson && (
               <LessonQuiz
                 key={quizKey}
                 questions={quizQuestions}
                 lessonTitle={lesson.title}
+                storageKey={quizKey}
               />
             )}
 
             {/* ── Lesson Feedback ── */}
-            <LessonFeedback tutorialSlug={slug} lessonSlug={lesson.slug} />
+            {lesson && (
+              <LessonFeedback tutorialSlug={slug} lessonSlug={lesson.slug} />
+            )}
 
             {/* ── End-of-course quiz CTA ── */}
             {quizCategory && !hasNext && <QuizCTA category={quizCategory} />}
@@ -799,7 +825,7 @@ function TutorialPageContent({
 
         {/* RIGHT: table of contents — sticky column that stays fixed while content scrolls */}
         <div className="hidden xl:flex xl:flex-col w-56 shrink-0 sticky top-[108px] h-[calc(100vh-108px)] px-4 py-8 overflow-y-auto scrollbar-thin">
-          <TableOfContents content={lesson.content} />
+          <TableOfContents content={lesson?.content ?? ""} />
         </div>
       </div>
     </div>

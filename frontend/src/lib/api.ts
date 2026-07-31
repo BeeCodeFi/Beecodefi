@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
 
@@ -28,14 +28,25 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Handle 401 Unauthorized — attempt token refresh
-    if (error.response?.status === 401 && typeof window !== "undefined" && originalRequest) {
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      originalRequest
+    ) {
       const refreshToken = localStorage.getItem("refreshToken");
-      if (refreshToken && !(originalRequest as any)._retry) {
-        (originalRequest as any)._retry = true;
+      if (
+        refreshToken &&
+        !(originalRequest as AxiosRequestConfig & { _retry?: boolean })._retry
+      ) {
+        (originalRequest as AxiosRequestConfig & { _retry?: boolean })._retry =
+          true;
         try {
-          const { data } = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
-            refreshToken,
-          });
+          const { data } = await axios.post(
+            `${API_BASE_URL}/api/auth/refresh`,
+            {
+              refreshToken,
+            },
+          );
           localStorage.setItem("token", data.token);
           localStorage.setItem("refreshToken", data.refreshToken);
           originalRequest.headers.Authorization = `Bearer ${data.token}`;
@@ -50,12 +61,15 @@ api.interceptors.response.use(
     }
 
     // Enhance error object with user-friendly messages
-    const enhancedError: any = error;
+    const enhancedError = error as AxiosError & {
+      userMessage?: string;
+      isRetryable?: boolean;
+    };
     enhancedError.userMessage = getUserFriendlyMessage(error);
     enhancedError.isRetryable = isRetryableError(error);
 
     return Promise.reject(enhancedError);
-  }
+  },
 );
 
 function getUserFriendlyMessage(error: AxiosError): string {
@@ -81,7 +95,9 @@ function getUserFriendlyMessage(error: AxiosError): string {
 
   // Validation errors
   if (error.response?.status === 400) {
-    const data: any = error.response.data;
+    const data = error.response?.data as
+      | { message?: string; errors?: Record<string, string[] | string> }
+      | undefined;
     if (data?.message) return data.message;
     if (data?.errors) {
       const firstError = Object.values(data.errors)[0];
@@ -101,7 +117,7 @@ function getUserFriendlyMessage(error: AxiosError): string {
   }
 
   // Default fallback
-  const data: any = error.response?.data;
+  const data = error.response?.data as { message?: string } | undefined;
   return data?.message || "An unexpected error occurred. Please try again.";
 }
 
