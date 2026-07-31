@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
+import { useAuth } from "@/context/AuthContext";
+import { getUserStorageKey } from "@/lib/userStorage";
 
 const iconMap: Record<string, React.ElementType> = {
   FileCode2,
@@ -39,10 +41,12 @@ function ContinueLearningCard() {
     title: string;
     percent: number;
   } | null>(null);
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
+    if (isLoading) return;
     // Get last visited lesson from localStorage
-    const lastLesson = localStorage.getItem("lastVisitedLesson");
+    const lastLesson = localStorage.getItem(getUserStorageKey(user?.id, "lastVisitedLesson"));
     if (lastLesson) {
       try {
         const data = JSON.parse(lastLesson);
@@ -65,7 +69,7 @@ function ContinueLearningCard() {
         // Invalid data, ignore
       }
     }
-  }, []);
+  }, [isLoading, user?.id]);
 
   if (!progress) return null;
 

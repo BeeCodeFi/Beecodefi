@@ -13,6 +13,8 @@ import { ArrowRight, BookOpen, Brain, Sparkles, Play, Zap } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { courses } from "@/data/courses";
 import { tutorials } from "@/data/tutorials";
+import { useAuth } from "@/context/AuthContext";
+import { getUserStorageKey } from "@/lib/userStorage";
 
 const totalVideos = courses.reduce((s, c) => s + c.videos.length, 0);
 
@@ -25,14 +27,16 @@ function useContinueLearning() {
     lessonTitle: string;
     progress: number;
   } | null>(null);
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
+    if (isLoading) return;
     // Find the most recently viewed tutorial that isn't fully complete
     let best: typeof resume = null;
     for (const track of tutorials) {
-      const savedIdx = localStorage.getItem(`tutorial-lesson-${track.slug}`);
+      const savedIdx = localStorage.getItem(getUserStorageKey(user?.id, `tutorial-lesson-${track.slug}`));
       const progressRaw = localStorage.getItem(
-        `tutorial-progress-${track.slug}`,
+        getUserStorageKey(user?.id, `tutorial-progress-${track.slug}`),
       );
       if (savedIdx === null) continue;
       const idx = parseInt(savedIdx, 10);
@@ -56,7 +60,7 @@ function useContinueLearning() {
       }
     }
     setResume(best);
-  }, []);
+  }, [isLoading, user?.id]);
 
   return resume;
 }

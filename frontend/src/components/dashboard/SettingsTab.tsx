@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { User, Camera, Mail, Lock, RotateCcw, Trash2, Save, Check, X, Eye, EyeOff, AlertTriangle, MousePointer2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
+import { getUserStorageKey } from "@/lib/userStorage";
 import { useToast } from "@/context/ToastContext";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
@@ -150,7 +151,7 @@ export default function SettingsTab({
         const keysToRemove: string[] = [];
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
-          if (key?.startsWith("tutorial-progress-")) {
+          if (key?.startsWith(getUserStorageKey(user?.id, "tutorial-progress-"))) {
             keysToRemove.push(key);
           }
         }

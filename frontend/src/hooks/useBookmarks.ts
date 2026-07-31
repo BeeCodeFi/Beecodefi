@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/context/ToastContext";
+import { useAuth } from "@/context/AuthContext";
+import { getUserStorageKey } from "@/lib/userStorage";
 
 interface Bookmark {
   tutorialSlug: string;
@@ -11,23 +13,24 @@ interface Bookmark {
   savedAt: string;
 }
 
-const STORAGE_KEY = "beecodefi_bookmarks";
-
-function loadBookmarks(): Bookmark[] {
+function loadBookmarks(userId: number | null | undefined): Bookmark[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"); }
+  try { return JSON.parse(localStorage.getItem(getUserStorageKey(userId, "bookmarks")) ?? "[]"); }
   catch { return []; }
 }
 
-function saveBookmarks(bm: Bookmark[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(bm));
+function saveBookmarks(userId: number | null | undefined, bm: Bookmark[]) {
+  localStorage.setItem(getUserStorageKey(userId, "bookmarks"), JSON.stringify(bm));
 }
 
 export function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const { success, info } = useToast();
+  const { user, isLoading } = useAuth();
 
-  useEffect(() => { setBookmarks(loadBookmarks()); }, []);
+  useEffect(() => {
+    if (!isLoading) setBookmarks(loadBookmarks(user?.id));
+  }, [isLoading, user?.id]);
 
   const isBookmarked = useCallback(
     (tutorialSlug: string, lessonSlug: string) =>
@@ -44,7 +47,7 @@ export function useBookmarks() {
         const next = exists
           ? prev.filter((b) => !(b.tutorialSlug === bm.tutorialSlug && b.lessonSlug === bm.lessonSlug))
           : [...prev, { ...bm, savedAt: new Date().toISOString() }];
-        saveBookmarks(next);
+        saveBookmarks(user?.id, next);
 
         // Toast feedback
         if (exists) {
@@ -56,14 +59,14 @@ export function useBookmarks() {
         return next;
       });
     },
-    [success, info]
+    [info, success, user?.id]
   );
 
   const clearBookmarks = useCallback(() => {
     setBookmarks([]);
-    saveBookmarks([]);
+    saveBookmarks(user?.id, []);
     info("All bookmarks cleared");
-  }, [info]);
+  }, [info, user?.id]);
 
   return { bookmarks, isBookmarked, toggleBookmark, clearBookmarks };
 }

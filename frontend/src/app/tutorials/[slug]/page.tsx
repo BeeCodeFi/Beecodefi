@@ -4,7 +4,15 @@ import { use, useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, X, Zap, BookOpen, Bookmark, BookmarkCheck } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Zap,
+  BookOpen,
+  Bookmark,
+  BookmarkCheck,
+} from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -22,6 +30,7 @@ import Certificate from "@/components/tutorial/Certificate";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
 import { useBookmarks } from "@/hooks/useBookmarks";
+import { getUserStorageKey } from "@/lib/userStorage";
 import { useStreak } from "@/hooks/useStreak";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
@@ -43,15 +52,15 @@ function renderInlineMarkdown(text: string): string {
         `<code class="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 rounded text-[0.82em] font-mono border border-indigo-100 dark:border-indigo-800">${code
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")}</code>`
+          .replace(/>/g, "&gt;")}</code>`,
     )
     .replace(
       /\*\*([^*]+)\*\*/g,
-      '<strong class="font-semibold text-gray-900 dark:text-white">$1</strong>'
+      '<strong class="font-semibold text-gray-900 dark:text-white">$1</strong>',
     )
     .replace(
       /\*([^*]+)\*/g,
-      '<em class="italic text-gray-700 dark:text-gray-300">$1</em>'
+      '<em class="italic text-gray-700 dark:text-gray-300">$1</em>',
     );
 }
 
@@ -108,7 +117,10 @@ function LessonContent({ content }: { content: string }) {
         if (/^\d+\.\s/.test(block)) {
           const items = block.split("\n").filter((l) => l.trim());
           return (
-            <ol key={i} className="my-4 space-y-2.5 pl-1 list-none counter-reset-none">
+            <ol
+              key={i}
+              className="my-4 space-y-2.5 pl-1 list-none counter-reset-none"
+            >
               {items.map((item, j) => (
                 <li key={j} className="flex items-start gap-3">
                   <span className="mt-0.5 w-6 h-6 rounded-md bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0">
@@ -117,7 +129,9 @@ function LessonContent({ content }: { content: string }) {
                   <span
                     className="text-base text-gray-600 dark:text-gray-300 leading-relaxed"
                     dangerouslySetInnerHTML={{
-                      __html: renderInlineMarkdown(item.replace(/^\d+\.\s/, "")),
+                      __html: renderInlineMarkdown(
+                        item.replace(/^\d+\.\s/, ""),
+                      ),
                     }}
                   />
                 </li>
@@ -179,7 +193,7 @@ function TutorialPageContent({
   const router = useRouter();
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [courseComplete, setCourseComplete] = useState(false);
@@ -188,7 +202,7 @@ function TutorialPageContent({
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { user } = useAuth();
   const { success, info } = useToast();
-  useStreak(!!user); // ping streak only when logged in
+  useStreak(); // ping streak only for the current account
 
   const tutorial = tutorials.find((t) => t.slug === slug);
 
@@ -196,7 +210,8 @@ function TutorialPageContent({
   useEffect(() => {
     const update = () => {
       const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
     };
     window.addEventListener("scroll", update, { passive: true });
@@ -214,25 +229,29 @@ function TutorialPageContent({
   useEffect(() => {
     if (!tutorial) return;
 
-    const stored = localStorage.getItem(`tutorial-progress-${slug}`);
+    const stored = localStorage.getItem(getUserStorageKey(user?.id, `tutorial-progress-${slug}`));
     let localIndices = new Set<number>();
     if (stored) {
       try {
         localIndices = new Set(JSON.parse(stored));
         setCompletedLessons(localIndices);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     // Prefer ?lesson= URL param (from search or bookmark deep-link)
     if (lessonParam) {
-      const paramIdx = tutorial.lessons.findIndex((l) => l.slug === lessonParam);
+      const paramIdx = tutorial.lessons.findIndex(
+        (l) => l.slug === lessonParam,
+      );
       if (paramIdx !== -1) {
         setCurrentLessonIndex(paramIdx);
         return;
       }
     }
 
-    const savedIndex = localStorage.getItem(`tutorial-lesson-${slug}`);
+    const savedIndex = localStorage.getItem(getUserStorageKey(user?.id, `tutorial-lesson-${slug}`));
     if (savedIndex !== null) {
       const idx = parseInt(savedIndex, 10);
       if (!isNaN(idx) && idx >= 0 && idx < tutorial.lessons.length) {
@@ -268,22 +287,23 @@ function TutorialPageContent({
         if (merged.size !== localIndices.size) {
           setCompletedLessons(merged);
           localStorage.setItem(
-            `tutorial-progress-${slug}`,
-            JSON.stringify([...merged])
+            getUserStorageKey(user?.id, `tutorial-progress-${slug}`),
+            JSON.stringify([...merged]),
           );
         }
       })
       .catch(() => {});
-  }, [slug, tutorial]);
+  }, [slug, tutorial, user?.id]);
 
   // ── Keyboard shortcuts ─── moved below lesson/hasNext/hasPrev declarations
 
-  const markCompleted = (index: number) => {    setCompletedLessons((prev) => {
+  const markCompleted = (index: number) => {
+    setCompletedLessons((prev) => {
       const next = new Set(prev);
       next.add(index);
       localStorage.setItem(
-        `tutorial-progress-${slug}`,
-        JSON.stringify([...next])
+        getUserStorageKey(user?.id, `tutorial-progress-${slug}`),
+        JSON.stringify([...next]),
       );
       return next;
     });
@@ -305,8 +325,8 @@ function TutorialPageContent({
       const next = new Set(prev);
       next.delete(index);
       localStorage.setItem(
-        `tutorial-progress-${slug}`,
-        JSON.stringify([...next])
+        getUserStorageKey(user?.id, `tutorial-progress-${slug}`),
+        JSON.stringify([...next]),
       );
       return next;
     });
@@ -314,7 +334,9 @@ function TutorialPageContent({
       const lessonSlug = tutorial.lessons[index]?.slug;
       if (lessonSlug) {
         api
-          .delete(`/progress/unmark?tutorialSlug=${slug}&lessonSlug=${lessonSlug}`)
+          .delete(
+            `/progress/unmark?tutorialSlug=${slug}&lessonSlug=${lessonSlug}`,
+          )
           .catch(() => {});
       }
       const lessonTitle = tutorial.lessons[index]?.title;
@@ -342,13 +364,15 @@ function TutorialPageContent({
 
   const goToLesson = (index: number) => {
     setCurrentLessonIndex(index);
-    localStorage.setItem(`tutorial-lesson-${slug}`, String(index));
+    localStorage.setItem(getUserStorageKey(user?.id, `tutorial-lesson-${slug}`), String(index));
     setSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     // Update URL so the lesson is shareable / bookmarkable
     const lessonSlug = tutorial.lessons[index]?.slug;
     if (lessonSlug) {
-      router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, { scroll: false });
+      router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
+        scroll: false,
+      });
     }
   };
 
@@ -374,10 +398,20 @@ function TutorialPageContent({
     const handler = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
-      if (e.key === "j" || e.key === "ArrowRight") { if (hasNext) goNext(); }
-      if (e.key === "k" || e.key === "ArrowLeft")  { if (hasPrev) goPrev(); }
+      if (e.key === "j" || e.key === "ArrowRight") {
+        if (hasNext) goNext();
+      }
+      if (e.key === "k" || e.key === "ArrowLeft") {
+        if (hasPrev) goPrev();
+      }
       if (e.key === "b") {
-        if (tutorial && user) toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title });
+        if (tutorial && user)
+          toggleBookmark({
+            tutorialSlug: slug,
+            lessonSlug: lesson.slug,
+            lessonTitle: lesson.title,
+            trackTitle: tutorial.title,
+          });
       }
     };
     window.addEventListener("keydown", handler);
@@ -478,7 +512,6 @@ function TutorialPageContent({
 
       {/* ── Three-column layout: sidebar | content | toc ── */}
       <div className="max-w-[1440px] mx-auto flex">
-
         {/* LEFT: fixed sidebar */}
         <TutorialSidebar
           tutorial={tutorial}
@@ -517,8 +550,16 @@ function TutorialPageContent({
                 {completedLessons.has(currentLessonIndex) && (
                   <div className="flex items-center gap-2 mt-3">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800/60">
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       Completed
                     </span>
@@ -534,19 +575,32 @@ function TutorialPageContent({
               </div>
               {/* Bookmark — logged-in only */}
               {user && (
-              <button
-                onClick={() => toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title })}
-                title={isBookmarked(slug, lesson.slug) ? "Remove bookmark (B)" : "Bookmark this lesson (B)"}
-                className={`shrink-0 mt-1 p-2 rounded-xl border transition-all ${
-                  isBookmarked(slug, lesson.slug)
-                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400"
-                    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-400 hover:text-indigo-500 hover:border-indigo-300"
-                }`}
-              >
-                {isBookmarked(slug, lesson.slug)
-                  ? <BookmarkCheck className="w-5 h-5" />
-                  : <Bookmark className="w-5 h-5" />}
-              </button>
+                <button
+                  onClick={() =>
+                    toggleBookmark({
+                      tutorialSlug: slug,
+                      lessonSlug: lesson.slug,
+                      lessonTitle: lesson.title,
+                      trackTitle: tutorial.title,
+                    })
+                  }
+                  title={
+                    isBookmarked(slug, lesson.slug)
+                      ? "Remove bookmark (B)"
+                      : "Bookmark this lesson (B)"
+                  }
+                  className={`shrink-0 mt-1 p-2 rounded-xl border transition-all ${
+                    isBookmarked(slug, lesson.slug)
+                      ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400"
+                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-400 hover:text-indigo-500 hover:border-indigo-300"
+                  }`}
+                >
+                  {isBookmarked(slug, lesson.slug) ? (
+                    <BookmarkCheck className="w-5 h-5" />
+                  ) : (
+                    <Bookmark className="w-5 h-5" />
+                  )}
+                </button>
               )}
             </div>
 
@@ -625,15 +679,15 @@ function TutorialPageContent({
             <LessonFeedback tutorialSlug={slug} lessonSlug={lesson.slug} />
 
             {/* ── End-of-course quiz CTA ── */}
-            {quizCategory && !hasNext && (
-              <QuizCTA category={quizCategory} />
-            )}
+            {quizCategory && !hasNext && <QuizCTA category={quizCategory} />}
 
             {/* ── Prerequisites (previous lesson) ── */}
             {hasPrev && (
               <div className="mt-10 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                 <div className="px-5 py-3 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Prerequisites</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                    Prerequisites
+                  </span>
                 </div>
                 <button
                   onClick={() => goToLesson(currentLessonIndex - 1)}
@@ -646,9 +700,17 @@ function TutorialPageContent({
                     <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors truncate">
                       {tutorial.lessons[currentLessonIndex - 1].title}
                     </p>
-                    {tutorial.lessons[currentLessonIndex - 1].estimatedMinutes && (
+                    {tutorial.lessons[currentLessonIndex - 1]
+                      .estimatedMinutes && (
                       <p className="text-xs text-gray-400 mt-0.5">
-                        ⏱ {tutorial.lessons[currentLessonIndex - 1].estimatedMinutes} min · {tutorial.lessons[currentLessonIndex - 1].difficulty ?? "beginner"}
+                        ⏱{" "}
+                        {
+                          tutorial.lessons[currentLessonIndex - 1]
+                            .estimatedMinutes
+                        }{" "}
+                        min ·{" "}
+                        {tutorial.lessons[currentLessonIndex - 1].difficulty ??
+                          "beginner"}
                       </p>
                     )}
                   </div>
@@ -661,7 +723,9 @@ function TutorialPageContent({
             {hasNext && (
               <div className="mt-10 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                 <div className="px-5 py-3 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Up Next</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                    Up Next
+                  </span>
                 </div>
                 <button
                   onClick={() => goToLesson(currentLessonIndex + 1)}
@@ -674,9 +738,17 @@ function TutorialPageContent({
                     <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                       {tutorial.lessons[currentLessonIndex + 1].title}
                     </p>
-                    {tutorial.lessons[currentLessonIndex + 1].estimatedMinutes && (
+                    {tutorial.lessons[currentLessonIndex + 1]
+                      .estimatedMinutes && (
                       <p className="text-xs text-gray-400 mt-0.5">
-                        ⏱ {tutorial.lessons[currentLessonIndex + 1].estimatedMinutes} min · {tutorial.lessons[currentLessonIndex + 1].difficulty ?? "beginner"}
+                        ⏱{" "}
+                        {
+                          tutorial.lessons[currentLessonIndex + 1]
+                            .estimatedMinutes
+                        }{" "}
+                        min ·{" "}
+                        {tutorial.lessons[currentLessonIndex + 1].difficulty ??
+                          "beginner"}
                       </p>
                     )}
                   </div>
@@ -694,7 +766,7 @@ function TutorialPageContent({
                   "flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all",
                   hasPrev
                     ? "border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900"
-                    : "text-gray-300 dark:text-gray-700 cursor-not-allowed"
+                    : "text-gray-300 dark:text-gray-700 cursor-not-allowed",
                 )}
               >
                 <ChevronLeft className="w-4 h-4 shrink-0" />
@@ -711,7 +783,7 @@ function TutorialPageContent({
                   "flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all shadow-md",
                   hasNext
                     ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-indigo-500/25"
-                    : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/25"
+                    : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/25",
                 )}
               >
                 <span className="truncate max-w-[180px]">

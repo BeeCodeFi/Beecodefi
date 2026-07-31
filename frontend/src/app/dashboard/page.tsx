@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Bookmark, Trophy, Settings, Loader2, ShieldCheck } from "lucide-react";
+import {
+  LayoutDashboard,
+  Bookmark,
+  Trophy,
+  Settings,
+  Loader2,
+  ShieldCheck,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useStreak } from "@/hooks/useStreak";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -12,26 +19,45 @@ import BookmarksTab from "@/components/dashboard/BookmarksTab";
 import QuizHistoryTab from "@/components/dashboard/QuizHistoryTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import { useRouter } from "next/navigation";
+import { getUserStorageKey } from "@/lib/userStorage";
 
 export default function UnifiedDashboardPage() {
   const { user, isLoading } = useAuth();
-  const streak = useStreak(!!user);
+  const streak = useStreak();
   const { bookmarks } = useBookmarks();
   const router = useRouter();
-  const isAdmin = user?.email.toLowerCase() === "kumaryursh@gmail.com" || user?.email.toLowerCase() === "kumaryursh@gmal.com";
+  const isAdmin =
+    user?.email.toLowerCase() === "kumaryursh@gmail.com" ||
+    user?.email.toLowerCase() === "kumaryursh@gmal.com";
 
-  const [activeTab, setActiveTab] = useState<"overview" | "bookmarks" | "quiz" | "settings">("overview");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "bookmarks" | "quiz" | "settings"
+  >("overview");
 
   const [tutorialProgress, setTutorialProgress] = useState<
-    { slug: string; title: string; completed: number; total: number; percent: number }[]
+    {
+      slug: string;
+      title: string;
+      completed: number;
+      total: number;
+      percent: number;
+    }[]
   >([]);
   const [recentLessons, setRecentLessons] = useState<
-    { tutorialSlug: string; lessonSlug: string; tutorialTitle: string; lessonTitle: string; timestamp: number }[]
+    {
+      tutorialSlug: string;
+      lessonSlug: string;
+      tutorialTitle: string;
+      lessonTitle: string;
+      timestamp: number;
+    }[]
   >([]);
 
   const loadProgress = () => {
     const progress = tutorials.map((tutorial) => {
-      const progressRaw = localStorage.getItem(`tutorial-progress-${tutorial.slug}`);
+      const progressRaw = localStorage.getItem(
+        getUserStorageKey(user?.id, `tutorial-progress-${tutorial.slug}`),
+      );
       const completed: number[] = progressRaw ? JSON.parse(progressRaw) : [];
       const total = tutorial.lessons.length;
       const percent = Math.round((completed.length / total) * 100);
@@ -45,12 +71,14 @@ export default function UnifiedDashboardPage() {
     });
     setTutorialProgress(progress);
 
-    const lastLesson = localStorage.getItem("lastVisitedLesson");
+    const lastLesson = localStorage.getItem(getUserStorageKey(user?.id, "lastVisitedLesson"));
     if (lastLesson) {
       try {
         const data = JSON.parse(lastLesson);
         const tutorial = tutorials.find((t) => t.slug === data.tutorialSlug);
-        const lesson = tutorial?.lessons.find((l) => l.slug === data.lessonSlug);
+        const lesson = tutorial?.lessons.find(
+          (l) => l.slug === data.lessonSlug,
+        );
         if (tutorial && lesson) {
           setRecentLessons([
             {
@@ -94,15 +122,19 @@ export default function UnifiedDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         {/* Header Section */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-10"
+        >
           <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             My Learning
           </h1>
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <p className="text-gray-600 dark:text-gray-400">
-              Welcome back, {user.name}! Track your progress and manage your account.
+              Welcome back, {user.name}! Track your progress and manage your
+              account.
             </p>
             {isAdmin && (
               <button
@@ -125,7 +157,9 @@ export default function UnifiedDashboardPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as typeof activeTab)}
                   className={`flex items-center gap-2 pb-4 text-sm font-medium transition-colors relative whitespace-nowrap ${
-                    isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    isActive
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -161,10 +195,11 @@ export default function UnifiedDashboardPage() {
             )}
             {activeTab === "bookmarks" && <BookmarksTab />}
             {activeTab === "quiz" && <QuizHistoryTab />}
-            {activeTab === "settings" && <SettingsTab reloadStats={loadProgress} />}
+            {activeTab === "settings" && (
+              <SettingsTab reloadStats={loadProgress} />
+            )}
           </motion.div>
         </AnimatePresence>
-
       </div>
     </div>
   );
