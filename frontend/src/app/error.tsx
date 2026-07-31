@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
-import { AlertTriangle, RotateCcw } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
-export default function GlobalError({
+export default function Error({
   error,
   reset,
 }: {
@@ -12,30 +11,34 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("[GlobalError]", error);
+    console.error(error);
   }, [error]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 px-4">
       <div className="text-center max-w-md">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
-          <AlertTriangle className="w-8 h-8 text-red-500 dark:text-red-400" />
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-950/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Something went wrong</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed">
-          An unexpected error occurred. Try refreshing the page or go back to home.
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          Something went wrong!
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          {error.message || "An unexpected error occurred. Please try again."}
         </p>
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex gap-3 justify-center">
           <button
-            onClick={reset}
-            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors"
+            onClick={() => reset()}
+            className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors"
           >
-            <RotateCcw className="w-4 h-4" /> Try again
+            Try Again
           </button>
-          <Link href="/"
-            className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl transition-colors">
-            Go home
-          </Link>
+          <a
+            href="/"
+            className="px-6 py-3 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            Go Home
+          </a>
         </div>
       </div>
     </div>
