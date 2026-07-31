@@ -622,7 +622,7 @@ function TutorialPageContent({
             )}
 
             {/* ── Lesson Feedback ── */}
-            <LessonFeedback lessonSlug={lesson.slug} />
+            <LessonFeedback tutorialSlug={slug} lessonSlug={lesson.slug} />
 
             {/* ── End-of-course quiz CTA ── */}
             {quizCategory && !hasNext && (

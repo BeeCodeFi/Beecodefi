@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<TutorialProgress> TutorialProgress => Set<TutorialProgress>();
     public DbSet<Badge> Badges => Set<Badge>();
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
+    public DbSet<LessonFeedback> LessonFeedback => Set<LessonFeedback>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,6 +98,17 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(ub => new { ub.UserId, ub.BadgeId }).IsUnique();
+        });
+
+        modelBuilder.Entity<LessonFeedback>(entity =>
+        {
+            entity.Property(feedback => feedback.TutorialSlug).HasMaxLength(100);
+            entity.Property(feedback => feedback.LessonSlug).HasMaxLength(150);
+            entity.HasIndex(feedback => new { feedback.TutorialSlug, feedback.LessonSlug });
+            entity.HasOne(feedback => feedback.User)
+                .WithMany()
+                .HasForeignKey(feedback => feedback.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

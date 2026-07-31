@@ -3,15 +3,23 @@
 import { useState } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
+import api from "@/lib/api";
 
-export default function LessonFeedback({ lessonSlug }: { lessonSlug: string }) {
+export default function LessonFeedback({ tutorialSlug, lessonSlug }: { tutorialSlug: string; lessonSlug: string }) {
   const [feedbackState, setFeedbackState] = useState<"idle" | "yes" | "no">("idle");
   const { success } = useToast();
 
-  const handleFeedback = (type: "yes" | "no") => {
+  const handleFeedback = async (type: "yes" | "no") => {
     setFeedbackState(type);
-    // In a real app, you would send this to the backend
-    // api.post("/feedback", { lessonSlug, type });
+    try {
+      await api.post("/lesson-feedback", {
+        tutorialSlug,
+        lessonSlug,
+        isHelpful: type === "yes",
+      });
+    } catch {
+      // Keep the interaction responsive if analytics is temporarily unavailable.
+    }
     success("Thanks for your feedback!", "This helps us improve BeeCodeFi.");
   };
 

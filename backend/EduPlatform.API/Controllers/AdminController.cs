@@ -89,6 +89,19 @@ public class AdminController : ControllerBase
             })
             .ToListAsync(cancellationToken);
 
+        var lessonFeedback = await _db.LessonFeedback
+            .AsNoTracking()
+            .GroupBy(feedback => new { feedback.TutorialSlug, feedback.LessonSlug })
+            .Select(group => new LessonFeedbackInsightDto
+            {
+                TutorialSlug = group.Key.TutorialSlug,
+                LessonSlug = group.Key.LessonSlug,
+                Helpful = group.Count(feedback => feedback.IsHelpful),
+                NotHelpful = group.Count(feedback => !feedback.IsHelpful),
+            })
+            .OrderByDescending(insight => insight.Helpful + insight.NotHelpful)
+            .ToListAsync(cancellationToken);
+
         return Ok(new AdminAnalyticsDto
         {
             TotalUsers = users.Count,
@@ -103,6 +116,7 @@ public class AdminController : ControllerBase
             Activity = activity,
             Users = users,
             Feedback = feedback,
+            LessonFeedback = lessonFeedback,
         });
     }
 }
@@ -118,6 +132,7 @@ public sealed class AdminAnalyticsDto
     public List<ActivityPointDto> Activity { get; set; } = [];
     public List<AdminUserDto> Users { get; set; } = [];
     public List<AdminFeedbackDto> Feedback { get; set; } = [];
+    public List<LessonFeedbackInsightDto> LessonFeedback { get; set; } = [];
 }
 
 public sealed class ActivityPointDto
@@ -150,4 +165,12 @@ public sealed class AdminFeedbackDto
     public string Message { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public bool IsRead { get; set; }
+}
+
+public sealed class LessonFeedbackInsightDto
+{
+    public string TutorialSlug { get; set; } = string.Empty;
+    public string LessonSlug { get; set; } = string.Empty;
+    public int Helpful { get; set; }
+    public int NotHelpful { get; set; }
 }
