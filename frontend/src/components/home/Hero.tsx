@@ -237,11 +237,24 @@ const snippets = [
   },
 ];
 
-const beeFlight = {
-  left: ["4%", "38%", "72%", "72%", "78%", "42%", "2%", "2%", "4%"],
-  top: ["18%", "10%", "12%", "12%", "55%", "72%", "68%", "68%", "18%"],
-  rotate: [-8, 8, -5, -2, 7, -8, 5, 2, -8],
-};
+function closestSnippetIndex(fromIndex: number) {
+  const from = snippets[fromIndex];
+  let closestIndex = fromIndex === 0 ? 1 : 0;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  snippets.forEach((snippet, index) => {
+    if (index === fromIndex) return;
+    const horizontalDistance = parseFloat(snippet.left) - parseFloat(from.left);
+    const verticalDistance = parseFloat(snippet.top) - parseFloat(from.top);
+    const distance = Math.hypot(horizontalDistance, verticalDistance);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+
+  return closestIndex;
+}
 
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -251,6 +264,26 @@ export default function Hero() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const resumeLesson = useContinueLearning();
+  const [activeSnippet, setActiveSnippet] = useState<number | null>(0);
+  const [beeTarget, setBeeTarget] = useState(0);
+
+  useEffect(() => {
+    if (activeSnippet === null) {
+      const arrivalTimer = setTimeout(() => {
+        setActiveSnippet(beeTarget);
+      }, 1500);
+
+      return () => clearTimeout(arrivalTimer);
+    }
+
+    const nextSnippet = closestSnippetIndex(activeSnippet);
+    const fadeOutTimer = setTimeout(() => {
+      setActiveSnippet(null);
+      setBeeTarget(nextSnippet);
+    }, 3600);
+
+    return () => clearTimeout(fadeOutTimer);
+  }, [activeSnippet, beeTarget]);
 
   return (
     <section
@@ -326,12 +359,14 @@ export default function Hero() {
             className="absolute"
             style={{ left: s.left, top: s.top }}
             initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: [0, 0.85, 0.85, 0], y: [16, 0, 0, -16] }}
+            animate={
+              activeSnippet === i
+                ? { opacity: 0.85, y: 0 }
+                : { opacity: 0, y: 16 }
+            }
             transition={{
-              delay: i * 1.2 + 1.5,
-              duration: 9,
-              repeat: Infinity,
-              repeatDelay: 3,
+              duration: activeSnippet === i ? 0.7 : 0.9,
+              ease: "easeInOut",
             }}
           >
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-gray-200/60 dark:border-slate-700/50 rounded-lg px-3 py-1.5 font-mono text-xs shadow-sm">
@@ -344,11 +379,13 @@ export default function Hero() {
       {/* ── Bee ────────────────────────────────────────────────── */}
       <motion.div
         className="absolute text-5xl hidden xl:block select-none pointer-events-none"
-        animate={beeFlight}
+        animate={{
+          left: snippets[beeTarget].left,
+          top: snippets[beeTarget].top,
+          rotate: beeTarget % 2 === 0 ? -6 : 6,
+        }}
         transition={{
-          duration: 18,
-          times: [0, 0.16, 0.29, 0.36, 0.5, 0.66, 0.79, 0.86, 1],
-          repeat: Infinity,
+          duration: activeSnippet === null ? 1.5 : 0.4,
           ease: "easeInOut",
         }}
       >
