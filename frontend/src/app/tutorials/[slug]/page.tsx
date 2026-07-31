@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Zap, BookOpen, Bookmark, BookmarkCheck } from "lucide-react";
@@ -175,6 +175,7 @@ function TutorialPageContent({
   const { slug } = use(params);
   const searchParams = useSearchParams();
   const lessonParam = searchParams.get("lesson");
+  const router = useRouter();
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(
     new Set()
@@ -298,6 +299,11 @@ function TutorialPageContent({
     localStorage.setItem(`tutorial-lesson-${slug}`, String(index));
     setSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    // Update URL so the lesson is shareable / bookmarkable
+    const lessonSlug = tutorial.lessons[index]?.slug;
+    if (lessonSlug) {
+      router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, { scroll: false });
+    }
   };
 
   const goNext = () => {

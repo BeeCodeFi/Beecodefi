@@ -45,10 +45,17 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>
+            {/* Skip to content — visible on focus for keyboard users */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-xl focus:font-semibold focus:text-sm focus:shadow-lg"
+            >
+              Skip to content
+            </a>
             {/* Custom cursor — hidden automatically on touch */}
             <CustomCursor />
             <Navbar />
-            <main className="flex-1 pt-16">
+            <main className="flex-1 pt-16" id="main-content">
               <PageTransition>
                 {children}
               </PageTransition>
