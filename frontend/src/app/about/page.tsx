@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   User, Briefcase, GraduationCap, Code2, Mail, MapPin, Phone,
   ExternalLink, Calendar, Cpu, Database, Cloud,
-  TestTube, Sparkles, ChevronDown
+  TestTube, Sparkles
 } from "lucide-react";
 
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -32,86 +31,56 @@ const experience = [
   },
 ];
 
-const landingPages = [
+const templates = [
   {
-    title: "Parkash Fabrics",
-    subtitle: "Textile & Fabric Store",
+    title: "Forge Industries",
+    subtitle: "Advanced Manufacturing Website",
     tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
-    description: "Parkash Fabrics offers a wide range of premium fabrics and textile solutions for fashion, apparel, and home furnishing needs.",
+    description: "A precision manufacturing template for CNC machining, robotic automation, quality assurance, facility showcases, and industrial enquiries.",
     color: "from-orange-500 to-red-500",
-    link: "https://parkashfabrics.vercel.app/",
+    link: "https://manufacturing-template.vercel.app/",
+    github: "https://github.com/BeeCodeFi/Template/tree/manufacturing-website",
+    image: "https://manufacturing-template.vercel.app/assets/images/hero.png",
   },
   {
-    title: "Jodh Hosiery Works",
-    subtitle: "Hosiery & Garment Manufacturer",
+    title: "VitalCare",
+    subtitle: "Healthcare & Medical Clinic Website",
     tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
-    description: "Jodh Hosiery Works is a leading manufacturer and supplier of hosiery products, uniforms, knitwear, socks, sweaters, and apparel solutions.",
-    color: "from-green-500 to-teal-500",
-    link: "https://jodhhosieryworks.vercel.app/",
+    description: "A healthcare template focused on departments, specialists, appointments, patient stories, FAQs, and a trusted clinical experience.",
+    color: "from-cyan-500 to-blue-500",
+    link: "https://pharma-template-eta.vercel.app/",
+    github: "https://github.com/BeeCodeFi/Template/tree/pharma-website",
+    image: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=1200&h=675&q=85",
   },
   {
-    title: "Shree Enterprises",
-    subtitle: "Industrial & Business Solutions Provider",
-    tech: ["HTML5", "Tailwind CSS", "JavaScript", "Vercel"],
-    description: "Shree Enterprises provides reliable industrial, engineering, and business solutions, delivering quality products and services to meet diverse customer requirements.",
-    color: "from-amber-500 to-yellow-500",
-    link: "https://shreeenterprises.vercel.app/",
-  },
-  {
-    title: "Trikha Weaving Factory",
-    subtitle: "Textile & Weaving Manufacturer",
-    tech: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Vercel"],
-    description: "Trikha Weaving Factory specializes in manufacturing high-quality woven and knitted fabrics, delivering reliable textile solutions for apparel and industrial applications.",
-    color: "from-rose-500 to-pink-500",
-    link: "https://trikhaweavingfactory.vercel.app/",
-  },
-  {
-    title: "VRV International",
-    subtitle: "Textile Exporter & International Trading Company",
+    title: "Elevate Coaching",
+    subtitle: "Coaching & Personal Growth Website",
     tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
-    description: "VRV International is a global textile and apparel business specializing in quality manufacturing, sourcing, and export solutions for international markets.",
-    color: "from-sky-500 to-blue-500",
-    link: "https://vrvinternational.vercel.app/",
-  },
-  {
-    title: "Vujay Modern Loomtex",
-    subtitle: "Textile & Weaving Manufacturer",
-    tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
-    description: "Vujay Modern Loomtex is a textile manufacturing company specializing in high-quality woven fabrics, offering modern weaving solutions for apparel and home textile applications.",
-    color: "from-emerald-500 to-green-500",
-    link: "https://vujaymodernloomtex.vercel.app/",
-  },
-  {
-    title: "Woolspun",
-    subtitle: "Wool & Textile Products",
-    tech: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Vercel"],
-    description: "Woolspun is a textile-focused brand offering high-quality wool-based yarns and fabric materials designed for knitting, weaving, and apparel production.",
+    description: "A premium coaching template with transformation programs, success stories, impact metrics, a guided process, FAQs, and consultation CTAs.",
     color: "from-violet-500 to-purple-500",
-    link: "https://woolspun.vercel.app/",
+    link: "https://coaching-template-nine.vercel.app/",
+    github: "https://github.com/BeeCodeFi/Template/tree/coaching",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&h=675&q=85",
   },
   {
-    title: "Birmi Overseas",
-    subtitle: "Textile Export & International Trading Company",
-    tech: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "Vercel"],
-    description: "Birmi Overseas is an international textile trading and export company providing high-quality fabrics and garments to global markets with a focus on reliability and quality.",
-    color: "from-cyan-500 to-teal-500",
-    link: "https://birmioverseas.vercel.app/",
+    title: "Rasa",
+    subtitle: "Modern Indian Restaurant Website",
+    tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
+    description: "An editorial restaurant template for signature dishes, menus, gallery storytelling, chef profiles, reservations, awards, and guest reviews.",
+    color: "from-rose-500 to-orange-500",
+    link: "https://restaurant-template-three-beta.vercel.app/",
+    github: "https://github.com/BeeCodeFi/Template/tree/Restaurant/Restaurant%20Website",
+    image: "https://restaurant-template-three-beta.vercel.app/assets/images/hero.jpg",
   },
   {
-    title: "Monsoon Salon",
-    subtitle: "Salon & Beauty Services Website",
-    tech: ["HTML5", "Bootstrap", "JavaScript", "Vercel"],
-    description: "A modern salon website showcasing hair, beauty, and grooming services with a clean UI designed to enhance customer engagement and booking experience.",
-    color: "from-pink-500 to-fuchsia-500",
-    link: "https://monsoon-rho.vercel.app/",
-  },
-  {
-    title: "Portfolio Website",
-    subtitle: "Personal Portfolio Website",
-    tech: ["HTML5", "CSS3", "JavaScript"],
-    description: "A modern personal portfolio website showcasing projects, skills, and experience with a clean and responsive design.",
-    color: "from-indigo-500 to-blue-500",
-    link: "https://portfoliowebsite-tan-six.vercel.app/",
+    title: "Aditya Kumar Portfolio",
+    subtitle: "Creative Developer Portfolio Website",
+    tech: ["HTML5", "CSS3", "JavaScript", "GSAP", "Three.js", "Vercel"],
+    description: "An immersive portfolio template combining project storytelling, animated transitions, 3D/WebGL presentation, skills, experience, testimonials, and contact sections.",
+    color: "from-indigo-500 to-fuchsia-500",
+    link: "https://portfolio-template-eight-ivory.vercel.app/",
+    github: "https://github.com/BeeCodeFi/Template/tree/portfolio",
+    image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=1200&h=675&q=85",
   },
 ];
 
@@ -183,7 +152,7 @@ const skillCategories = [
   },
 ];
 
-function ProjectCard({ project, delay }: { project: typeof projects[0]; delay: number }) {
+function ProjectCard({ project, delay }: { project: typeof projects[0] & { github?: string; image?: string }; delay: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -192,7 +161,12 @@ function ProjectCard({ project, delay }: { project: typeof projects[0]; delay: n
       transition={{ delay }}
       className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
     >
-      <a href={project.link} target="_blank" rel="noopener noreferrer" className="block">
+      <div>
+        {project.image && (
+          <a href={project.link} target="_blank" rel="noopener noreferrer" className="block mb-5 overflow-hidden rounded-xl aspect-[16/9] bg-gray-100 dark:bg-gray-900">
+            <img src={project.image} alt={`${project.title} home page preview`} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
+          </a>
+        )}
         <div className={`h-2 rounded-full bg-gradient-to-r ${project.color} mb-4`} />
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
           {project.title}
@@ -200,21 +174,29 @@ function ProjectCard({ project, delay }: { project: typeof projects[0]; delay: n
         </h3>
         <p className="text-sm text-gray-500 mb-3">{project.subtitle}</p>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">{project.description}</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-5">
           {project.tech.map((t) => (
             <span key={t} className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs rounded-full font-medium">
               {t}
             </span>
           ))}
         </div>
-      </a>
+        <div className="flex flex-wrap items-center gap-3">
+          <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+            Live demo <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+          {project.github && (
+            <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+              <GithubIcon className="w-4 h-4" /> GitHub
+            </a>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 }
 
 function ProjectsSection() {
-  const [showLandingPages, setShowLandingPages] = useState(false);
-
   return (
     <section className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -237,43 +219,20 @@ function ProjectsSection() {
           ))}
         </div>
 
-        {/* Landing Pages Category */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          onClick={() => setShowLandingPages(!showLandingPages)}
-          className="w-full flex items-center justify-between bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-        >
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
-              <ExternalLink className="w-5 h-5 text-white" />
-            </div>
-            <div className="text-left">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Landing Pages</h3>
-              <p className="text-sm text-gray-500">{landingPages.length} client projects</p>
-            </div>
+        <div className="flex items-center gap-3 mt-14 mb-8">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 flex items-center justify-center">
+            <ExternalLink className="w-5 h-5 text-white" />
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${showLandingPages ? "rotate-180" : ""}`} />
-        </motion.button>
-
-        <AnimatePresence>
-          {showLandingPages && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                {landingPages.map((project, i) => (
-                  <ProjectCard key={i} project={project} delay={i * 0.05} />
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Website Templates</h3>
+            <p className="text-sm text-gray-500">Five ready-to-explore designs from the BeeCodeFi template collection</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {templates.map((project, i) => (
+            <ProjectCard key={project.title} project={project} delay={i * 0.05} />
+          ))}
+        </div>
       </div>
     </section>
   );
