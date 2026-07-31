@@ -2,16 +2,14 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   FileCode2, Palette, Braces, Rocket,
   BookOpen, Brain, ArrowRight, CheckCircle2,
 } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { tutorials } from "@/data/tutorials";
-
-gsap.registerPlugin(ScrollTrigger);
+import SplitText from "@/components/ui/SplitText";
+import FluidOrbs from "@/components/ui/FluidOrbs";
 
 // ── Step data ─────────────────────────────────────────────────────────────────
 const STEPS = [
@@ -321,70 +319,66 @@ export default function RoadmapPage() {
       {/* ── HERO ───────────────────────────────────────────────── */}
       <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden" style={{ background: "#030712" }}>
 
-        {/* Ambient orbs */}
-        {[
-          { size: 600, color: "rgba(249,115,22,0.12)", left: "10%",  top: "20%" },
-          { size: 500, color: "rgba(59,130,246,0.10)", left: "70%",  top: "15%" },
-          { size: 450, color: "rgba(139,92,246,0.08)", left: "40%",  top: "65%" },
-        ].map((orb, i) => (
-          <motion.div key={i} className="absolute rounded-full pointer-events-none blur-3xl"
-            style={{ width: orb.size, height: orb.size, left: orb.left, top: orb.top, background: orb.color }}
-            animate={{ x: [0, 30, -15, 0], y: [0, -20, 15, 0] }}
-            transition={{ duration: 10 + i * 3, repeat: Infinity, ease: "easeInOut" }}
-          />
-        ))}
+        {/* Fluid canvas orbs */}
+        <FluidOrbs count={5} />
 
         {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+          style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)", backgroundSize: "44px 44px" }} />
+
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at center, transparent 40%, #030712 100%)" }} />
 
         <motion.div style={{ y: heroY, opacity: heroO }} className="relative text-center px-4 max-w-5xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-white/60 text-sm font-medium mb-8 backdrop-blur-sm">
+          {/* Badge */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-white/50 text-sm font-medium mb-10 backdrop-blur-sm">
             🗺️ Interactive Roadmap · {totalLessons}+ free lessons
           </motion.div>
 
-          <div className="overflow-hidden mb-4">
-            <motion.h1
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.9, ease: [0.21, 1.02, 0.73, 1] }}
-              className="text-[15vw] sm:text-[12vw] md:text-[10vw] font-black tracking-tight leading-none text-white">
-              Dev
-            </motion.h1>
+          {/* Character-split title — lusion.co style */}
+          <div className="mb-4 overflow-hidden">
+            <SplitText
+              text="Dev"
+              delay={0.2}
+              stagger={0.04}
+              className="text-[18vw] sm:text-[14vw] md:text-[12vw] font-black tracking-tight leading-none text-white block"
+            />
           </div>
           <div className="overflow-hidden mb-10">
-            <motion.h1
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.9, delay: 0.12, ease: [0.21, 1.02, 0.73, 1] }}
-              className="text-[15vw] sm:text-[12vw] md:text-[10vw] font-black tracking-tight leading-none bg-gradient-to-r from-orange-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Roadmap
-            </motion.h1>
+            <SplitText
+              text="Roadmap"
+              delay={0.35}
+              stagger={0.03}
+              className="text-[18vw] sm:text-[14vw] md:text-[12vw] font-black tracking-tight leading-none block bg-gradient-to-r from-orange-400 via-blue-400 to-purple-400 bg-clip-text text-transparent"
+            />
           </div>
 
           {/* Stage pills */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
             className="flex flex-wrap items-center justify-center gap-3 mb-10">
             {STEPS.map((s, i) => (
               <motion.div key={s.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.55 + i * 0.08 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold"
-                style={{ border: `1px solid ${s.accent}35`, color: s.accent, background: `${s.accent}12` }}>
+                transition={{ delay: 0.75 + i * 0.08 }}
+                whileHover={{ scale: 1.08, y: -2 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold cursor-default"
+                style={{ border: `1px solid ${s.accent}35`, color: s.accent, background: `${s.accent}12` }}
+                data-cursor-hover>
                 {s.emoji} {s.title}
               </motion.div>
             ))}
           </motion.div>
 
           {/* Scroll cue */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}
             className="flex flex-col items-center gap-3">
-            <span className="text-[11px] uppercase tracking-[0.3em] text-white/30 font-medium">Scroll to explore</span>
+            <span className="text-[11px] uppercase tracking-[0.3em] text-white/25 font-medium">Scroll to explore</span>
             <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}
-              className="w-6 h-10 border-2 border-white/20 rounded-full flex items-start justify-center pt-2">
-              <motion.div className="w-1.5 h-2 bg-white/30 rounded-full"
+              className="w-6 h-10 border-2 border-white/15 rounded-full flex items-start justify-center pt-2">
+              <motion.div className="w-1.5 h-2 bg-white/25 rounded-full"
                 animate={{ y: [0, 14, 0] }} transition={{ duration: 2, repeat: Infinity }} />
             </motion.div>
           </motion.div>
