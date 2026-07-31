@@ -18,6 +18,7 @@ if (string.IsNullOrWhiteSpace(connectionString) ||
     connectionString = builder.Configuration["DATABASE_URL"];
 }
 var jwtKey = builder.Configuration["Jwt:Key"];
+var adminEmail = builder.Configuration["Admin:Email"] ?? "kumaryursh@gmail.com";
 
 if (string.IsNullOrEmpty(connectionString) || connectionString.Contains("PLACEHOLDER"))
 {
@@ -95,7 +96,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireAssertion(context =>
+            string.Equals(
+                context.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value,
+                adminEmail,
+                StringComparison.OrdinalIgnoreCase)));
+});
 
 // CORS
 builder.Services.AddCors(options =>

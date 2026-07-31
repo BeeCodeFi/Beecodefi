@@ -66,7 +66,15 @@ Jwt__Audience=BEECODEFI-Users
 
 If not set, defaults will be used.
 
-### 4. Email Service (Resend API)
+### 4. Admin Analytics Access
+
+```
+Admin__Email=kumaryursh@gmail.com
+```
+
+The `/admin` dashboard and `/api/admin/analytics` endpoint are restricted by the backend to the email configured here. The default matches the existing project account. If `kumaryursh@gmal.com` is intentional, set that exact value in Render and ensure the signed-in account uses the same email.
+
+### 5. Email Service (Resend API)
 
 ```
 Resend__ApiKey=re_xxxxxxxxxxxxx
@@ -76,7 +84,7 @@ Resend__FromName=BeeCodeFi
 
 Get your API key from [Resend.com](https://resend.com/api-keys)
 
-### 5. Frontend URL (for CORS)
+### 6. Frontend URL (for CORS)
 
 The backend already includes these CORS origins:
 
@@ -119,6 +127,8 @@ Jwt__Key=YOUR_GENERATED_JWT_KEY_HERE
 Jwt__Issuer=BEECODEFI
 
 Jwt__Audience=BEECODEFI-Users
+
+Admin__Email=kumaryursh@gmail.com
 
 Resend__ApiKey=re_xxxxxxxxxxxxx
 
