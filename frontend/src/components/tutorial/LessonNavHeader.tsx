@@ -12,6 +12,7 @@ interface LessonNavHeaderProps {
   onPrev: () => void;
   onNext: () => void;
   onMenuToggle: () => void;
+  scrollProgress?: number; // 0–100
 }
 
 export default function LessonNavHeader({
@@ -23,9 +24,20 @@ export default function LessonNavHeader({
   onPrev,
   onNext,
   onMenuToggle,
+  scrollProgress = 0,
 }: LessonNavHeaderProps) {
   return (
-    <div className="sticky top-[64px] z-20 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-2.5">
+    <div className="sticky top-[64px] z-20 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-2.5 relative overflow-hidden">
+      {/* Reading progress bar — lives here to avoid z-index stacking issues */}
+      <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-200/60 dark:bg-gray-700/40">
+        <div
+          className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-[width] duration-150 ease-linear"
+          style={{
+            width: `${scrollProgress}%`,
+            boxShadow: scrollProgress > 0 ? "0 0 8px 1px rgba(139,92,246,0.7)" : "none",
+          }}
+        />
+      </div>
       <div className="max-w-[1400px] mx-auto flex items-center gap-3">
         {/* Mobile menu toggle */}
         <button

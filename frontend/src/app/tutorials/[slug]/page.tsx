@@ -15,9 +15,8 @@ import LessonMeta from "@/components/tutorial/LessonMeta";
 import QuizCTA from "@/components/tutorial/QuizCTA";
 import LessonQuiz from "@/components/tutorial/LessonQuiz";
 import TutorialSidebar from "@/components/tutorial/TutorialSidebar";
-import ReadingProgressBar from "@/components/tutorial/ReadingProgressBar";
-import TableOfContents from "@/components/tutorial/TableOfContents";
 import LessonNavHeader from "@/components/tutorial/LessonNavHeader";
+import TableOfContents from "@/components/tutorial/TableOfContents";
 import Certificate from "@/components/tutorial/Certificate";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
@@ -184,12 +183,31 @@ function TutorialPageContent({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [courseComplete, setCourseComplete] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { user } = useAuth();
   const { success, info } = useToast();
   useStreak(!!user); // ping streak only when logged in
 
   const tutorial = tutorials.find((t) => t.slug === slug);
+
+  // Track scroll progress for the reading bar in LessonNavHeader
+  useEffect(() => {
+    const update = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+
+  // Reset scroll progress when lesson changes
+  useEffect(() => {
+    setScrollProgress(0);
+    window.scrollTo({ top: 0 });
+  }, [currentLessonIndex]);
 
   // ── Load + sync progress ─────────────────────────────────────────────────
   useEffect(() => {
@@ -362,8 +380,7 @@ function TutorialPageContent({
         )}
       </AnimatePresence>
 
-      {/* Scroll-driven reading progress line at very top of viewport */}
-      <ReadingProgressBar />
+      {/* Scroll-driven reading progress line — embedded in LessonNavHeader */}
 
       {/* ── Course complete banner ── */}
       <AnimatePresence>
@@ -419,6 +436,7 @@ function TutorialPageContent({
         onPrev={goPrev}
         onNext={goNext}
         onMenuToggle={() => setSidebarOpen((o) => !o)}
+        scrollProgress={scrollProgress}
       />
 
       {/* ── Mobile sidebar overlay backdrop ── */}
