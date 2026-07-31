@@ -90,26 +90,28 @@ function StagePanel({ step, index }: { step: Step; index: number }) {
     offset: ["start start", "end end"],
   });
 
-  // All transforms driven by scroll within the section
-  const bgScale   = useTransform(scrollYProgress, [0, 0.15], [1.08, 1]);
-  const numO      = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
-  const numY      = useTransform(scrollYProgress, [0, 0.12], [40, 0]);
-  const titleO    = useTransform(scrollYProgress, [0.05, 0.22], [0, 1]);
-  const titleY    = useTransform(scrollYProgress, [0.05, 0.22], [60, 0]);
-  const descO     = useTransform(scrollYProgress, [0.12, 0.3], [0, 1]);
-  const descY     = useTransform(scrollYProgress, [0.12, 0.3], [40, 0]);
-  const cardO     = useTransform(scrollYProgress, [0.2, 0.4], [0, 1]);
-  const cardX     = useTransform(scrollYProgress, [0.2, 0.4], [80, 0]);
-  const lineScale = useTransform(scrollYProgress, [0.05, 0.5], [0, 1]);
-  const exitO     = useTransform(scrollYProgress, [0.85, 1], [1, 0]);
-  const exitY     = useTransform(scrollYProgress, [0.85, 1], [0, -40]);
+  // All transforms driven by scroll within this section
+  // Content is VISIBLE immediately (starts fully shown), then exits at the end
+  const bgScale   = useTransform(scrollYProgress, [0, 0.2], [1.04, 1]);
+  const numO      = useTransform(scrollYProgress, [0, 0.08], [0, 1]);
+  const numY      = useTransform(scrollYProgress, [0, 0.08], [30, 0]);
+  const titleO    = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
+  const titleY    = useTransform(scrollYProgress, [0, 0.12], [50, 0]);
+  const descO     = useTransform(scrollYProgress, [0.06, 0.18], [0, 1]);
+  const descY     = useTransform(scrollYProgress, [0.06, 0.18], [30, 0]);
+  const cardO     = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
+  const cardX     = useTransform(scrollYProgress, [0.1, 0.25], [60, 0]);
+  const lineScale = useTransform(scrollYProgress, [0.02, 0.4], [0, 1]);
+  // Exit fade — everything fades out as the NEXT section takes over
+  const exitO     = useTransform(scrollYProgress, [0.82, 1], [1, 0]);
+  const exitY     = useTransform(scrollYProgress, [0.82, 1], [0, -50]);
 
   const bg = isDark ? step.darkBg : step.lightBg;
 
   return (
-    // 350vh tall container — gives room for GSAP-style pin
+    // 350vh tall container — gives room for sticky pin
     <div ref={container} style={{ height: "350vh" }}>
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
 
         {/* Full-bleed background */}
         <motion.div
@@ -138,9 +140,8 @@ function StagePanel({ step, index }: { step: Step; index: number }) {
           style={{ background: `linear-gradient(to right, transparent, ${step.accent}, transparent)`, opacity: 0.6 }} />
 
         {/* All content wrapped for exit fade */}
-        <motion.div style={{ opacity: exitO, y: exitY }} className="relative h-full">
-          <div className="h-full flex items-center">
-            <div className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+        <motion.div style={{ opacity: exitO, y: exitY }} className="relative w-full">
+          <div className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
                 {/* LEFT — heading side */}
@@ -274,7 +275,6 @@ function StagePanel({ step, index }: { step: Step; index: number }) {
 
               </div>
             </div>
-          </div>
         </motion.div>
 
         {/* Progress dot at bottom */}
