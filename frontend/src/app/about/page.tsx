@@ -66,14 +66,6 @@ const landingPages = [
     link: "https://trikhaweavingfactory.vercel.app/",
   },
   {
-    title: "Amazon Clone",
-    subtitle: "E-Commerce Web Application",
-    tech: ["HTML5", "CSS3", "Vercel"],
-    description: "A modern Amazon-inspired e-commerce platform featuring product browsing, search, shopping cart functionality, and a responsive user experience.",
-    color: "from-yellow-500 to-orange-500",
-    link: "https://amazonclone-coral-alpha.vercel.app/",
-  },
-  {
     title: "VRV International",
     subtitle: "Textile Exporter & International Trading Company",
     tech: ["HTML5", "CSS3", "JavaScript", "Vercel"],
