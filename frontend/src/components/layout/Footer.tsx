@@ -42,7 +42,7 @@ const footerLinks = {
   ],
   Community: [
     { href: "https://github.com/BeeCodeFi", label: "GitHub", external: true },
-    { href: "https://discord.gg/beecodefi", label: "Discord", external: true },
+    { href: "https://discord.gg/Uy78j9kRRM", label: "Discord", external: true },
   ],
 };
 
