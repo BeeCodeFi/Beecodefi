@@ -8,6 +8,38 @@ import { Bookmark, BookmarkX, ArrowRight, BookOpen } from "lucide-react";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useAuth } from "@/context/AuthContext";
 
+// ── Skeleton loader ────────────────────────────────────────────────────────────
+function BookmarksSkeleton() {
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950 py-16">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <div className="h-9 w-44 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse mb-2" />
+            <div className="h-4 w-28 bg-gray-100 dark:bg-gray-800/60 rounded animate-pulse" />
+          </div>
+        </div>
+        {/* Card skeletons */}
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse shrink-0" />
+                <div className="flex-1">
+                  <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1.5" />
+                  <div className="h-3 w-24 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+                </div>
+              </div>
+              <div className="h-4 w-16 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BookmarksPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -20,9 +52,9 @@ export default function BookmarksPage() {
     }
   }, [isLoading, user, router]);
 
-  // Show nothing while auth state is resolving or redirecting
-  if (isLoading || !user) return null;
-
+  // Show skeleton while auth is resolving (instead of blank screen)
+  if (isLoading) return <BookmarksSkeleton />;
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-16">
@@ -78,14 +110,18 @@ export default function BookmarksPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Link href={`/tutorials/${bm.tutorialSlug}`}
-                    className="flex items-center gap-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+                  {/* Deep-link includes ?lesson= so the exact lesson opens */}
+                  <Link
+                    href={`/tutorials/${bm.tutorialSlug}?lesson=${bm.lessonSlug}`}
+                    className="flex items-center gap-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+                  >
                     Open <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                   <button
                     onClick={() => toggleBookmark(bm)}
                     className="p-1.5 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30"
                     title="Remove bookmark"
+                    aria-label={`Remove bookmark for ${bm.lessonTitle}`}
                   >
                     <BookmarkX className="w-4 h-4" />
                   </button>

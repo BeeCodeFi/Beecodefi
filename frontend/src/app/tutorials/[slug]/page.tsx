@@ -1,6 +1,7 @@
 "use client";
 
-import { use, useState, useEffect, useCallback } from "react";
+import { use, useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Zap, BookOpen, Bookmark, BookmarkCheck } from "lucide-react";
@@ -159,7 +160,21 @@ export default function TutorialPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  return (
+    <Suspense>
+      <TutorialPageContent params={params} />
+    </Suspense>
+  );
+}
+
+function TutorialPageContent({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = use(params);
+  const searchParams = useSearchParams();
+  const lessonParam = searchParams.get("lesson");
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(
     new Set()
@@ -184,6 +199,15 @@ export default function TutorialPage({
         localIndices = new Set(JSON.parse(stored));
         setCompletedLessons(localIndices);
       } catch { /* ignore */ }
+    }
+
+    // Prefer ?lesson= URL param (from search or bookmark deep-link)
+    if (lessonParam) {
+      const paramIdx = tutorial.lessons.findIndex((l) => l.slug === lessonParam);
+      if (paramIdx !== -1) {
+        setCurrentLessonIndex(paramIdx);
+        return;
+      }
     }
 
     const savedIndex = localStorage.getItem(`tutorial-lesson-${slug}`);

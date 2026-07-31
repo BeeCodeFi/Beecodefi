@@ -272,6 +272,15 @@ export default function Navbar() {
 
             {/* Mobile controls */}
             <div className="flex md:hidden items-center gap-1">
+              {/* Mobile search icon */}
+              <motion.button
+                whileTap={{ scale: 0.88 }}
+                onClick={() => setSearchOpen(true)}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </motion.button>
               <motion.button
                 whileTap={{ scale: 0.88, rotate: 15 }}
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -329,6 +338,14 @@ export default function Navbar() {
                   </motion.div>
                 ))}
                 <div className="pt-3 border-t border-gray-200/60 dark:border-white/8 space-y-1.5">
+                {/* Search row in mobile menu */}
+                <button
+                  onClick={() => { setSearchOpen(true); setIsOpen(false); }}
+                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5 rounded-xl"
+                >
+                  <Search className="w-4 h-4" /> Search lessons
+                  <kbd className="ml-auto text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-400">/</kbd>
+                </button>
                   {user ? (
                     <>
                       <Link href="/account" onClick={() => setIsOpen(false)}

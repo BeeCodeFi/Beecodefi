@@ -36,7 +36,7 @@ const buildIndex = (): SearchResult[] => {
         type: "lesson",
         title: lesson.title,
         subtitle: `${track.title} · ${lesson.difficulty ?? "beginner"}`,
-        href: `/tutorials/${track.slug}`,
+        href: `/tutorials/${track.slug}?lesson=${lesson.slug}`,
         category: track.slug,
         icon: categoryIcon[track.slug] ?? BookOpen,
         iconColor: categoryColor[track.slug] ?? "text-indigo-500",
@@ -129,6 +129,9 @@ export default function GlobalSearch({ open, onClose }: Props) {
           {/* Panel */}
           <motion.div
             key="panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search lessons and quizzes"
             initial={{ opacity: 0, scale: 0.96, y: -16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -16 }}

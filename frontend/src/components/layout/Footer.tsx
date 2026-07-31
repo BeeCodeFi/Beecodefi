@@ -27,10 +27,10 @@ const footerLinks = {
     { href: "/tutorials/javascript", label: "JavaScript"  },
   ],
   Practice: [
-    { href: "/quiz",                   label: "Quizzes"   },
-    { href: "/quiz?topic=html",        label: "HTML Quiz" },
-    { href: "/quiz?topic=css",         label: "CSS Quiz"  },
-    { href: "/quiz?topic=javascript",  label: "JS Quiz"   },
+    { href: "/quiz",                      label: "Quizzes"   },
+    { href: "/quiz?category=html",        label: "HTML Quiz" },
+    { href: "/quiz?category=css",         label: "CSS Quiz"  },
+    { href: "/quiz?category=javascript",  label: "JS Quiz"   },
   ],
   Company: [
     { href: "/about",     label: "About"     },
