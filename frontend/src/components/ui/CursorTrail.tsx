@@ -2,8 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Theme colors: HTML (Orange), CSS (Blue), JS (Yellow), React (Purple)
-const COLORS = ["#ea6b1a", "#2563eb", "#eab308", "#7c3aed"];
+// A broad, high-contrast palette keeps each new stroke visually distinct.
+const COLORS = [
+  "#ff6b35", "#ff3d81", "#f43f5e", "#ec4899",
+  "#a855f7", "#7c3aed", "#3b82f6", "#06b6d4",
+  "#14b8a6", "#22c55e", "#eab308", "#f97316",
+];
 
 class Point {
   x: number;

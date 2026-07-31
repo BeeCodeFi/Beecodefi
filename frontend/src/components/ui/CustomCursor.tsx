@@ -3,6 +3,12 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
+const CURSOR_COLORS = [
+  "#ff6b35", "#ff3d81", "#f43f5e", "#ec4899",
+  "#a855f7", "#7c3aed", "#3b82f6", "#06b6d4",
+  "#14b8a6", "#22c55e", "#eab308", "#f97316",
+];
+
 export default function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -82,17 +88,21 @@ export default function CustomCursor() {
           width:  hovering ? 44 : clicking ? 24 : 32,
           height: hovering ? 44 : clicking ? 24 : 32,
           borderColor: hovering
-            ? "rgba(99,102,241,0.6)"
+            ? "rgba(255,255,255,0.85)"
             : clicking
-            ? "rgba(139,92,246,0.7)"
-            : "rgba(99,102,241,0.35)",
+            ? "rgba(255,255,255,0.95)"
+            : CURSOR_COLORS,
         }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        transition={{
+          duration: hovering || clicking ? 0.2 : 4.5,
+          repeat: hovering || clicking ? 0 : Infinity,
+          ease: "linear",
+        }}
       />
 
       {/* Sharp inner dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full bg-indigo-600 dark:bg-indigo-400"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full"
         style={{
           x: springX,
           y: springY,
@@ -104,9 +114,13 @@ export default function CustomCursor() {
           width:  hovering ? 6 : clicking ? 10 : 7,
           height: hovering ? 6 : clicking ? 10 : 7,
           opacity: visible ? (hovering ? 0.7 : 1) : 0,
-          backgroundColor: clicking ? "#8b5cf6" : "#6366f1",
+          backgroundColor: clicking ? "#ffffff" : CURSOR_COLORS,
         }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
+        transition={{
+          duration: clicking ? 0.15 : 4.5,
+          repeat: clicking ? 0 : Infinity,
+          ease: "linear",
+        }}
       />
     </>
   );
