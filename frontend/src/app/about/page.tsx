@@ -57,7 +57,7 @@ const templates = [
     link: "https://manufacturing-template.vercel.app/",
     github: "https://github.com/BeeCodeFi/Template/tree/manufacturing-website",
     image:
-      "https://image.thum.io/get/width/1200/crop/675/noanimate/https://manufacturing-template.vercel.app/",
+      "https://images.unsplash.com/photo-1565610222536-ef125c59da2e?auto=format&fit=crop&w=1200&h=675&q=85",
   },
   {
     title: "VitalCare",
@@ -69,7 +69,7 @@ const templates = [
     link: "https://pharma-template-eta.vercel.app/",
     github: "https://github.com/BeeCodeFi/Template/tree/pharma-website",
     image:
-      "https://image.thum.io/get/width/1200/crop/675/noanimate/https://pharma-template-eta.vercel.app/",
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&h=675&q=85",
   },
   {
     title: "Elevate Coaching",
@@ -81,7 +81,7 @@ const templates = [
     link: "https://coaching-template-nine.vercel.app/",
     github: "https://github.com/BeeCodeFi/Template/tree/coaching",
     image:
-      "https://image.thum.io/get/width/1200/crop/675/noanimate/https://coaching-template-nine.vercel.app/",
+      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&h=675&q=85",
   },
   {
     title: "Rasa",
@@ -106,7 +106,7 @@ const templates = [
     link: "https://portfolio-template-eight-ivory.vercel.app/",
     github: "https://github.com/BeeCodeFi/Template/tree/portfolio",
     image:
-      "https://image.thum.io/get/width/1200/crop/675/noanimate/https://portfolio-template-eight-ivory.vercel.app/",
+      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&h=675&q=85",
   },
 ];
 
