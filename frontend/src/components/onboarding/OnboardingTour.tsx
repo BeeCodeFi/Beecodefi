@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Joyride, { Step, CallBackProps, STATUS, ACTIONS, EVENTS } from "react-joyride";
+import { Joyride, Step, EventData, STATUS, ACTIONS, EVENTS } from "react-joyride";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 
@@ -34,7 +34,7 @@ export default function OnboardingTour() {
         </div>
       ),
       placement: "center",
-      disableBeacon: true,
+      skipBeacon: true,
     },
     {
       target: '[href="/tutorials"]',
@@ -125,7 +125,7 @@ export default function OnboardingTour() {
     },
   ];
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: EventData) => {
     const { status, action, index, type } = data;
 
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
@@ -145,23 +145,23 @@ export default function OnboardingTour() {
       run={run}
       stepIndex={stepIndex}
       continuous
-      showProgress
-      showSkipButton
-      callback={handleJoyrideCallback}
+      onEvent={handleJoyrideCallback}
+      options={{
+        primaryColor: "#6366f1",
+        backgroundColor: "#ffffff",
+        arrowColor: "#ffffff",
+        textColor: "#374151",
+        zIndex: 10000,
+        showProgress: true,
+        buttons: ['back', 'close', 'primary', 'skip'],
+      }}
       styles={{
-        options: {
-          primaryColor: "#6366f1",
-          textColor: "#374151",
-          backgroundColor: "#ffffff",
-          arrowColor: "#ffffff",
-          zIndex: 10000,
-        },
-        buttonNext: {
+        buttonPrimary: {
           backgroundColor: "#6366f1",
           borderRadius: "0.75rem",
           padding: "0.625rem 1.25rem",
           fontSize: "0.875rem",
-          fontWeight: 600,
+          fontWeight: "600",
         },
         buttonBack: {
           color: "#6b7280",
