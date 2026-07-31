@@ -16,6 +16,8 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
   const [expanded, setExpanded] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [fontSize, setFontSize] = useState(14);
+  const [showLineNumbers, setShowLineNumbers] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isModified = code !== initialCode;
@@ -173,9 +175,20 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
         {/* ── Code editor pane ── */}
         <div className={isHtml ? "border-b lg:border-b-0 lg:border-r border-gray-700/60 flex flex-col" : ""}>
           {isHtml && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#161b22] border-b border-gray-700/40">
+            <div className="flex items-center justify-between px-3 py-1.5 bg-[#161b22] border-b border-gray-700/40">
               <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">editor</span>
-              <span className="text-[10px] text-gray-600 ml-auto">Tab = indent · brackets auto-close</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] text-gray-500">Size:</span>
+                  <button onClick={() => setFontSize(f => Math.max(10, f - 1))} className="text-gray-400 hover:text-white px-1.5 py-0.5 bg-gray-800 rounded text-xs">-</button>
+                  <span className="text-[10px] text-gray-300 w-4 text-center">{fontSize}</span>
+                  <button onClick={() => setFontSize(f => Math.min(24, f + 1))} className="text-gray-400 hover:text-white px-1.5 py-0.5 bg-gray-800 rounded text-xs">+</button>
+                </div>
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" checked={showLineNumbers} onChange={(e) => setShowLineNumbers(e.target.checked)} className="rounded border-gray-700 bg-gray-800 text-indigo-500 w-3 h-3" />
+                  <span className="text-[10px] text-gray-400">Lines</span>
+                </label>
+              </div>
             </div>
           )}
 
@@ -186,14 +199,17 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
             }`}
           >
             {/* Line numbers */}
-            <div
-              aria-hidden
-              className="select-none text-right pr-3 pl-3 pt-4 text-gray-600 font-mono text-sm leading-relaxed shrink-0 bg-[#0d1117] border-r border-gray-800 min-w-[2.8rem]"
-            >
-              {lines.map((_, i) => (
-                <div key={i}>{i + 1}</div>
-              ))}
-            </div>
+            {showLineNumbers && (
+              <div
+                aria-hidden
+                className="select-none text-right pr-3 pl-3 pt-4 text-gray-600 font-mono leading-relaxed shrink-0 bg-[#0d1117] border-r border-gray-800 min-w-[2.8rem]"
+                style={{ fontSize: `${fontSize}px` }}
+              >
+                {lines.map((_, i) => (
+                  <div key={i}>{i + 1}</div>
+                ))}
+              </div>
+            )}
 
             {/* Textarea */}
             <textarea
@@ -206,8 +222,8 @@ export default function LiveCodeEditor({ initialCode, language, title, descripti
               autoCorrect="off"
               autoCapitalize="off"
               rows={lines.length}
-              className="flex-1 bg-transparent text-gray-200 font-mono text-sm leading-relaxed px-4 pt-4 pb-4 resize-none focus:outline-none w-full caret-indigo-400 overflow-hidden"
-              style={{ tabSize: 2 }}
+              className="flex-1 bg-transparent text-gray-200 font-mono leading-relaxed px-4 pt-4 pb-4 resize-none focus:outline-none w-full caret-indigo-400 overflow-hidden"
+              style={{ tabSize: 2, fontSize: `${fontSize}px` }}
             />
           </div>
 

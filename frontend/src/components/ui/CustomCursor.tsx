@@ -22,7 +22,8 @@ export default function CustomCursor() {
   useEffect(() => {
     // Detect touch device — hide cursor entirely
     const checkTouch = () => {
-      if (window.matchMedia("(pointer: coarse)").matches) {
+      const isCustomCursorDisabled = localStorage.getItem("beecodefi_custom_cursor") === "disabled";
+      if (window.matchMedia("(pointer: coarse)").matches || isCustomCursorDisabled) {
         setIsTouch(true);
       }
     };

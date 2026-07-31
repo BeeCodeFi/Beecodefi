@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/context/ToastContext";
 
 interface LessonNavHeaderProps {
   lessonTitle: string;
@@ -26,6 +27,15 @@ export default function LessonNavHeader({
   onMenuToggle,
   scrollProgress = 0,
 }: LessonNavHeaderProps) {
+  const { success } = useToast();
+
+  const handleShare = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      success("Link Copied!", "The lesson URL has been copied to your clipboard.");
+    }
+  };
+
   return (
     <div className="sticky top-[64px] z-20 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-2.5 relative overflow-hidden">
       {/* Reading progress bar — lives here to avoid z-index stacking issues */}
@@ -72,6 +82,16 @@ export default function LessonNavHeader({
             {lessonTitle}
           </span>
         </div>
+
+        {/* Share */}
+        <button
+          onClick={handleShare}
+          className="p-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          title="Share Lesson"
+          aria-label="Share Lesson"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
 
         {/* Next */}
         <button

@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/account", "/bookmarks", "/quiz/history"],
+        disallow: ["/api/"],
       },
     ],
     sitemap: "https://beecodefi.com/sitemap.xml",

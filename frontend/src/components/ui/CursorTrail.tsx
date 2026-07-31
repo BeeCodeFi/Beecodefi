@@ -26,7 +26,8 @@ export default function CursorTrail() {
   useEffect(() => {
     // Detect touch device — hide cursor trail entirely
     const checkTouch = () => {
-      if (window.matchMedia("(pointer: coarse)").matches) {
+      const isCustomCursorDisabled = localStorage.getItem("beecodefi_custom_cursor") === "disabled";
+      if (window.matchMedia("(pointer: coarse)").matches || isCustomCursorDisabled) {
         setIsTouch(true);
       }
     };

@@ -1,30 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-  BookOpen,
-  Brain,
-  Flame,
-  TrendingUp,
-  Award,
-  Clock,
-  Target,
-  Bookmark,
-  ArrowRight,
-  Trophy,
-  Zap,
-} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LayoutDashboard, Bookmark, Trophy, Settings, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useStreak } from "@/hooks/useStreak";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { tutorials } from "@/data/tutorials";
+import OverviewTab from "@/components/dashboard/OverviewTab";
+import BookmarksTab from "@/components/dashboard/BookmarksTab";
+import QuizHistoryTab from "@/components/dashboard/QuizHistoryTab";
+import SettingsTab from "@/components/dashboard/SettingsTab";
+import { useRouter } from "next/navigation";
 
-export default function DashboardPage() {
-  const { user } = useAuth();
+export default function UnifiedDashboardPage() {
+  const { user, isLoading } = useAuth();
   const streak = useStreak(!!user);
   const { bookmarks } = useBookmarks();
+  const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<"overview" | "bookmarks" | "quiz" | "settings">("overview");
+
   const [tutorialProgress, setTutorialProgress] = useState<
     { slug: string; title: string; completed: number; total: number; percent: number }[]
   >([]);
@@ -32,8 +28,7 @@ export default function DashboardPage() {
     { tutorialSlug: string; lessonSlug: string; tutorialTitle: string; lessonTitle: string; timestamp: number }[]
   >([]);
 
-  useEffect(() => {
-    // Calculate tutorial progress
+  const loadProgress = () => {
     const progress = tutorials.map((tutorial) => {
       const progressRaw = localStorage.getItem(`tutorial-progress-${tutorial.slug}`);
       const completed: number[] = progressRaw ? JSON.parse(progressRaw) : [];
@@ -49,7 +44,6 @@ export default function DashboardPage() {
     });
     setTutorialProgress(progress);
 
-    // Get recent lessons (from lastVisitedLesson)
     const lastLesson = localStorage.getItem("lastVisitedLesson");
     if (lastLesson) {
       try {
@@ -71,244 +65,95 @@ export default function DashboardPage() {
         // Invalid data
       }
     }
-  }, []);
+  };
 
-  const totalLessonsCompleted = tutorialProgress.reduce((sum, t) => sum + t.completed, 0);
-  const totalLessons = tutorialProgress.reduce((sum, t) => sum + t.total, 0);
-  const overallProgress = totalLessons > 0 ? Math.round((totalLessonsCompleted / totalLessons) * 100) : 0;
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    } else if (user) {
+      loadProgress();
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "bookmarks", label: "Bookmarks", icon: Bookmark },
+    { id: "quiz", label: "Quiz History", icon: Trophy },
+    { id: "settings", label: "Settings", icon: Settings },
+  ] as const;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 py-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
+        
+        {/* Header Section */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
           <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
-            My Learning Dashboard
+            My Learning
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track your progress, streaks, and achievements in one place
+            Welcome back, {user.name}! Track your progress and manage your account.
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {/* Overall Progress */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-                <Target className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Overall Progress</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{overallProgress}%</p>
-              </div>
-            </div>
-            <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
-                style={{ width: `${overallProgress}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              {totalLessonsCompleted} of {totalLessons} lessons completed
-            </p>
-          </motion.div>
-
-          {/* Streak */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
-                <Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Current Streak</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{streak.current} days</p>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Longest streak: {streak.longest} days
-            </p>
-          </motion.div>
-
-          {/* Bookmarks */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center">
-                <Bookmark className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Saved Lessons</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{bookmarks.length}</p>
-              </div>
-            </div>
-            <Link
-              href="/bookmarks"
-              className="text-xs text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
-            >
-              View all <ArrowRight className="w-3 h-3" />
-            </Link>
-          </motion.div>
-
-          {/* Quiz Scores */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Quizzes Taken</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">-</p>
-              </div>
-            </div>
-            <Link
-              href="/quiz/history"
-              className="text-xs text-green-600 dark:text-green-400 hover:underline flex items-center gap-1"
-            >
-              View history <ArrowRight className="w-3 h-3" />
-            </Link>
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Tutorial Progress */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                Tutorial Progress
-              </h2>
-              <Link
-                href="/tutorials"
-                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
-              >
-                View all <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="space-y-4">
-              {tutorialProgress.map((tutorial, i) => (
-                <Link
-                  key={tutorial.slug}
-                  href={`/tutorials/${tutorial.slug}`}
-                  className="block group"
+        {/* Tab Navigation */}
+        <div className="flex overflow-x-auto hide-scrollbar mb-8 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex gap-8">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                  className={`flex items-center gap-2 pb-4 text-sm font-medium transition-colors relative whitespace-nowrap ${
+                    isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                      {tutorial.title}
-                    </span>
-                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                      {tutorial.percent}%
-                    </span>
-                  </div>
-                  <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
-                      style={{ width: `${tutorial.percent}%` }}
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="dashboard-tab"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400"
                     />
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {tutorial.completed} of {tutorial.total} lessons
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Recent Activity */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
-          >
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-6">
-              <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              Recent Activity
-            </h2>
-            <div className="space-y-3">
-              {recentLessons.length > 0 ? (
-                recentLessons.map((lesson, i) => (
-                  <Link
-                    key={i}
-                    href={`/tutorials/${lesson.tutorialSlug}?lesson=${lesson.lessonSlug}`}
-                    className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
-                      <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
-                        {lesson.lessonTitle}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{lesson.tutorialTitle}</p>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-1 transition-all shrink-0" />
-                  </Link>
-                ))
-              ) : (
-                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                  <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm">No recent activity</p>
-                  <Link
-                    href="/tutorials"
-                    className="inline-flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline mt-3"
-                  >
-                    Start learning <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Actions */}
-            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <Link
-                  href="/tutorials"
-                  className="flex items-center gap-2 px-4 py-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors text-sm font-medium"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  Browse Tutorials
-                </Link>
-                <Link
-                  href="/quiz"
-                  className="flex items-center gap-2 px-4 py-3 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium"
-                >
-                  <Brain className="w-4 h-4" />
-                  Take Quiz
-                </Link>
-              </div>
-            </div>
-          </motion.div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Tab Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeTab === "overview" && (
+              <OverviewTab
+                streak={streak}
+                bookmarksCount={bookmarks.length}
+                tutorialProgress={tutorialProgress}
+                recentLessons={recentLessons}
+              />
+            )}
+            {activeTab === "bookmarks" && <BookmarksTab />}
+            {activeTab === "quiz" && <QuizHistoryTab />}
+            {activeTab === "settings" && <SettingsTab reloadStats={loadProgress} />}
+          </motion.div>
+        </AnimatePresence>
+
       </div>
     </div>
   );

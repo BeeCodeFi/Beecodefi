@@ -85,7 +85,7 @@ export default function PrivacyPage() {
                       </p>
                       {section.title === "Your Rights" && (
                         <Link
-                          href="/account"
+                          href="/dashboard"
                           className="inline-flex items-center gap-1 mt-3 text-indigo-600 dark:text-indigo-400 hover:underline font-medium text-sm"
                         >
                           Go to account settings →

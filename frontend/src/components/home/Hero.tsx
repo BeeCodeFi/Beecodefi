@@ -283,44 +283,6 @@ export default function Hero() {
             />
           </div>
 
-          {/* Continue Learning CTA — only for returning users */}
-          {resumeLesson && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.8, duration: 0.4, ease: "easeOut" }}
-              className="mb-6"
-            >
-              <Link
-                href={`/tutorials/${resumeLesson.slug}?lesson=${resumeLesson.lessonSlug}`}
-                className="inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl
-                  bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-emerald-950/30 dark:to-cyan-950/30
-                  border-2 border-emerald-200 dark:border-emerald-500/30
-                  hover:border-emerald-400 dark:hover:border-emerald-400/50
-                  shadow-lg hover:shadow-xl transition-all duration-200 group"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Zap className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Continue {resumeLesson.trackTitle}</p>
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate max-w-[260px]">{resumeLesson.lessonTitle}</p>
-                </div>
-                {/* Progress pill */}
-                <div className="flex items-center gap-2 ml-2">
-                  <div className="w-20 h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500"
-                      style={{ width: `${resumeLesson.progress}%` }}
-                    />
-                  </div>
-                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{resumeLesson.progress}%</span>
-                </div>
-                <ArrowRight className="w-5 h-5 text-emerald-500 group-hover:translate-x-1 transition-transform shrink-0" />
-              </Link>
-            </motion.div>
-          )}
-
           {/* ── Magnetic CTA buttons ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -328,17 +290,31 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.9 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
           >
-            <MagneticLink href="/tutorials"
-              className="group flex items-center gap-2.5 px-8 py-4
-                bg-gradient-to-r from-indigo-600 to-purple-600
-                hover:from-indigo-500 hover:to-purple-500
-                text-white font-semibold rounded-xl cursor-pointer
-                shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300"
-            >
-              <BookOpen className="w-5 h-5" />
-              Start Learning
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </MagneticLink>
+            {resumeLesson ? (
+              <MagneticLink href={`/tutorials/${resumeLesson.slug}?lesson=${resumeLesson.lessonSlug}`}
+                className="group flex items-center gap-2.5 px-8 py-4
+                  bg-gradient-to-r from-emerald-600 to-cyan-600
+                  hover:from-emerald-500 hover:to-cyan-500
+                  text-white font-semibold rounded-xl cursor-pointer
+                  shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-300"
+              >
+                <Zap className="w-5 h-5 text-emerald-100" />
+                Continue: {resumeLesson.trackTitle}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </MagneticLink>
+            ) : (
+              <MagneticLink href="/tutorials"
+                className="group flex items-center gap-2.5 px-8 py-4
+                  bg-gradient-to-r from-indigo-600 to-purple-600
+                  hover:from-indigo-500 hover:to-purple-500
+                  text-white font-semibold rounded-xl cursor-pointer
+                  shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300"
+              >
+                <BookOpen className="w-5 h-5" />
+                Start Learning
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </MagneticLink>
+            )}
 
             <MagneticLink href="/courses"
               className="group flex items-center gap-2.5 px-8 py-4 cursor-pointer
