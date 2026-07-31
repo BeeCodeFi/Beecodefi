@@ -4,11 +4,23 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --font-display: var(--font-geist-sans, var(--font-inter));
 }
 
+/* ── Base ─────────────────────────────────────────────────────────────────── */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-gray-200 dark:border-gray-800;
+    box-sizing: border-box;
+  }
+
+  /* Hide default cursor when CustomCursor is mounted */
+  body.custom-cursor-active * {
+    cursor: none !important;
   }
 
   body {
@@ -16,14 +28,52 @@
     font-family: var(--font-sans), system-ui, sans-serif;
   }
 
+  /* ── Noise grain overlay ── */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.028;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    body::after { display: none; }
+  }
+
+  /* ── Polished text selection ── */
   ::selection {
     @apply bg-indigo-200 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-100;
   }
+
+  /* ── Focus rings ── */
+  :focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* ── Heading optical tracking ── */
+  h1, h2, h3 {
+    letter-spacing: -0.03em;
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  }
 }
 
+/* ── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
   .text-gradient {
     @apply bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  /* Tighter optical tracking for large display text */
+  .heading-tight {
+    letter-spacing: -0.045em;
   }
 
   .animate-float {
@@ -70,12 +120,32 @@
   }
 }
 
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-20px); }
+}
+
+/* ── Social proof ticker ─────────────────────────────────────────────────── */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  animation: ticker 35s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
   }
-  50% {
-    transform: translateY(-20px);
-  }
+}
+
+/* ── Ticker fade colour tokens (light / dark via CSS vars) ────────────────── */
+:root {
+  --ticker-fade-from: #f9fafb;
+}
+.dark {
+  --ticker-fade-from: rgb(3 7 18);
 }

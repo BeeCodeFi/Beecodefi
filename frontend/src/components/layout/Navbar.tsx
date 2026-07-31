@@ -22,10 +22,12 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen]         = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted]       = useState(false);
+  const [scrolled, setScrolled]     = useState(false);
+
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -33,7 +35,18 @@ export default function Navbar() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Press "/" to open search globally
+  // Track scroll for glassmorphism transition
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setIsOpen(false); setShowUserMenu(false); }, [pathname]);
+
+  // Press "/" to open search
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     const tag = (e.target as HTMLElement).tagName;
     if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
@@ -47,225 +60,304 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // Glassmorphism style — transparent at top, frosted glass after scroll
+  const navStyle = scrolled
+    ? {
+        backgroundColor: "rgba(255,255,255,0.82)",
+        backdropFilter: "blur(20px) saturate(180%)",
+        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        borderBottom: "1px solid rgba(0,0,0,0.08)",
+        boxShadow: "0 1px 0 0 rgba(0,0,0,0.04), 0 4px 24px -4px rgba(0,0,0,0.06)",
+      }
+    : {
+        backgroundColor: "transparent",
+        backdropFilter: "blur(0px)",
+        borderBottom: "1px solid transparent",
+        boxShadow: "none",
+      };
+
+  const navStyleDark = scrolled
+    ? {
+        backgroundColor: "rgba(3,7,18,0.82)",
+        backdropFilter: "blur(20px) saturate(180%)",
+        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        boxShadow: "0 1px 0 0 rgba(255,255,255,0.04), 0 4px 24px -4px rgba(0,0,0,0.3)",
+      }
+    : {
+        backgroundColor: "transparent",
+        backdropFilter: "blur(0px)",
+        borderBottom: "1px solid transparent",
+        boxShadow: "none",
+      };
+
   return (
     <>
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Code2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              BEECODEFI
-            </span>
-          </Link>
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
+        style={mounted ? (theme === "dark" ? navStyleDark : navStyle) : {
+          backgroundColor: "rgba(255,255,255,0.82)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(0,0,0,0.08)",
+        }}
+        animate={{ y: 0 }}
+        initial={{ y: -4 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                  pathname === link.href
-                    ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                )}
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 group" data-cursor-grow>
+              <motion.div
+                whileHover={{ scale: 1.12, rotate: -6 }}
+                whileTap={{ scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md"
               >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+                <Code2 className="w-5 h-5 text-white" />
+              </motion.div>
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
+                BEECODEFI
+              </span>
+            </Link>
 
-          {/* Theme Toggle + Search + Streak + Auth */}
-          <div className="hidden md:flex items-center gap-2">
-            {/* Search */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700"
-              aria-label="Search"
-            >
-              <Search className="w-4 h-4" />
-              <span className="text-xs hidden lg:inline">Search</span>
-              <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">/</kbd>
-            </button>
-
-            {/* Streak — only for logged-in users */}
-            {mounted && user && streak.current > 0 && (
-              <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 text-orange-600 dark:text-orange-400 text-xs font-bold" title={`${streak.current} day streak! Longest: ${streak.longest}`}>
-                <Flame className="w-3.5 h-3.5" />
-                {streak.current}
-              </div>
-            )}
-
-            {/* Theme */}
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
-            </button>
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 shrink-0">
-                    {user.profileImageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={user.profileImageUrl} alt={user.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                        <span className="text-xs text-white font-bold">{user.name[0].toUpperCase()}</span>
-                      </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-0.5">
+              {navLinks.map((link) => {
+                const active = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    data-cursor-grow
+                    className={cn(
+                      "relative px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
+                      active
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     )}
-                  </div>
-                  <span>{user.name}</span>
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                <AnimatePresence>
-                  {showUserMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2"
-                    >
-                      <Link
-                        href="/quiz/history"
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        <User className="w-4 h-4" /> Quiz History
-                      </Link>
-                      <Link
-                        href="/account"
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        <Settings className="w-4 h-4" /> Account Settings
-                      </Link>
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
-                      <button
-                        onClick={() => { logout(); setShowUserMenu(false); }}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
-                      >
-                        <LogOut className="w-4 h-4" /> Logout
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                >
-                  <LogIn className="w-4 h-4" /> Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
-                >
-                  <UserPlus className="w-4 h-4" /> Sign Up
-                </Link>
-              </>
-            )}
-          </div>
+                  >
+                    {link.label}
+                    {/* Active underline pill */}
+                    {active && (
+                      <motion.div
+                        layoutId="nav-active-pill"
+                        className="absolute inset-0 rounded-lg bg-indigo-50 dark:bg-indigo-950/60"
+                        style={{ zIndex: -1 }}
+                        transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
 
-          {/* Mobile Theme Toggle + Menu Button */}
-          <div className="flex md:hidden items-center gap-1">
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
-            </button>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+            {/* Right — Search + Streak + Theme + Auth */}
+            <div className="hidden md:flex items-center gap-2">
+              {/* Search */}
+              <motion.button
+                whileTap={{ scale: 0.94 }}
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors border border-gray-200/70 dark:border-white/8"
+                aria-label="Search"
+                data-cursor-grow
+              >
+                <Search className="w-4 h-4" />
+                <span className="text-xs hidden lg:inline">Search</span>
+                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-100 dark:bg-white/5 rounded border border-gray-200 dark:border-white/10">/</kbd>
+              </motion.button>
+
+              {/* Streak — logged-in only */}
+              {mounted && user && streak.current > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400 }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 text-orange-600 dark:text-orange-400 text-xs font-bold"
+                  title={`${streak.current} day streak! Longest: ${streak.longest}`}
+                >
+                  <Flame className="w-3.5 h-3.5" />
+                  {streak.current}
+                </motion.div>
+              )}
+
+              {/* Theme toggle */}
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.88, rotate: 15 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                aria-label="Toggle theme"
+                data-cursor-grow
+              >
+                {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
+              </motion.button>
+
+              {/* User menu / auth */}
+              {user ? (
+                <div className="relative">
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                    data-cursor-grow
+                  >
+                    <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 dark:border-white/10 shrink-0 shadow-sm">
+                      {user.profileImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={user.profileImageUrl} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                          <span className="text-xs text-white font-bold">{user.name[0].toUpperCase()}</span>
+                        </div>
+                      )}
+                    </div>
+                    <span>{user.name}</span>
+                    <motion.span animate={{ rotate: showUserMenu ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-4 h-4" />
+                    </motion.span>
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {showUserMenu && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute right-0 mt-2 w-52 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/60 dark:border-white/8 py-2 overflow-hidden"
+                      >
+                        <Link href="/quiz/history"
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
+                          onClick={() => setShowUserMenu(false)}>
+                          <User className="w-4 h-4" /> Quiz History
+                        </Link>
+                        <Link href="/account"
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
+                          onClick={() => setShowUserMenu(false)}>
+                          <Settings className="w-4 h-4" /> Account Settings
+                        </Link>
+                        <div className="border-t border-gray-200/60 dark:border-white/8 my-1.5 mx-3" />
+                        <motion.button
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => { logout(); setShowUserMenu(false); }}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                          <LogOut className="w-4 h-4" /> Logout
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <>
+                  <motion.div whileTap={{ scale: 0.96 }}>
+                    <Link href="/login"
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                      data-cursor-grow>
+                      <LogIn className="w-4 h-4" /> Login
+                    </Link>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
+                    <Link href="/register"
+                      className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md shadow-indigo-500/25"
+                      data-cursor-grow>
+                      <UserPlus className="w-4 h-4" /> Sign Up
+                    </Link>
+                  </motion.div>
+                </>
+              )}
+            </div>
+
+            {/* Mobile controls */}
+            <div className="flex md:hidden items-center gap-1">
+              <motion.button
+                whileTap={{ scale: 0.88, rotate: 15 }}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                aria-label="Toggle theme"
+              >
+                {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5"
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  {isOpen
+                    ? <motion.span key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}><X className="w-6 h-6" /></motion.span>
+                    : <motion.span key="m" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}><Menu className="w-6 h-6" /></motion.span>
+                  }
+                </AnimatePresence>
+              </motion.button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950"
-          >
-            <div className="px-4 py-4 space-y-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "block px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                    pathname === link.href
-                      ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: "easeInOut" }}
+              className="md:hidden border-t border-gray-200/60 dark:border-white/6 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl overflow-hidden"
+            >
+              <div className="px-4 py-4 space-y-1">
+                {navLinks.map((link, i) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04, duration: 0.2 }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "block px-4 py-3 rounded-xl text-sm font-medium transition-colors",
+                        pathname === link.href
+                          ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+                <div className="pt-3 border-t border-gray-200/60 dark:border-white/8 space-y-1.5">
+                  {user ? (
+                    <>
+                      <Link href="/account" onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 rounded-xl">
+                        <Settings className="w-4 h-4" /> Account Settings
+                      </Link>
+                      <button onClick={() => { logout(); setIsOpen(false); }}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl">
+                        <LogOut className="w-4 h-4" /> Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/login" onClick={() => setIsOpen(false)}
+                        className="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 rounded-xl">
+                        Login
+                      </Link>
+                      <Link href="/register" onClick={() => setIsOpen(false)}
+                        className="block px-4 py-3 text-sm font-semibold text-center text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-md">
+                        Sign Up Free
+                      </Link>
+                    </>
                   )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
-                {user ? (
-                  <>
-                    <Link
-                      href="/account"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                    >
-                      <Settings className="w-4 h-4" /> Account Settings
-                    </Link>
-                    <button
-                      onClick={() => { logout(); setIsOpen(false); }}
-                      className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg"
-                    >
-                      <LogOut className="w-4 h-4" /> Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/register"
-                      onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium text-center text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"
-                    >
-                      Sign Up Free
-                    </Link>
-                  </>
-                )}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
     </>
   );
 }

@@ -116,8 +116,10 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              whileHover={{ y: -6, transition: { type: "spring", stiffness: 300, damping: 22 } }}
+              whileTap={{ scale: 0.97, transition: { duration: 0.12 } }}
               className={`group relative p-7 rounded-2xl border ${f.light} ${f.dark} overflow-hidden cursor-default bg-white dark:bg-transparent`}
+              data-cursor-grow
             >
               {/* Number watermark */}
               <div className="absolute top-4 right-5 text-6xl font-black text-gray-100 dark:text-white/[0.03] select-none">

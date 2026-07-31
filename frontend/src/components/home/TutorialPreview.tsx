@@ -89,9 +89,10 @@ export default function TutorialPreview() {
               >
                 <Link href={`/tutorials/${m.slug}`} className="group block h-full">
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    transition={{ duration: 0.25 }}
+                    whileHover={{ y: -8, transition: { type: "spring", stiffness: 300, damping: 22 } }}
+                    whileTap={{ scale: 0.97, transition: { duration: 0.12 } }}
                     className={`relative h-full rounded-2xl border ${m.border} ${m.bg} p-7 overflow-hidden transition-shadow duration-300 ${m.glow} hover:shadow-xl bg-white dark:bg-transparent`}
+                    data-cursor-grow
                   >
                     {/* Icon */}
                     <motion.div
