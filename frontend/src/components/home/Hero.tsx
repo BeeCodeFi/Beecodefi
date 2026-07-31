@@ -237,6 +237,13 @@ const snippets = [
   },
 ];
 
+const beePerches = [
+  { x: 0, y: 0, rotate: -8 },
+  { x: -180, y: 80, rotate: 6 },
+  { x: 140, y: 170, rotate: -4 },
+  { x: 40, y: 280, rotate: 8 },
+];
+
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -245,6 +252,19 @@ export default function Hero() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const resumeLesson = useContinueLearning();
+  const [beePerch, setBeePerch] = useState(0);
+
+  useEffect(() => {
+    const perchTimer = setInterval(() => {
+      setBeePerch((current) => {
+        let next = Math.floor(Math.random() * beePerches.length);
+        while (next === current) next = Math.floor(Math.random() * beePerches.length);
+        return next;
+      });
+    }, 4500);
+
+    return () => clearInterval(perchTimer);
+  }, []);
 
   return (
     <section
@@ -337,11 +357,17 @@ export default function Hero() {
 
       {/* ── Bee ────────────────────────────────────────────────── */}
       <motion.div
-        className="absolute top-24 right-[13%] text-5xl hidden xl:block select-none"
-        animate={{ y: [-10, 10, -10], rotate: [-5, 5, -5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-24 right-[13%] text-5xl hidden xl:block select-none pointer-events-none"
+        animate={beePerches[beePerch]}
+        transition={{ duration: 1.6, ease: "easeInOut" }}
       >
-        🐝
+        <motion.span
+          className="inline-block"
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🐝
+        </motion.span>
       </motion.div>
 
       {/* ── Content ────────────────────────────────────────────── */}
@@ -370,7 +396,7 @@ export default function Hero() {
 
             {/* ── Word-by-word headline reveal ── */}
             <div className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-gray-900 dark:text-white overflow-hidden">
-              <div className="flex flex-wrap justify-center lg:justify-start gap-x-4">
+              <div className="flex flex-wrap items-baseline justify-center gap-x-4">
                 <WordReveal text="Learn" delay={0.1} />
                 {/* Typing word */}
                 <motion.span
@@ -386,7 +412,7 @@ export default function Hero() {
                   <TypingWord />
                 </motion.span>
               </div>
-              <div className="mt-2">
+              <div className="mt-3">
                 <motion.span
                   initial={{ opacity: 0, y: "110%", rotate: 3 }}
                   animate={{ opacity: 1, y: 0, rotate: 0 }}
@@ -403,7 +429,7 @@ export default function Hero() {
             </div>
 
             {/* Subtitle — staggered word reveal */}
-            <div className="text-base sm:text-lg text-gray-600 dark:text-slate-400 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed overflow-hidden">
+            <div className="text-base sm:text-lg text-gray-600 dark:text-slate-400 mb-8 max-w-xl mx-auto leading-relaxed overflow-hidden">
               <WordReveal
                 text="Interactive tutorials, video courses, and quizzes for web development. Learn by doing with hands-on coding exercises."
                 delay={0.55}
