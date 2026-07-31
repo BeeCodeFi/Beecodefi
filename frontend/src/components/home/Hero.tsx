@@ -9,12 +9,10 @@ import {
   useScroll,
   useSpring,
 } from "framer-motion";
-import { ArrowRight, BookOpen, Brain, Sparkles, Play, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, Sparkles, Play } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { tutorials } from "@/data/tutorials";
 import { courses } from "@/data/courses";
 
-const totalLessons = tutorials.reduce((s, t) => s + t.lessons.length, 0);
 const totalVideos  = courses.reduce((s, c) => s + c.videos.length, 0);
 
 // ── Animated counter ──────────────────────────────────────────────────────
@@ -120,83 +118,7 @@ function MagneticLink({ href, children, className }: { href: string; children: R
   );
 }
 
-// ── Continue where you left off ──────────────────────────────────────────
-function ContinueBanner() {
-  const [resume, setResume] = useState<{
-    slug: string;
-    lessonSlug: string;
-    trackTitle: string;
-    lessonTitle: string;
-    progress: number;
-  } | null>(null);
 
-  useEffect(() => {
-    // Find the most recently viewed tutorial that isn't fully complete
-    let best: typeof resume = null;
-    for (const track of tutorials) {
-      const savedIdx = localStorage.getItem(`tutorial-lesson-${track.slug}`);
-      const progressRaw = localStorage.getItem(`tutorial-progress-${track.slug}`);
-      if (savedIdx === null) continue;
-      const idx = parseInt(savedIdx, 10);
-      if (isNaN(idx) || idx < 0) continue;
-      const lesson = track.lessons[idx];
-      if (!lesson) continue;
-      const completed: number[] = progressRaw ? JSON.parse(progressRaw) : [];
-      const progress = Math.round((completed.length / track.lessons.length) * 100);
-      // Only show if not 100% done
-      if (progress < 100) {
-        best = {
-          slug: track.slug,
-          lessonSlug: lesson.slug,
-          trackTitle: track.title,
-          lessonTitle: lesson.title,
-          progress,
-        };
-        break;
-      }
-    }
-    setResume(best);
-  }, []);
-
-  if (!resume) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -10, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
-      className="mb-6"
-    >
-      <Link
-        href={`/tutorials/${resume.slug}?lesson=${resume.lessonSlug}`}
-        className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl
-          bg-white dark:bg-white/5
-          border border-indigo-200 dark:border-indigo-500/30
-          hover:border-indigo-400 dark:hover:border-indigo-400/50
-          shadow-sm hover:shadow-md transition-all duration-200 group"
-      >
-        <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center shrink-0">
-          <Zap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-        </div>
-        <div className="text-left">
-          <p className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Continue {resume.trackTitle}</p>
-          <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[220px]">{resume.lessonTitle}</p>
-        </div>
-        {/* Progress pill */}
-        <div className="flex items-center gap-2 ml-1">
-          <div className="w-16 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-indigo-500"
-              style={{ width: `${resume.progress}%` }}
-            />
-          </div>
-          <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">{resume.progress}%</span>
-        </div>
-        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all shrink-0" />
-      </Link>
-    </motion.div>
-  );
-}
 
 // ── Floating code snippet ─────────────────────────────────────────────────
 const snippets = [
@@ -266,9 +188,6 @@ export default function Hero() {
       {/* ── Content ────────────────────────────────────────────── */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
         <div className="max-w-5xl mx-auto text-center">
-
-          {/* Continue learning banner — only visible for returning users */}
-          <ContinueBanner />
 
           {/* Badge */}
           <motion.div
@@ -373,7 +292,7 @@ export default function Hero() {
               border border-gray-200/60 dark:border-white/10 shadow-sm"
           >
             {[
-              { value: totalLessons, suffix: "+", label: "Lessons",    icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400" },
+              { value: 50, suffix: "+", label: "Lessons",    icon: BookOpen, color: "text-indigo-600 dark:text-indigo-400" },
               { value: totalVideos,  suffix: "",  label: "Videos",     icon: Play,     color: "text-red-500   dark:text-red-400"     },
               { value: 3,            suffix: "",  label: "Quiz Topics", icon: Brain,    color: "text-purple-600 dark:text-purple-400" },
               { value: 100,          suffix: "%", label: "Free",        icon: Sparkles, color: "text-green-600 dark:text-green-400"  },
