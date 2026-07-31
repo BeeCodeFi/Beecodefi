@@ -1,4 +1,5 @@
 using System.Text;
+using AspNetCoreRateLimit;
 using EduPlatform.API.Data;
 using EduPlatform.API.Middleware;
 using EduPlatform.API.Services;
@@ -8,9 +9,23 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Validate critical environment variables on startup
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+if (string.IsNullOrEmpty(connectionString) || connectionString.Contains("PLACEHOLDER"))
+{
+    throw new InvalidOperationException("ConnectionStrings__DefaultConnection environment variable is required");
+}
+
+if (string.IsNullOrEmpty(jwtKey) || jwtKey.Contains("PLACEHOLDER") || jwtKey.Length < 32)
+{
+    throw new InvalidOperationException("Jwt__Key environment variable is required (minimum 32 characters)");
+}
+
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // Services
 builder.Services.AddHttpClient();
@@ -20,8 +35,34 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Rate Limiting
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(options =>
+{
+    options.EnableEndpointRateLimiting = true;
+    options.StackBlockedRequests = false;
+    options.HttpStatusCode = 429;
+    options.RealIpHeader = "X-Real-IP";
+    options.ClientIdHeader = "X-ClientId";
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        // Global: 100 requests per minute per IP
+        new RateLimitRule { Endpoint = "*", Period = "1m", Limit = 100 },
+        // Auth endpoints: 5 requests per minute per IP
+        new RateLimitRule { Endpoint = "POST:/api/auth/login", Period = "1m", Limit = 5 },
+        new RateLimitRule { Endpoint = "POST:/api/auth/register", Period = "1m", Limit = 5 },
+        new RateLimitRule { Endpoint = "POST:/api/auth/forgot-password", Period = "1m", Limit = 3 },
+        new RateLimitRule { Endpoint = "POST:/api/auth/reset-password", Period = "1m", Limit = 3 },
+        // Contact form: 2 requests per 5 minutes per IP
+        new RateLimitRule { Endpoint = "POST:/api/contact", Period = "5m", Limit = 2 },
+    };
+});
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+
 // JWT Authentication
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "BeeCodeFiSuperSecretKey2026ForDevelopment!";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -58,6 +99,52 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// Security Headers
+app.Use(async (context, next) =>
+{
+    // HSTS — Force HTTPS for 1 year (only in production)
+    if (!app.Environment.IsDevelopment())
+    {
+        context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    }
+    
+    // Prevent clickjacking
+    context.Response.Headers.Add("X-Frame-Options", "DENY");
+    
+    // Prevent MIME sniffing
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    
+    // XSS protection
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    
+    // Referrer policy
+    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+    
+    // Content Security Policy
+    context.Response.Headers.Add("Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: https: blob:; " +
+        "font-src 'self' data:; " +
+        "connect-src 'self' https://beecodefi-api.onrender.com https://vercel.live wss://ws-us3.pusher.com; " +
+        "frame-ancestors 'none'; " +
+        "base-uri 'self'; " +
+        "form-action 'self'");
+    
+    // Permissions Policy (formerly Feature-Policy)
+    context.Response.Headers.Add("Permissions-Policy",
+        "camera=(), microphone=(), geolocation=(), interest-cohort=()");
+    
+    await next();
+});
+
+// HTTPS Redirection (only in production)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 // Startup diagnostics
 var startupLogger = app.Logger;
 var resendKey = builder.Configuration["Resend:ApiKey"];
@@ -70,6 +157,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors();
+app.UseIpRateLimiting();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles(); // Serve uploaded avatars from wwwroot
 app.UseAuthentication();
