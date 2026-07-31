@@ -97,7 +97,8 @@ public class QuizService : IQuizService
                 QuestionText = question.Text,
                 IsCorrect = isCorrect,
                 CorrectAnswer = correctAnswer.Text,
-                UserAnswer = userAnswer?.Text
+                UserAnswer = userAnswer?.Text,
+                Explanation = question.Explanation
             });
         }
 

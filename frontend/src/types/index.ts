@@ -54,6 +54,7 @@ export interface QuestionResult {
   isCorrect: boolean;
   correctAnswer: string;
   userAnswer: string | null;
+  explanation?: string | null;
 }
 
 export interface QuizAttempt {

@@ -52,6 +52,7 @@ public class QuestionResultDto
     public bool IsCorrect { get; set; }
     public string CorrectAnswer { get; set; } = string.Empty;
     public string? UserAnswer { get; set; }
+    public string? Explanation { get; set; }
 }
 
 public class QuizAttemptDto

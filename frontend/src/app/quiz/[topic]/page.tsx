@@ -3,12 +3,12 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, RotateCcw, Trophy, Home } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, RotateCcw, Trophy, Home, Timer, Eye } from "lucide-react";
 import api from "@/lib/api";
 import { QuizQuestion, QuizResult } from "@/types";
 import { cn } from "@/lib/utils";
 
-type QuizState = "loading" | "playing" | "results";
+type QuizState = "loading" | "ready" | "playing" | "results" | "review";
 
 export default function QuizSessionPage({ params }: { params: Promise<{ topic: string }> }) {
   const { topic } = use(params);
@@ -18,6 +18,9 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [result, setResult] = useState<QuizResult | null>(null);
   const [quizId, setQuizId] = useState<number>(0);
+  const [isTimedMode, setIsTimedMode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [quizTitle, setQuizTitle] = useState("");
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -28,22 +31,40 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
         );
         if (quizTopic) {
           setQuizId(quizTopic.id);
+          setQuizTitle(quizTopic.title);
           // Store the quiz title for display
           document.title = `${quizTopic.title} Quiz`;
         }
 
         const { data } = await api.get<QuizQuestion[]>(`/quiz/${topic}`);
         setQuestions(data);
-        setState("playing");
+        setState("ready");
       } catch {
-        setState("playing");
+        setState("ready");
         setQuestions([]);
       }
     };
     fetchQuestions();
   }, [topic]);
 
+  useEffect(() => {
+    if (state === "playing" && isTimedMode && timeLeft > 0) {
+      const timerId = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerId);
+            handleSubmit(); // Auto submit when time is up
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timerId);
+    }
+  }, [state, isTimedMode, timeLeft]);
+
   const handleAnswer = (questionId: number, answerId: number) => {
+    if (state === "review") return;
     setAnswers((prev) => ({ ...prev, [questionId]: answerId }));
   };
 
@@ -65,6 +86,13 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
     setCurrentIndex(0);
     setAnswers({});
     setResult(null);
+    setState("ready");
+  };
+
+  const startQuiz = () => {
+    if (isTimedMode) {
+      setTimeLeft(questions.length * 30); // 30 seconds per question
+    }
     setState("playing");
   };
 
@@ -75,6 +103,34 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
           <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">Loading quiz...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (state === "ready") {
+    return (
+      <div className="min-h-screen py-20 flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 sm:p-12 text-center max-w-md w-full">
+          <h1 className="text-3xl font-bold mb-4">{quizTitle} Quiz</h1>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">{questions.length} Questions</p>
+          
+          <label className="flex items-center justify-between p-4 mb-8 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                <Timer className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-900 dark:text-white">Timed Mode</p>
+                <p className="text-xs text-gray-500">30s per question</p>
+              </div>
+            </div>
+            <input type="checkbox" checked={isTimedMode} onChange={(e) => setIsTimedMode(e.target.checked)} className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
+          </label>
+
+          <button onClick={startQuiz} className="w-full py-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
+            Start Quiz
+          </button>
+        </motion.div>
       </div>
     );
   }
@@ -135,12 +191,19 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
                   ) : (
                     <XCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                   )}
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">{r.questionText}</p>
                     {!r.isCorrect && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Correct answer: <span className="text-green-600 dark:text-green-400 font-medium">{r.correctAnswer}</span>
-                      </p>
+                      <>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Correct answer: <span className="text-green-600 dark:text-green-400 font-medium">{r.correctAnswer}</span>
+                        </p>
+                        {r.explanation && (
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 leading-relaxed bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700">
+                            💡 <span className="font-semibold">Explanation:</span> {r.explanation}
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -148,6 +211,12 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => { setCurrentIndex(0); setState("review"); }}
+                className="flex items-center gap-2 px-6 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-800/50 transition-colors"
+              >
+                <Eye className="w-4 h-4" /> Review Answers
+              </button>
               <button
                 onClick={handleRetry}
                 className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors"
@@ -196,7 +265,14 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
             <span className="text-sm font-medium text-gray-500">
               Question {currentIndex + 1} of {questions.length}
             </span>
-            <span className="text-sm font-medium text-gray-500">{topic.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")} Quiz</span>
+            <div className="flex items-center gap-4">
+              {state === "playing" && isTimedMode && (
+                <span className={cn("text-sm font-bold flex items-center gap-1", timeLeft < 10 ? "text-red-500 animate-pulse" : "text-amber-500")}>
+                  <Timer className="w-4 h-4" /> {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+                </span>
+              )}
+              <span className="text-sm font-medium text-gray-500">{quizTitle} Quiz {state === "review" && "(Review)"}</span>
+            </div>
           </div>
           <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
             <motion.div
@@ -235,9 +311,14 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
                 <button
                   key={answer.id}
                   onClick={() => handleAnswer(question.id, answer.id)}
+                  disabled={state === "review"}
                   className={cn(
                     "w-full text-left p-4 rounded-xl border-2 transition-all duration-200 font-medium",
-                    answers[question.id] === answer.id
+                    state === "review" && result?.results.find(r => r.questionId === question.id)?.correctAnswer === answer.text
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                      : state === "review" && answers[question.id] === answer.id && result?.results.find(r => r.questionId === question.id)?.correctAnswer !== answer.text
+                      ? "border-red-500 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                      : answers[question.id] === answer.id
                       ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300"
                       : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300"
                   )}
@@ -267,10 +348,10 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
           {currentIndex < questions.length - 1 ? (
             <button
               onClick={() => setCurrentIndex((prev) => prev + 1)}
-              disabled={!answers[question.id]}
+              disabled={!answers[question.id] && state !== "review"}
               className={cn(
                 "flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all",
-                answers[question.id]
+                answers[question.id] || state === "review"
                   ? "bg-indigo-600 text-white hover:bg-indigo-700"
                   : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
               )}
@@ -279,16 +360,22 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
             </button>
           ) : (
             <button
-              onClick={handleSubmit}
-              disabled={!allAnswered}
+              onClick={() => {
+                if (state === "review") {
+                  setState("results");
+                } else {
+                  handleSubmit();
+                }
+              }}
+              disabled={!allAnswered && state !== "review"}
               className={cn(
                 "flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all",
-                allAnswered
+                allAnswered || state === "review"
                   ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600"
                   : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
               )}
             >
-              <Trophy className="w-4 h-4" /> Submit Quiz
+              {state === "review" ? <ArrowLeft className="w-4 h-4" /> : <Trophy className="w-4 h-4" />} {state === "review" ? "Back to Results" : "Submit Quiz"}
             </button>
           )}
         </div>
