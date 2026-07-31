@@ -17,10 +17,18 @@ export default function ReadingProgressBar() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-[3px] bg-transparent pointer-events-none">
+    /*
+     * Positioned at top-[64px] (bottom edge of the fixed 64px navbar).
+     * z-30 sits above the LessonNavHeader (z-20) so the bar is always visible
+     * as a glowing line between the main navbar and the lesson sub-nav.
+     */
+    <div className="fixed top-[64px] left-0 right-0 z-30 h-[3px] pointer-events-none">
+      {/* Faint track so the bar is recognisable even at 0% */}
+      <div className="absolute inset-0 bg-gray-200/50 dark:bg-gray-700/40" />
+      {/* Filled portion with glow */}
       <div
-        className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-100 ease-linear"
-        style={{ width: `${progress}%` }}
+        className="relative h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-[width] duration-150 ease-linear"
+        style={{ width: `${progress}%`, boxShadow: "0 0 8px 1px rgba(139,92,246,0.55)" }}
       />
     </div>
   );
