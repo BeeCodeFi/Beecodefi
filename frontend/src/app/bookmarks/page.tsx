@@ -1,12 +1,28 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Bookmark, BookmarkX, ArrowRight, BookOpen } from "lucide-react";
 import { useBookmarks } from "@/hooks/useBookmarks";
+import { useAuth } from "@/context/AuthContext";
 
 export default function BookmarksPage() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
   const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks();
+
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/login?from=/bookmarks");
+    }
+  }, [isLoading, user, router]);
+
+  // Show nothing while auth state is resolving or redirecting
+  if (isLoading || !user) return null;
+
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 py-16">
