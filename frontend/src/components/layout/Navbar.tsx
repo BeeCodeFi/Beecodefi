@@ -29,7 +29,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
-  const streak = useStreak();
+  const streak = useStreak(!!user);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -95,8 +95,8 @@ export default function Navbar() {
               <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">/</kbd>
             </button>
 
-            {/* Streak */}
-            {mounted && streak.current > 0 && (
+            {/* Streak — only for logged-in users */}
+            {mounted && user && streak.current > 0 && (
               <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 text-orange-600 dark:text-orange-400 text-xs font-bold" title={`${streak.current} day streak! Longest: ${streak.longest}`}>
                 <Flame className="w-3.5 h-3.5" />
                 {streak.current}

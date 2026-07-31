@@ -22,6 +22,7 @@ import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useStreak } from "@/hooks/useStreak";
+import { useAuth } from "@/context/AuthContext";
 
 // ─── Inline markdown helpers ────────────────────────────────────────────────
 
@@ -167,7 +168,8 @@ export default function TutorialPage({
   const [courseComplete, setCourseComplete] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  useStreak(); // ping streak on lesson view
+  const { user } = useAuth();
+  useStreak(!!user); // ping streak only when logged in
 
   const tutorial = tutorials.find((t) => t.slug === slug);
 
@@ -298,7 +300,7 @@ export default function TutorialPage({
       if (e.key === "j" || e.key === "ArrowRight") { if (hasNext) goNext(); }
       if (e.key === "k" || e.key === "ArrowLeft")  { if (hasPrev) goPrev(); }
       if (e.key === "b") {
-        if (tutorial) toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title });
+        if (tutorial && user) toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title });
       }
     };
     window.addEventListener("keydown", handler);
@@ -433,6 +435,8 @@ export default function TutorialPage({
               <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
                 {lesson.title}
               </h1>
+              {/* Bookmark — logged-in only */}
+              {user && (
               <button
                 onClick={() => toggleBookmark({ tutorialSlug: slug, lessonSlug: lesson.slug, lessonTitle: lesson.title, trackTitle: tutorial.title })}
                 title={isBookmarked(slug, lesson.slug) ? "Remove bookmark (B)" : "Bookmark this lesson (B)"}
@@ -446,6 +450,7 @@ export default function TutorialPage({
                   ? <BookmarkCheck className="w-5 h-5" />
                   : <Bookmark className="w-5 h-5" />}
               </button>
+              )}
             </div>
 
             {/* Meta badges */}

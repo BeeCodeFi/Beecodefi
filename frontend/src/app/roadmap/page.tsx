@@ -83,20 +83,43 @@ function WalkingBee() {
   );
 }
 
-// ── Road Wrapper (tracks scroll progress) ────────────────────────────────────
+// ── Road Wrapper (tracks scroll progress + theme) ────────────────────────────
 function RoadWrapper({ scrollYProgress }: { scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"] }) {
   const [prog, setProg] = useState(0);
+  // Read dark mode from document class (avoids next-themes import cycle)
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
     const unsub = scrollYProgress.on("change", setProg);
-    return unsub;
+    // Watch for theme class changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    setIsDark(document.documentElement.classList.contains("dark"));
+    return () => { unsub(); observer.disconnect(); };
   }, [scrollYProgress]);
-  return <RoadSVG progress={prog} />;
+
+  return <RoadSVG progress={prog} isDark={isDark} />;
 }
 
 // ── Road SVG ─────────────────────────────────────────────────────────────────
-function RoadSVG({ progress }: { progress: number }) {
+function RoadSVG({ progress, isDark }: { progress: number; isDark: boolean }) {
+  // This is the exact same bezier path — we measure its length via a hidden ref
   const PATH = "M 100 30 C 55 130, 155 210, 100 320 C 45 420, 155 490, 100 600 C 55 680, 145 750, 100 880";
-  const LEN = 950;
+  const pathRef = useRef<SVGPathElement>(null);
+  const [pathLen, setPathLen] = useState(900);
+
+  useEffect(() => {
+    if (pathRef.current) {
+      setPathLen(pathRef.current.getTotalLength());
+    }
+  }, []);
+
+  const drawn = progress * pathLen;
+  const roadBase = isDark ? "#374151" : "#e5e7eb";
+  const roadShadow = isDark ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.08)";
+
   return (
     <svg viewBox="0 0 200 920" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
       <defs>
@@ -106,21 +129,44 @@ function RoadSVG({ progress }: { progress: number }) {
           <stop offset="66%"  stopColor="#eab308" />
           <stop offset="100%" stopColor="#8b5cf6" />
         </linearGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur" />
+        <filter id="roadGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
       </defs>
+
+      {/* Measure path (invisible) */}
+      <path ref={pathRef} d={PATH} fill="none" stroke="none" strokeWidth="0" />
+
       {/* Road shadow */}
-      <path d={PATH} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="30" strokeLinecap="round" />
-      {/* Road base */}
-      <path d={PATH} fill="none" stroke="#e5e7eb" strokeWidth="26" strokeLinecap="round" className="dark:[stroke:#374151]" />
-      {/* Progress */}
-      <path d={PATH} fill="none" stroke="url(#rg)" strokeWidth="22" strokeLinecap="round"
-        strokeDasharray={LEN} strokeDashoffset={LEN - progress * LEN}
-        style={{ transition: "stroke-dashoffset 0.08s linear" }} filter="url(#glow)" />
-      {/* Centre dashes */}
-      <path d={PATH} fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="14 18" />
+      <path d={PATH} fill="none" stroke={roadShadow} strokeWidth="32" strokeLinecap="round" />
+      {/* Road base (full length, uncoloured) */}
+      <path d={PATH} fill="none" stroke={roadBase} strokeWidth="28" strokeLinecap="round" />
+
+      {/* Coloured progress fill — starts at 0, fills as you scroll */}
+      {pathLen > 0 && (
+        <path
+          d={PATH}
+          fill="none"
+          stroke="url(#rg)"
+          strokeWidth="24"
+          strokeLinecap="round"
+          strokeDasharray={`${pathLen}`}
+          strokeDashoffset={`${pathLen - drawn}`}
+          style={{ transition: "stroke-dashoffset 0.06s linear" }}
+          filter="url(#roadGlow)"
+        />
+      )}
+
+      {/* White centre dashes — always full length */}
+      <path
+        d={PATH}
+        fill="none"
+        stroke={isDark ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.7)"}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeDasharray="14 18"
+      />
     </svg>
   );
 }
@@ -395,7 +441,7 @@ export default function RoadmapPage() {
       </section>
 
       {/* ── Desktop road ─────────────────────────────────────── */}
-      <section ref={roadRef} className="relative hidden md:block py-16">
+      <section ref={roadRef} className="relative hidden md:block py-16 bg-white dark:bg-gray-950">
         <div className="max-w-5xl mx-auto px-4 relative" style={{ minHeight: `${STEPS.length * 340}px` }}>
 
           {/* SVG road — centred */}
@@ -421,7 +467,7 @@ export default function RoadmapPage() {
       </section>
 
       {/* ── Mobile road ──────────────────────────────────────── */}
-      <section className="md:hidden py-10 px-4 relative">
+      <section className="md:hidden py-10 px-4 relative bg-white dark:bg-gray-950">
         {/* Vertical line */}
         <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-orange-400 via-blue-400 via-yellow-400 to-purple-500 opacity-30" />
         <div className="space-y-0">
