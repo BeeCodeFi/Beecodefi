@@ -10,6 +10,7 @@ import CursorTrail from "@/components/ui/CursorTrail";
 import PageTransition from "@/components/ui/PageTransition";
 import { ToastProvider } from "@/context/ToastContext";
 import OnboardingTour from "@/components/onboarding/OnboardingTour";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 
 // Inter — body text (readable, neutral)
 const inter = Inter({
@@ -45,6 +46,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${dmSans.variable} h-full antialiased`}>
+      <head>
+        <GoogleAnalytics />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>
