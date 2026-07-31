@@ -128,12 +128,17 @@
 
 /* ── Social proof ticker ─────────────────────────────────────────────────── */
 @keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
 }
 
 .ticker-track {
   animation: ticker 35s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -144,8 +149,8 @@
 
 /* ── Ticker fade colour tokens (light / dark via CSS vars) ────────────────── */
 :root {
-  --ticker-fade-from: #f9fafb;
+  --ticker-fade-from: #ffffff;
 }
 .dark {
-  --ticker-fade-from: rgb(3 7 18);
+  --ticker-fade-from: #030712;
 }
