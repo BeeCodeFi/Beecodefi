@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
@@ -89,7 +89,20 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [expanded, setExpanded] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifyState, setNotifyState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const isLeft = index % 2 === 0;
+
+  const handleNotifySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!notifyEmail) return;
+    setNotifyState("loading");
+    // Simulate API call
+    setTimeout(() => {
+      setNotifyState("success");
+      setNotifyEmail("");
+    }, 800);
+  };
 
   const cardBg  = isDark ? "rgb(17 24 39)"  : step.lightCardBg;
   const cardBdr = isDark ? `${step.accent}28` : step.lightBorder;
@@ -188,10 +201,27 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
                     <BookOpen className="w-4 h-4" /> Start Learning <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold cursor-not-allowed"
-                    style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6", color: isDark ? "#6b7280" : "#9ca3af" }}>
-                    <Rocket className="w-4 h-4" /> Coming Soon
-                  </div>
+                  <form onSubmit={handleNotifySubmit} className="flex-1 flex items-center gap-2">
+                    <input
+                      type="email"
+                      required
+                      placeholder="Enter email to get notified..."
+                      value={notifyEmail}
+                      onChange={(e) => setNotifyEmail(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex-1 min-w-0 h-12 px-4 rounded-2xl text-sm outline-none transition-all"
+                      style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"}`, color: textPri }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={notifyState === "loading" || notifyState === "success"}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-12 px-6 rounded-2xl text-sm font-bold text-white transition-all disabled:opacity-50"
+                      style={{ background: notifyState === "success" ? "#10b981" : step.accent, boxShadow: notifyState === "success" ? "none" : `0 4px 14px ${step.accent}40` }}
+                    >
+                      {notifyState === "loading" ? "..." : notifyState === "success" ? "Subscribed! ✓" : "Notify Me"}
+                    </button>
+                  </form>
                 )}
                 {step.tutorialSlug && (
                   <Link href={`/quiz?category=${step.tutorialSlug}`} onClick={(e) => e.stopPropagation()}
@@ -233,6 +263,8 @@ function MobileStepCard({ step, index, isDark }: { step: Step; index: number; is
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [expanded, setExpanded] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifyState, setNotifyState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const cardBg  = isDark ? "#111827" : step.lightCardBg;
   const textPri = isDark ? "#f9fafb" : "#111827";
   const textSec = isDark ? "#9ca3af" : "#4b5563";
@@ -278,24 +310,37 @@ function MobileStepCard({ step, index, isDark }: { step: Step; index: number; is
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="flex gap-2">
-          {step.tutorialSlug ? (
-            <Link href={`/tutorials/${step.tutorialSlug}`} onClick={(e) => e.stopPropagation()}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r ${step.gradient} text-white text-xs font-bold`}
-              style={{ boxShadow: `0 4px 12px ${step.accent}35` }}>
-              <BookOpen className="w-3.5 h-3.5" /> Start <ArrowRight className="w-3 h-3" />
-            </Link>
-          ) : (
-            <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold cursor-not-allowed"
-              style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6", color: isDark ? "#6b7280" : "#9ca3af" }}>
-              <Rocket className="w-3.5 h-3.5" /> Coming Soon
-            </div>
-          )}
-          <button onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-            className="px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors"
-            style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${step.accent}12`, color: isDark ? "#9ca3af" : step.accent }}>
-            {expanded ? "Less up" : "Skills down"}
-          </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2 w-full">
+            {step.tutorialSlug ? (
+              <Link href={`/tutorials/${step.tutorialSlug}`} onClick={(e) => e.stopPropagation()}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r ${step.gradient} text-white text-xs font-bold`}
+                style={{ boxShadow: `0 4px 12px ${step.accent}35` }}>
+                <BookOpen className="w-3.5 h-3.5" /> Start <ArrowRight className="w-3 h-3" />
+              </Link>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!notifyEmail) return;
+                setNotifyState("loading");
+                setTimeout(() => setNotifyState("success"), 800);
+              }} className="flex-1 flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
+                <input type="email" required placeholder="Get notified..." value={notifyEmail} onChange={e => setNotifyEmail(e.target.value)}
+                  className="w-full min-w-0 h-9 px-3 rounded-xl text-xs outline-none"
+                  style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"}`, color: textPri }} />
+                <button type="submit" disabled={notifyState === "loading" || notifyState === "success"}
+                  className="h-9 px-3 rounded-xl text-xs font-bold text-white whitespace-nowrap disabled:opacity-50"
+                  style={{ background: notifyState === "success" ? "#10b981" : step.accent }}>
+                  {notifyState === "success" ? "✓" : "Notify"}
+                </button>
+              </form>
+            )}
+            <button onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+              className="px-3 py-2.5 rounded-xl text-xs font-medium transition-colors shrink-0"
+              style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${step.accent}12`, color: isDark ? "#9ca3af" : step.accent }}>
+              {expanded ? "Less" : "Skills"}
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>

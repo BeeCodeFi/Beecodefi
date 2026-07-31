@@ -56,10 +56,48 @@ export async function generateMetadata({
   };
 }
 
-export default function TutorialSlugLayout({
+import Script from "next/script";
+
+export default async function TutorialSlugLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ slug: string }>;
 }) {
-  return <>{children}</>;
+  const { slug } = await params;
+  const track = tutorials.find((t) => t.slug === slug);
+  const meta = trackMeta[slug];
+
+  const jsonLd = track
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        name: track.title,
+        description: meta?.description || track.description,
+        provider: {
+          "@type": "Organization",
+          name: "BeeCodeFi",
+          sameAs: "https://beecodefi.com",
+        },
+        hasCourseInstance: {
+          "@type": "CourseInstance",
+          courseMode: "online",
+          courseWorkload: "PT10H", // roughly 10 hours depending on the course
+        },
+      }
+    : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <Script
+          id={`json-ld-course-${slug}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      {children}
+    </>
+  );
 }

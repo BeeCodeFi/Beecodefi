@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import {
   User, Camera, Mail, Lock, RotateCcw, Trash2, Save,
   BookOpen, Trophy, BarChart3, Calendar, AlertTriangle, Check, X, Eye, EyeOff,
-  ZoomIn, ZoomOut, Crop, PlayCircle, CheckCircle2,
+  ZoomIn, ZoomOut, Crop, PlayCircle, CheckCircle2, Medal, Flame, Star, Zap
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
@@ -522,6 +522,61 @@ export default function AccountPage() {
               </button>
             </form>
           </motion.div>
+
+          {/* Achievements Section */}
+          {stats && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6"
+            >
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Medal className="w-5 h-5 text-indigo-500" /> Achievements
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className={`p-4 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  stats.completedLessons >= 1
+                    ? "bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/50"
+                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-50 grayscale"
+                }`}>
+                  <Zap className={`w-8 h-8 mb-2 ${stats.completedLessons >= 1 ? "text-indigo-500" : "text-gray-400"}`} />
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">First Steps</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete 1 lesson</span>
+                </div>
+
+                <div className={`p-4 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  stats.completedQuizzes >= 1
+                    ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800/50"
+                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-50 grayscale"
+                }`}>
+                  <Trophy className={`w-8 h-8 mb-2 ${stats.completedQuizzes >= 1 ? "text-green-500" : "text-gray-400"}`} />
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">Quiz Taker</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Complete 1 quiz</span>
+                </div>
+
+                <div className={`p-4 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  stats.streakDays >= 3
+                    ? "bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800/50"
+                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-50 grayscale"
+                }`}>
+                  <Flame className={`w-8 h-8 mb-2 ${stats.streakDays >= 3 ? "text-orange-500" : "text-gray-400"}`} />
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">Persistent</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">3 day streak</span>
+                </div>
+
+                <div className={`p-4 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  stats.averageScore >= 80 && stats.completedQuizzes >= 3
+                    ? "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800/50"
+                    : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-50 grayscale"
+                }`}>
+                  <Star className={`w-8 h-8 mb-2 ${stats.averageScore >= 80 && stats.completedQuizzes >= 3 ? "text-yellow-500" : "text-gray-400"}`} />
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">Mastery</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Avg 80%+ (3 quizzes)</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Quiz History Section */}
           <motion.div

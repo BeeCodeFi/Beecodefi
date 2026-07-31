@@ -17,6 +17,7 @@ import LessonQuiz from "@/components/tutorial/LessonQuiz";
 import TutorialSidebar from "@/components/tutorial/TutorialSidebar";
 import LessonNavHeader from "@/components/tutorial/LessonNavHeader";
 import TableOfContents from "@/components/tutorial/TableOfContents";
+import LessonFeedback from "@/components/tutorial/LessonFeedback";
 import Certificate from "@/components/tutorial/Certificate";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
@@ -577,6 +578,9 @@ function TutorialPageContent({
                 lessonTitle={lesson.title}
               />
             )}
+
+            {/* ── Lesson Feedback ── */}
+            <LessonFeedback lessonSlug={lesson.slug} />
 
             {/* ── End-of-course quiz CTA ── */}
             {quizCategory && !hasNext && (

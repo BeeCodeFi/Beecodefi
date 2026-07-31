@@ -35,9 +35,10 @@ const footerLinks = {
   Company: [
     { href: "/about",     label: "About"     },
     { href: "/roadmap",   label: "Roadmap"   },
-    { href: "/bookmarks", label: "Bookmarks" },
-    { href: "/courses",   label: "Courses"   },
     { href: "/contact",   label: "Contact"   },
+    { href: "/faq",       label: "FAQ"       },
+    { href: "/privacy",   label: "Privacy"   },
+    { href: "/terms",     label: "Terms"     },
   ],
 };
 
