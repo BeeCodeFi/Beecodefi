@@ -1,12 +1,12 @@
 # Backend Deployment Guide
 
-This guide explains how to deploy the BeeCodeFi backend API to Render.com.
+This guide explains how to deploy the BeeCodeFi backend API to Render.com with a Neon PostgreSQL database.
 
 ## Prerequisites
 
 1. A [Render.com](https://render.com) account
 2. A GitHub repository with your code
-3. A PostgreSQL database (Render provides this)
+3. A Neon PostgreSQL project
 
 ## Required Environment Variables
 
@@ -18,17 +18,26 @@ You MUST set these environment variables in your Render dashboard:
 ConnectionStrings__DefaultConnection
 ```
 
-**Format for Render PostgreSQL (Internal):**
+**Recommended Neon connection URL:**
+Copy the pooled or direct connection string from the Neon dashboard. It normally looks like this:
+
 ```
-Host=dpg-xxxxx-a.oregon-postgres.render.com;Database=beecodefi;Username=beecodefi_user;Password=YOUR_PASSWORD;SSL Mode=Require;Trust Server Certificate=true
+postgresql://neondb_owner:YOUR_PASSWORD@ep-example.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 ```
 
-**Format for Render PostgreSQL (External):**
+**Key-value format:**
+
 ```
-postgresql://beecodefi_user:YOUR_PASSWORD@dpg-xxxxx-a.oregon-postgres.render.com/beecodefi
+Host=ep-example.us-east-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=YOUR_PASSWORD;SSL Mode=Require
 ```
 
-⚠️ **Important**: Use the **Internal Database URL** format for better performance within Render.
+**Do not use a Render `dpg-...` hostname unless the database is hosted by Render.** The value below is incomplete and contains placeholders:
+
+```
+dpg-xxxxx-a.oregon-postgres.render.com;Database=beecodefi;Username=beecodefi_user;Password=YOUR_DB_PASSWORD
+```
+
+Set the complete Neon URL as `ConnectionStrings__DefaultConnection` in Render. The application also accepts the `DATABASE_URL` variable when the nested connection-string variable is not set.
 
 ### 2. JWT Secret Key
 
@@ -37,6 +46,7 @@ Jwt__Key
 ```
 
 Generate a secure 32+ character key:
+
 ```bash
 # Using openssl (Linux/Mac)
 openssl rand -base64 32
@@ -69,6 +79,7 @@ Get your API key from [Resend.com](https://resend.com/api-keys)
 ### 5. Frontend URL (for CORS)
 
 The backend already includes these CORS origins:
+
 - `http://localhost:3000` (development)
 - `https://localhost:3000` (development)
 - `https://beecodefi-edu.vercel.app` (production)
@@ -77,15 +88,12 @@ If your frontend URL is different, you'll need to update `Program.cs`.
 
 ## Deployment Steps
 
-### Step 1: Create PostgreSQL Database on Render
+### Step 1: Create PostgreSQL Database on Neon
 
-1. Go to Render Dashboard → "New" → "PostgreSQL"
-2. Name: `beecodefi-db`
-3. Database: `beecodefi`
-4. User: `beecodefi_user`
-5. Region: Same as your web service
-6. Click "Create Database"
-7. **Copy the Internal Database URL** (starts with `Host=`)
+1. Create or open your project in the [Neon Console](https://console.neon.tech/).
+2. Create the `beecodefi` database if it does not already exist.
+3. Select **Connect**, choose the `Node.js` or `ADO.NET` connection format, and copy the complete connection string.
+4. Keep the password URL-encoded if it contains characters such as `@`, `:`, `/`, or `#`.
 
 ### Step 2: Create Web Service on Render
 
@@ -104,7 +112,7 @@ If your frontend URL is different, you'll need to update `Program.cs`.
 In your Render web service settings, add these environment variables:
 
 ```
-ConnectionStrings__DefaultConnection=Host=dpg-xxxxx-a.oregon-postgres.render.com;Database=beecodefi;Username=beecodefi_user;Password=YOUR_DB_PASSWORD;SSL Mode=Require;Trust Server Certificate=true
+ConnectionStrings__DefaultConnection=postgresql://neondb_owner:YOUR_PASSWORD@ep-example.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 Jwt__Key=YOUR_GENERATED_JWT_KEY_HERE
 
@@ -141,6 +149,7 @@ You should get a response indicating the API is running.
 ## Health Check Endpoint
 
 The API includes a health check at:
+
 ```
 GET /api/auth/health
 ```
@@ -163,20 +172,21 @@ dotnet ef database update --connection "YOUR_CONNECTION_STRING"
 
 ## Troubleshooting
 
-### Issue: "ConnectionStrings__DefaultConnection environment variable is required"
+### Issue: "ConnectionStrings\_\_DefaultConnection environment variable is required"
 
-**Solution**: Make sure you've set the environment variable in Render dashboard. Use the Internal Database URL for best performance.
+**Solution**: Make sure you've set the environment variable in the Render dashboard to the complete Neon connection string. It must include the `postgresql://` prefix, Neon hostname, database, username, and password.
 
-### Issue: "Jwt__Key environment variable is required"
+### Issue: "Jwt\_\_Key environment variable is required"
 
 **Solution**: Generate a secure key (32+ characters) and set it as an environment variable.
 
 ### Issue: Database connection timeout
 
-**Solution**: 
-1. Ensure database and web service are in the same region
-2. Use Internal Database URL (not External)
-3. Check database is not suspended (free tier sleeps after inactivity)
+**Solution**:
+
+1. Confirm the Neon project is active and the connection string points to the correct branch.
+2. Use the complete Neon pooled connection string from the Neon Console.
+3. Confirm `sslmode=require` is present.
 
 ### Issue: CORS errors from frontend
 
@@ -195,13 +205,13 @@ policy.WithOrigins(
 
 ## Environment Variables Checklist
 
-- [ ] ConnectionStrings__DefaultConnection
-- [ ] Jwt__Key (32+ characters)
-- [ ] Jwt__Issuer
-- [ ] Jwt__Audience
-- [ ] Resend__ApiKey
-- [ ] Resend__FromEmail
-- [ ] Resend__FromName
+- [ ] ConnectionStrings\_\_DefaultConnection
+- [ ] Jwt\_\_Key (32+ characters)
+- [ ] Jwt\_\_Issuer
+- [ ] Jwt\_\_Audience
+- [ ] Resend\_\_ApiKey
+- [ ] Resend\_\_FromEmail
+- [ ] Resend\_\_FromName
 
 ## Security Notes
 
@@ -214,6 +224,7 @@ policy.WithOrigins(
 ## Monitoring
 
 View logs in real-time:
+
 ```bash
 render logs beecodefi-api --tail
 ```
@@ -223,6 +234,7 @@ Or access via Render Dashboard → Your Service → Logs
 ## Scaling
 
 For production, consider:
+
 - Upgrading to Starter tier ($7/month) for always-on service
 - Enabling auto-scaling based on traffic
 - Setting up a CDN for static assets
@@ -232,6 +244,7 @@ For production, consider:
 ## Support
 
 If you encounter issues:
+
 1. Check Render logs for error details
 2. Verify all environment variables are set correctly
 3. Test database connection separately

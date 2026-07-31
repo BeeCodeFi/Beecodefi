@@ -6,18 +6,24 @@ using EduPlatform.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Validate critical environment variables on startup
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString) ||
+    connectionString.Contains("PLACEHOLDER", StringComparison.OrdinalIgnoreCase))
+{
+    connectionString = builder.Configuration["DATABASE_URL"];
+}
 var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrEmpty(connectionString) || connectionString.Contains("PLACEHOLDER"))
 {
     var errorMsg = "ConnectionStrings__DefaultConnection environment variable is required. " +
-                   "Please set it in your Render dashboard to your PostgreSQL connection string. " +
-                   "Format: Host=myhost;Database=mydb;Username=user;Password=pass;SSL Mode=Require;Trust Server Certificate=true";
+                   "Set it in your hosting provider dashboard to your Neon PostgreSQL connection string. " +
+                   "Format: postgresql://user:password@ep-example.us-east-2.aws.neon.tech/database?sslmode=require";
     throw new InvalidOperationException(errorMsg);
 }
 
@@ -28,9 +34,15 @@ if (string.IsNullOrEmpty(jwtKey) || jwtKey.Contains("PLACEHOLDER") || jwtKey.Len
     throw new InvalidOperationException(errorMsg);
 }
 
+connectionString = NormalizeConnectionString(connectionString);
+
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null)));
 
 // Services
 builder.Services.AddHttpClient();
@@ -173,3 +185,39 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "5219";
 app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();
+
+static string NormalizeConnectionString(string value)
+{
+    if (value.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+        value.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+    {
+        var uri = new Uri(value);
+        var userInfo = uri.UserInfo.Split(':', 2);
+        var builder = new NpgsqlConnectionStringBuilder
+        {
+            Host = uri.Host,
+            Port = uri.IsDefaultPort ? 5432 : uri.Port,
+            Database = uri.AbsolutePath.TrimStart('/'),
+            Username = Uri.UnescapeDataString(userInfo[0]),
+            Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty,
+        };
+
+        foreach (var parameter in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var pair = parameter.Split('=', 2);
+            if (pair.Length == 2 && pair[0].Equals("sslmode", StringComparison.OrdinalIgnoreCase))
+            {
+                builder.SslMode = Enum.Parse<SslMode>(pair[1], ignoreCase: true);
+            }
+        }
+
+        value = builder.ConnectionString;
+    }
+
+    var connectionStringBuilder = new NpgsqlConnectionStringBuilder(value)
+    {
+        SslMode = SslMode.Require,
+    };
+
+    return connectionStringBuilder.ConnectionString;
+}
