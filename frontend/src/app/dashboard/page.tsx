@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Bookmark, Trophy, Settings, Loader2 } from "lucide-react";
+import { LayoutDashboard, Bookmark, Trophy, Settings, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useStreak } from "@/hooks/useStreak";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -18,6 +18,7 @@ export default function UnifiedDashboardPage() {
   const streak = useStreak(!!user);
   const { bookmarks } = useBookmarks();
   const router = useRouter();
+  const isAdmin = user?.email.toLowerCase() === "kumaryursh@gmail.com" || user?.email.toLowerCase() === "kumaryursh@gmal.com";
 
   const [activeTab, setActiveTab] = useState<"overview" | "bookmarks" | "quiz" | "settings">("overview");
 
@@ -99,9 +100,19 @@ export default function UnifiedDashboardPage() {
           <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             My Learning
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Welcome back, {user.name}! Track your progress and manage your account.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <p className="text-gray-600 dark:text-gray-400">
+              Welcome back, {user.name}! Track your progress and manage your account.
+            </p>
+            {isAdmin && (
+              <button
+                onClick={() => router.push("/admin")}
+                className="inline-flex items-center gap-2 self-start px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+              >
+                <ShieldCheck className="w-4 h-4" /> Admin analytics
+              </button>
+            )}
+          </div>
         </motion.div>
 
         {/* Tab Navigation */}
