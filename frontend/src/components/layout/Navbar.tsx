@@ -162,6 +162,7 @@ export default function Navbar() {
               <motion.button
                 whileTap={{ scale: 0.94 }}
                 onClick={() => setSearchOpen(true)}
+                data-tour="search"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors border border-gray-200/70 dark:border-white/8"
                 aria-label="Search"
                 data-cursor-grow
@@ -204,6 +205,7 @@ export default function Navbar() {
                   <motion.button
                     whileTap={{ scale: 0.96 }}
                     onClick={() => setShowUserMenu(!showUserMenu)}
+                    data-tour="user-menu"
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
                     data-cursor-grow
                   >

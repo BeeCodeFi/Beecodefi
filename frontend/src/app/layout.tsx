@@ -9,6 +9,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import CursorTrail from "@/components/ui/CursorTrail";
 import PageTransition from "@/components/ui/PageTransition";
 import { ToastProvider } from "@/context/ToastContext";
+import OnboardingTour from "@/components/onboarding/OnboardingTour";
 
 // Inter — body text (readable, neutral)
 const inter = Inter({
@@ -65,6 +66,7 @@ export default function RootLayout({
               </PageTransition>
             </main>
             <Footer />
+            <OnboardingTour />
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
