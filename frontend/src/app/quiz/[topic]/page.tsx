@@ -3,14 +3,28 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, RotateCcw, Trophy, Home, Timer, Eye } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  Trophy,
+  Home,
+  Timer,
+  Eye,
+} from "lucide-react";
 import api from "@/lib/api";
 import { QuizQuestion, QuizResult } from "@/types";
 import { cn } from "@/lib/utils";
 
 type QuizState = "loading" | "ready" | "playing" | "results" | "review";
 
-export default function QuizSessionPage({ params }: { params: Promise<{ topic: string }> }) {
+export default function QuizSessionPage({
+  params,
+}: {
+  params: Promise<{ topic: string }>;
+}) {
   const { topic } = use(params);
   const [state, setState] = useState<QuizState>("loading");
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -27,7 +41,8 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
       try {
         const topicsRes = await api.get("/quiz/topics");
         const quizTopic = topicsRes.data.find(
-          (t: { topic: string }) => t.topic.toLowerCase() === topic.toLowerCase()
+          (t: { topic: string }) =>
+            t.topic.toLowerCase() === topic.toLowerCase(),
         );
         if (quizTopic) {
           setQuizId(quizTopic.id);
@@ -110,24 +125,40 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
   if (state === "ready") {
     return (
       <div className="min-h-screen py-20 flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 sm:p-12 text-center max-w-md w-full">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 sm:p-12 text-center max-w-md w-full"
+        >
           <h1 className="text-3xl font-bold mb-4">{quizTitle} Quiz</h1>
-          <p className="text-gray-500 dark:text-gray-400 mb-8">{questions.length} Questions</p>
-          
+          <p className="text-gray-500 dark:text-gray-400 mb-8">
+            {questions.length} Questions
+          </p>
+
           <label className="flex items-center justify-between p-4 mb-8 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                 <Timer className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-gray-900 dark:text-white">Timed Mode</p>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  Timed Mode
+                </p>
                 <p className="text-xs text-gray-500">30s per question</p>
               </div>
             </div>
-            <input type="checkbox" checked={isTimedMode} onChange={(e) => setIsTimedMode(e.target.checked)} className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
+            <input
+              type="checkbox"
+              checked={isTimedMode}
+              onChange={(e) => setIsTimedMode(e.target.checked)}
+              className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
           </label>
 
-          <button onClick={startQuiz} className="w-full py-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
+          <button
+            onClick={startQuiz}
+            className="w-full py-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
+          >
             Start Quiz
           </button>
         </motion.div>
@@ -153,10 +184,29 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
             {/* Score Ring */}
             <div className="relative w-40 h-40 mx-auto mb-8">
               <svg className="w-full h-full -rotate-90">
-                <circle cx="80" cy="80" r="60" fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-200 dark:text-gray-800" />
+                <circle
+                  cx="80"
+                  cy="80"
+                  r="60"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  className="text-gray-200 dark:text-gray-800"
+                />
                 <motion.circle
-                  cx="80" cy="80" r="60" fill="none" strokeWidth="8" strokeLinecap="round"
-                  className={percentage >= 70 ? "text-green-500" : percentage >= 40 ? "text-amber-500" : "text-red-500"}
+                  cx="80"
+                  cy="80"
+                  r="60"
+                  fill="none"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  className={
+                    percentage >= 70
+                      ? "text-green-500"
+                      : percentage >= 40
+                        ? "text-amber-500"
+                        : "text-red-500"
+                  }
                   stroke="currentColor"
                   strokeDasharray={strokeDasharray}
                   initial={{ strokeDashoffset: strokeDasharray }}
@@ -169,38 +219,53 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
               </div>
             </div>
 
-            <p className="text-xl font-semibold mb-2">
+            <p className="text-xl font-semibold mb-2" aria-live="polite">
               {result.score} / {result.totalQuestions} Correct
             </p>
             <p className="text-gray-500 mb-8">
-              {percentage >= 80 ? "Excellent! You really know your stuff!" :
-               percentage >= 60 ? "Good job! Keep practicing!" :
-               percentage >= 40 ? "Not bad! Review the topics and try again." :
-               "Keep learning! Review the tutorials and try again."}
+              {percentage >= 80
+                ? "Excellent! You really know your stuff!"
+                : percentage >= 60
+                  ? "Good job! Keep practicing!"
+                  : percentage >= 40
+                    ? "Not bad! Review the topics and try again."
+                    : "Keep learning! Review the tutorials and try again."}
             </p>
 
             {/* Results Breakdown */}
             <div className="text-left space-y-3 mb-8">
               {result.results.map((r, i) => (
-                <div key={i} className={cn(
-                  "flex items-start gap-3 p-4 rounded-xl border",
-                  r.isCorrect ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900" : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900"
-                )}>
+                <div
+                  key={i}
+                  className={cn(
+                    "flex items-start gap-3 p-4 rounded-xl border",
+                    r.isCorrect
+                      ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900"
+                      : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900",
+                  )}
+                >
                   {r.isCorrect ? (
                     <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                   ) : (
                     <XCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{r.questionText}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {r.questionText}
+                    </p>
                     {!r.isCorrect && (
                       <>
                         <p className="text-xs text-gray-500 mt-1">
-                          Correct answer: <span className="text-green-600 dark:text-green-400 font-medium">{r.correctAnswer}</span>
+                          Correct answer:{" "}
+                          <span className="text-green-600 dark:text-green-400 font-medium">
+                            {r.correctAnswer}
+                          </span>
                         </p>
                         {r.explanation && (
                           <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 leading-relaxed bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700">
-                            💡 <span className="font-semibold">Explanation:</span> {r.explanation}
+                            💡{" "}
+                            <span className="font-semibold">Explanation:</span>{" "}
+                            {r.explanation}
                           </p>
                         )}
                       </>
@@ -212,7 +277,10 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => { setCurrentIndex(0); setState("review"); }}
+                onClick={() => {
+                  setCurrentIndex(0);
+                  setState("review");
+                }}
                 className="flex items-center gap-2 px-6 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-800/50 transition-colors"
               >
                 <Eye className="w-4 h-4" /> Review Answers
@@ -267,11 +335,21 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
             </span>
             <div className="flex items-center gap-4">
               {state === "playing" && isTimedMode && (
-                <span className={cn("text-sm font-bold flex items-center gap-1", timeLeft < 10 ? "text-red-500 animate-pulse" : "text-amber-500")}>
-                  <Timer className="w-4 h-4" /> {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+                <span
+                  className={cn(
+                    "text-sm font-bold flex items-center gap-1",
+                    timeLeft < 10
+                      ? "text-red-500 animate-pulse"
+                      : "text-amber-500",
+                  )}
+                >
+                  <Timer className="w-4 h-4" /> {Math.floor(timeLeft / 60)}:
+                  {(timeLeft % 60).toString().padStart(2, "0")}
                 </span>
               )}
-              <span className="text-sm font-medium text-gray-500">{quizTitle} Quiz {state === "review" && "(Review)"}</span>
+              <span className="text-sm font-medium text-gray-500">
+                {quizTitle} Quiz {state === "review" && "(Review)"}
+              </span>
             </div>
           </div>
           <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -314,13 +392,19 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
                   disabled={state === "review"}
                   className={cn(
                     "w-full text-left p-4 rounded-xl border-2 transition-all duration-200 font-medium",
-                    state === "review" && result?.results.find(r => r.questionId === question.id)?.correctAnswer === answer.text
+                    state === "review" &&
+                      result?.results.find((r) => r.questionId === question.id)
+                        ?.correctAnswer === answer.text
                       ? "border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                      : state === "review" && answers[question.id] === answer.id && result?.results.find(r => r.questionId === question.id)?.correctAnswer !== answer.text
-                      ? "border-red-500 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-                      : answers[question.id] === answer.id
-                      ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300"
-                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300"
+                      : state === "review" &&
+                          answers[question.id] === answer.id &&
+                          result?.results.find(
+                            (r) => r.questionId === question.id,
+                          )?.correctAnswer !== answer.text
+                        ? "border-red-500 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                        : answers[question.id] === answer.id
+                          ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300"
+                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300",
                   )}
                 >
                   {answer.text}
@@ -339,7 +423,7 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
               "flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all",
               currentIndex > 0
                 ? "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                : "text-gray-300 dark:text-gray-700 cursor-not-allowed"
+                : "text-gray-300 dark:text-gray-700 cursor-not-allowed",
             )}
           >
             <ArrowLeft className="w-4 h-4" /> Previous
@@ -353,7 +437,7 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
                 "flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all",
                 answers[question.id] || state === "review"
                   ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                  : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed",
               )}
             >
               Next <ArrowRight className="w-4 h-4" />
@@ -372,10 +456,15 @@ export default function QuizSessionPage({ params }: { params: Promise<{ topic: s
                 "flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all",
                 allAnswered || state === "review"
                   ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600"
-                  : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed",
               )}
             >
-              {state === "review" ? <ArrowLeft className="w-4 h-4" /> : <Trophy className="w-4 h-4" />} {state === "review" ? "Back to Results" : "Submit Quiz"}
+              {state === "review" ? (
+                <ArrowLeft className="w-4 h-4" />
+              ) : (
+                <Trophy className="w-4 h-4" />
+              )}{" "}
+              {state === "review" ? "Back to Results" : "Submit Quiz"}
             </button>
           )}
         </div>

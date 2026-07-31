@@ -230,10 +230,10 @@ export default function Hero() {
 
       {/* ── Content ────────────────────────────────────────────── */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid gap-12 items-center">
           
           {/* Left: Text Content */}
-          <div className="text-center lg:text-left">
+          <div className="text-center lg:text-left max-w-4xl">
 
           {/* Badge */}
           <motion.div
@@ -356,92 +356,6 @@ export default function Hero() {
             ))}
           </motion.div>
         </div>
-
-        {/* Right: Hero Illustration */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="hidden lg:block relative"
-        >
-          {/* Modern 3D mockup of coding workspace */}
-          <div className="relative aspect-square max-w-lg mx-auto">
-            {/* Main screen/editor mockup */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black rounded-3xl shadow-2xl p-6 border border-slate-700/50 overflow-hidden">
-              {/* Browser chrome */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                </div>
-                <div className="flex-1 bg-slate-700/50 rounded-md px-3 py-1 text-xs text-slate-400">localhost:3000</div>
-              </div>
-              
-              {/* Code editor content */}
-              <div className="space-y-2 text-sm font-mono">
-                <div className="text-purple-400">&lt;<span className="text-blue-400">html</span>&gt;</div>
-                <div className="pl-4 text-orange-400">&lt;<span className="text-blue-400">body</span>&gt;</div>
-                <div className="pl-8"><span className="text-gray-500">&lt;</span><span className="text-pink-400">h1</span><span className="text-gray-500">&gt;</span><span className="text-green-300">Learn Web Dev</span><span className="text-gray-500">&lt;/</span><span className="text-pink-400">h1</span><span className="text-gray-500">&gt;</span></div>
-                <div className="pl-8"><span className="text-gray-500">&lt;</span><span className="text-pink-400">p</span><span className="text-gray-500">&gt;</span><span className="text-slate-300">with BeeCodeFi</span><span className="text-gray-500">&lt;/</span><span className="text-pink-400">p</span><span className="text-gray-500">&gt;</span></div>
-                <div className="pl-4 text-orange-400">&lt;/<span className="text-blue-400">body</span>&gt;</div>
-                <div className="text-purple-400">&lt;/<span className="text-blue-400">html</span>&gt;</div>
-              </div>
-
-              {/* Floating elements */}
-              <motion.div
-                className="absolute top-20 right-8 bg-indigo-500/20 border border-indigo-400/30 rounded-lg px-3 py-2 backdrop-blur-sm"
-                animate={{ y: [-5, 5, -5] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <div className="text-xs text-indigo-300 font-semibold">✨ Interactive</div>
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-20 right-12 bg-green-500/20 border border-green-400/30 rounded-lg px-3 py-2 backdrop-blur-sm"
-                animate={{ y: [5, -5, 5] }}
-                transition={{ duration: 3.5, repeat: Infinity }}
-              >
-                <div className="text-xs text-green-300 font-semibold">✓ Hands-On</div>
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-32 left-8 bg-purple-500/20 border border-purple-400/30 rounded-lg px-3 py-2 backdrop-blur-sm"
-                animate={{ x: [-3, 3, -3] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                <div className="text-xs text-purple-300 font-semibold">🎯 Quizzes</div>
-              </motion.div>
-            </div>
-
-            {/* Floating bee */}
-            <motion.div
-              className="absolute -top-8 -right-8 text-6xl"
-              animate={{ rotate: [0, 10, -10, 0], y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
-            >
-              🐝
-            </motion.div>
-
-            {/* Stats cards */}
-            <motion.div
-              className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 border border-gray-200 dark:border-slate-700"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.2 }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                  50+
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500 dark:text-slate-400">Lessons</div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-white">Available Now</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
 
         </div>
 

@@ -33,7 +33,12 @@ const difficultyColors: Record<string, string> = {
 
 // Continue Learning Card Component
 function ContinueLearningCard() {
-  const [progress, setProgress] = useState<{ slug: string; lessonSlug: string; title: string; percent: number } | null>(null);
+  const [progress, setProgress] = useState<{
+    slug: string;
+    lessonSlug: string;
+    title: string;
+    percent: number;
+  } | null>(null);
 
   useEffect(() => {
     // Get last visited lesson from localStorage
@@ -43,8 +48,12 @@ function ContinueLearningCard() {
         const data = JSON.parse(lastLesson);
         const tutorial = tutorials.find((t) => t.slug === data.tutorialSlug);
         if (tutorial) {
-          const lessonIndex = tutorial.lessons.findIndex((l) => l.slug === data.lessonSlug);
-          const percent = Math.round(((lessonIndex + 1) / tutorial.lessons.length) * 100);
+          const lessonIndex = tutorial.lessons.findIndex(
+            (l) => l.slug === data.lessonSlug,
+          );
+          const percent = Math.round(
+            ((lessonIndex + 1) / tutorial.lessons.length) * 100,
+          );
           setProgress({
             slug: tutorial.slug,
             lessonSlug: data.lessonSlug,
@@ -60,8 +69,13 @@ function ContinueLearningCard() {
 
   if (!progress) return null;
 
-  const Icon = iconMap[tutorials.find((t) => t.slug === progress.slug)?.icon || "FileCode2"];
-  const color = tutorials.find((t) => t.slug === progress.slug)?.color || "from-indigo-500 to-purple-500";
+  const Icon =
+    iconMap[
+      tutorials.find((t) => t.slug === progress.slug)?.icon || "FileCode2"
+    ];
+  const color =
+    tutorials.find((t) => t.slug === progress.slug)?.color ||
+    "from-indigo-500 to-purple-500";
 
   return (
     <motion.div
@@ -71,11 +85,13 @@ function ContinueLearningCard() {
       className="mt-12 max-w-md mx-auto"
     >
       <Link
-        href={`/tutorials/${progress.slug}/${progress.lessonSlug}`}
+        href={`/tutorials/${progress.slug}?lesson=${progress.lessonSlug}`}
         className="group block bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700 transition-all"
       >
         <div className="flex items-center gap-4">
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+          <div
+            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
+          >
             <Icon className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -88,7 +104,9 @@ function ContinueLearningCard() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <div className="text-right">
-              <div className="text-lg font-bold text-gray-900 dark:text-white">{progress.percent}%</div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {progress.percent}%
+              </div>
               <div className="text-[10px] text-gray-500">Complete</div>
             </div>
             <ArrowRight className="w-5 h-5 text-indigo-500 group-hover:translate-x-1 transition-transform" />
@@ -133,8 +151,7 @@ export default function TutorialsPage() {
             transition={{ delay: 0.1 }}
             className="text-4xl sm:text-6xl font-bold mb-5 tracking-tight"
           >
-            Master Web{" "}
-            <span className="text-gradient">Development</span>
+            Master Web <span className="text-gradient">Development</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -142,7 +159,8 @@ export default function TutorialsPage() {
             transition={{ delay: 0.2 }}
             className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed"
           >
-            Learn step-by-step with interactive code editors, live previews, exercises, and MDN-referenced content.
+            Learn step-by-step with interactive code editors, live previews,
+            exercises, and MDN-referenced content.
           </motion.p>
 
           {/* Stats */}
@@ -166,8 +184,12 @@ export default function TutorialsPage() {
                   <stat.icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div className="text-left">
-                  <div className="text-lg font-bold text-gray-900 dark:text-white">{stat.value}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</div>
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {stat.label}
+                  </div>
                 </div>
               </div>
             ))}
@@ -184,8 +206,15 @@ export default function TutorialsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {tutorials.map((tutorial, index) => {
               const Icon = iconMap[tutorial.icon] || FileCode2;
-              const totalMinutes = tutorial.lessons.reduce((sum, l) => sum + (l.estimatedMinutes || 0), 0);
-              const difficulties = [...new Set(tutorial.lessons.map((l) => l.difficulty).filter(Boolean))];
+              const totalMinutes = tutorial.lessons.reduce(
+                (sum, l) => sum + (l.estimatedMinutes || 0),
+                0,
+              );
+              const difficulties = [
+                ...new Set(
+                  tutorial.lessons.map((l) => l.difficulty).filter(Boolean),
+                ),
+              ];
 
               return (
                 <motion.div
@@ -199,13 +228,19 @@ export default function TutorialsPage() {
                     className="group relative block rounded-2xl p-[1px] h-full glow-card"
                   >
                     {/* Gradient border */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tutorial.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`} />
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tutorial.color} opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                    <div
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tutorial.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm`}
+                    />
+                    <div
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tutorial.color} opacity-20 group-hover:opacity-40 transition-opacity duration-500`}
+                    />
 
                     <div className="relative bg-white dark:bg-gray-900 rounded-2xl p-7 sm:p-8 h-full flex flex-col">
                       {/* Icon & Badge Row */}
                       <div className="flex items-start justify-between mb-5">
-                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tutorial.color} flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
+                        <div
+                          className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tutorial.color} flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}
+                        >
                           <Icon className="w-7 h-7 text-white" />
                         </div>
                         <div className="flex flex-col items-end gap-1.5">
@@ -255,7 +290,9 @@ export default function TutorialsPage() {
                             </span>
                             <span className="truncate">{lesson.title}</span>
                             {lesson.difficulty && (
-                              <span className={`ml-auto text-[10px] font-semibold ${difficultyColors[lesson.difficulty]} shrink-0`}>
+                              <span
+                                className={`ml-auto text-[10px] font-semibold ${difficultyColors[lesson.difficulty]} shrink-0`}
+                              >
                                 {lesson.difficulty.slice(0, 3).toUpperCase()}
                               </span>
                             )}
@@ -265,11 +302,16 @@ export default function TutorialsPage() {
 
                       {/* CTA */}
                       <div className="flex items-center justify-between mt-auto">
-                        <div className={`flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${tutorial.color} bg-clip-text text-transparent group-hover:gap-3 transition-all`}>
-                          Start Learning <ArrowRight className="w-4 h-4 text-indigo-500 group-hover:translate-x-1 transition-transform" />
+                        <div
+                          className={`flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${tutorial.color} bg-clip-text text-transparent group-hover:gap-3 transition-all`}
+                        >
+                          Start Learning{" "}
+                          <ArrowRight className="w-4 h-4 text-indigo-500 group-hover:translate-x-1 transition-transform" />
                         </div>
                         {(() => {
-                          const quizCat = getQuizCategoryForTutorial(tutorial.slug);
+                          const quizCat = getQuizCategoryForTutorial(
+                            tutorial.slug,
+                          );
                           if (quizCat) {
                             return (
                               <button
