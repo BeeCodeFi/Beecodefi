@@ -9,9 +9,9 @@ public static class SeedData
     {
         await db.Database.MigrateAsync();
 
-        // Re-seed if no quizzes or still using old 3-quiz structure
+        // Re-seed if no quizzes or the quiz catalog is still below the expanded topic set
         var quizCount = await db.Quizzes.CountAsync();
-        if (quizCount >= 18) return;
+        if (quizCount >= 27) return;
 
         // Clear old quiz data to reseed
         if (quizCount > 0)
@@ -24,7 +24,7 @@ public static class SeedData
         }
 
         // ═══════════════════════════════════════════════════
-        //  HTML Quizzes (6 subcategories × 5 questions)
+        //  HTML Quizzes (9 subcategories × 5 questions)
         // ═══════════════════════════════════════════════════
 
         var htmlBasics = new Quiz
@@ -129,8 +129,59 @@ public static class SeedData
             }
         };
 
+        var htmlAttributes = new Quiz
+        {
+            Title = "Attributes & Metadata",
+            Topic = "html-attributes-metadata",
+            Category = "HTML",
+            Description = "HTML attributes, metadata tags, and page-level configuration.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which attribute is used to define the URL of a linked resource?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "href", IsCorrect = true }, new() { Text = "src", IsCorrect = false }, new() { Text = "link", IsCorrect = false }, new() { Text = "url", IsCorrect = false } } },
+                new() { Text = "What is the purpose of the <meta> tag?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "To provide metadata about the HTML document", IsCorrect = true }, new() { Text = "To create a paragraph", IsCorrect = false }, new() { Text = "To insert an image", IsCorrect = false }, new() { Text = "To define a link", IsCorrect = false } } },
+                new() { Text = "Which attribute is commonly used for responsive viewport settings?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "viewport", IsCorrect = true }, new() { Text = "scale", IsCorrect = false }, new() { Text = "width", IsCorrect = false }, new() { Text = "device", IsCorrect = false } } },
+                new() { Text = "Which attribute provides descriptive text for screen readers on images?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "alt", IsCorrect = true }, new() { Text = "title", IsCorrect = false }, new() { Text = "caption", IsCorrect = false }, new() { Text = "description", IsCorrect = false } } },
+                new() { Text = "What does the 'rel' attribute typically describe on a link?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "The relationship between the current and linked document", IsCorrect = true }, new() { Text = "The link color", IsCorrect = false }, new() { Text = "The target frame", IsCorrect = false }, new() { Text = "The link language", IsCorrect = false } } },
+            }
+        };
+
+        var htmlMediaEmbeds = new Quiz
+        {
+            Title = "Media & Embeds",
+            Topic = "html-media-embeds",
+            Category = "HTML",
+            Description = "Images, audio, video, iframes, and embedded media.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which tag is used to embed an image in HTML?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "<img>", IsCorrect = true }, new() { Text = "<picture>", IsCorrect = false }, new() { Text = "<figure>", IsCorrect = false }, new() { Text = "<image>", IsCorrect = false } } },
+                new() { Text = "Which HTML element is used to embed a video?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<video>", IsCorrect = true }, new() { Text = "<embed>", IsCorrect = false }, new() { Text = "<audio>", IsCorrect = false }, new() { Text = "<source>", IsCorrect = false } } },
+                new() { Text = "What does the 'controls' attribute do on a media element?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "It shows playback controls to the user", IsCorrect = true }, new() { Text = "It loops the media automatically", IsCorrect = false }, new() { Text = "It changes the media source", IsCorrect = false }, new() { Text = "It hides the media element", IsCorrect = false } } },
+                new() { Text = "Which element is used to define multiple media resources for audio or video?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<source>", IsCorrect = true }, new() { Text = "<track>", IsCorrect = false }, new() { Text = "<media>", IsCorrect = false }, new() { Text = "<file>", IsCorrect = false } } },
+                new() { Text = "What is an iframe commonly used for?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Embedding another HTML page inside the current page", IsCorrect = true }, new() { Text = "Creating a list item", IsCorrect = false }, new() { Text = "Defining a form field", IsCorrect = false }, new() { Text = "Styling text", IsCorrect = false } } },
+            }
+        };
+
+        var htmlAccessibility = new Quiz
+        {
+            Title = "Accessibility & ARIA",
+            Topic = "html-accessibility-aria",
+            Category = "HTML",
+            Description = "Accessibility basics, labels, landmarks, and ARIA attributes.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Why are form labels important for accessibility?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "They help screen readers identify the purpose of a form control", IsCorrect = true }, new() { Text = "They make the form look better", IsCorrect = false }, new() { Text = "They are required for every input", IsCorrect = false }, new() { Text = "They reduce the page size", IsCorrect = false } } },
+                new() { Text = "What does ARIA stand for?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Accessible Rich Internet Applications", IsCorrect = true }, new() { Text = "Advanced Responsive Interface Attributes", IsCorrect = false }, new() { Text = "Accessible Renderable Input Areas", IsCorrect = false }, new() { Text = "Advanced Rich Internet Applications", IsCorrect = false } } },
+                new() { Text = "Which HTML landmark element is commonly used for page navigation?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<nav>", IsCorrect = true }, new() { Text = "<footer>", IsCorrect = false }, new() { Text = "<article>", IsCorrect = false }, new() { Text = "<aside>", IsCorrect = false } } },
+                new() { Text = "What is the purpose of the 'aria-label' attribute?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "To provide an accessible name for an element", IsCorrect = true }, new() { Text = "To set the element's color", IsCorrect = false }, new() { Text = "To define the element's id", IsCorrect = false }, new() { Text = "To make the element visible", IsCorrect = false } } },
+                new() { Text = "Which element often improves keyboard navigation when used properly?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "<button>", IsCorrect = true }, new() { Text = "<div>", IsCorrect = false }, new() { Text = "<span>", IsCorrect = false }, new() { Text = "<p>", IsCorrect = false } } },
+            }
+        };
+
         // ═══════════════════════════════════════════════════
-        //  CSS Quizzes (6 subcategories × 5 questions)
+        //  CSS Quizzes (9 subcategories × 5 questions)
         // ═══════════════════════════════════════════════════
 
         var cssBasics = new Quiz
@@ -235,8 +286,59 @@ public static class SeedData
             }
         };
 
+        var cssPositioning = new Quiz
+        {
+            Title = "Positioning & Responsive Design",
+            Topic = "css-positioning-responsive",
+            Category = "CSS",
+            Description = "Positioning, media queries, and responsive behavior.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which CSS property is used to position an element relative to its normal flow?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "position: relative", IsCorrect = true }, new() { Text = "position: absolute", IsCorrect = false }, new() { Text = "position: fixed", IsCorrect = false }, new() { Text = "position: static", IsCorrect = false } } },
+                new() { Text = "What does 'position: sticky' do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "It behaves like relative until a threshold is reached, then becomes fixed", IsCorrect = true }, new() { Text = "It removes the element from the layout", IsCorrect = false }, new() { Text = "It always stays at the top of the page", IsCorrect = false }, new() { Text = "It makes the element invisible", IsCorrect = false } } },
+                new() { Text = "Which rule is used to apply styles on smaller screens?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "@media", IsCorrect = true }, new() { Text = "@supports", IsCorrect = false }, new() { Text = "@import", IsCorrect = false }, new() { Text = "@keyframes", IsCorrect = false } } },
+                new() { Text = "What does the 'z-index' property control?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "The stacking order of positioned elements", IsCorrect = true }, new() { Text = "The element's width", IsCorrect = false }, new() { Text = "The element's font size", IsCorrect = false }, new() { Text = "The element's color", IsCorrect = false } } },
+                new() { Text = "Which CSS unit is commonly used for responsive typography?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "rem", IsCorrect = true }, new() { Text = "px", IsCorrect = false }, new() { Text = "cm", IsCorrect = false }, new() { Text = "pt", IsCorrect = false } } },
+            }
+        };
+
+        var cssTransforms = new Quiz
+        {
+            Title = "Transforms & Animations",
+            Topic = "css-transforms-animations",
+            Category = "CSS",
+            Description = "Transforms, transitions, and animation timing.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which property is used to rotate an element?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "transform", IsCorrect = true }, new() { Text = "rotate", IsCorrect = false }, new() { Text = "transition", IsCorrect = false }, new() { Text = "animation", IsCorrect = false } } },
+                new() { Text = "What does the 'transition' property do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "It animates changes between CSS property values", IsCorrect = true }, new() { Text = "It changes the element's display mode", IsCorrect = false }, new() { Text = "It defines a new layout", IsCorrect = false }, new() { Text = "It freezes the element", IsCorrect = false } } },
+                new() { Text = "Which property allows a transformation to be applied smoothly over time?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "transition", IsCorrect = true }, new() { Text = "filter", IsCorrect = false }, new() { Text = "opacity", IsCorrect = false }, new() { Text = "align-items", IsCorrect = false } } },
+                new() { Text = "What does 'transform: scale(1.2)' do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Makes the element 20% larger", IsCorrect = true }, new() { Text = "Moves the element downward", IsCorrect = false }, new() { Text = "Changes the element's color", IsCorrect = false }, new() { Text = "Makes the element fully transparent", IsCorrect = false } } },
+                new() { Text = "Which property defines a named animation sequence?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "@keyframes", IsCorrect = true }, new() { Text = "animation-name", IsCorrect = false }, new() { Text = "transform", IsCorrect = false }, new() { Text = "transition-delay", IsCorrect = false } } },
+            }
+        };
+
+        var cssVariables = new Quiz
+        {
+            Title = "Custom Properties & Theming",
+            Topic = "css-variables-theming",
+            Category = "CSS",
+            Description = "CSS variables, theming, and reusable design tokens.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What is a CSS custom property?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "A reusable value defined with -- and accessed with var()", IsCorrect = true }, new() { Text = "A JavaScript function", IsCorrect = false }, new() { Text = "A special HTML attribute", IsCorrect = false }, new() { Text = "A browser-only selector", IsCorrect = false } } },
+                new() { Text = "Which syntax defines a CSS variable?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "--primary-color: #6366f1;", IsCorrect = true }, new() { Text = "var-primary-color: #6366f1;", IsCorrect = false }, new() { Text = "@primary-color: #6366f1;", IsCorrect = false }, new() { Text = "primary-color = #6366f1;", IsCorrect = false } } },
+                new() { Text = "How do you access a CSS variable in a declaration?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "var(--primary-color)", IsCorrect = true }, new() { Text = "value(--primary-color)", IsCorrect = false }, new() { Text = "get(--primary-color)", IsCorrect = false }, new() { Text = "use(--primary-color)", IsCorrect = false } } },
+                new() { Text = "Why are CSS variables useful for theming?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "They let you change design tokens across a whole site from one place", IsCorrect = true }, new() { Text = "They reduce browser compatibility", IsCorrect = false }, new() { Text = "They replace all HTML tags", IsCorrect = false }, new() { Text = "They automatically generate animations", IsCorrect = false } } },
+                new() { Text = "Where are CSS variables typically declared?", Difficulty = "Advanced", Answers = new List<Answer> { new() { Text = "In :root for global scope", IsCorrect = true }, new() { Text = "Inside JavaScript functions", IsCorrect = false }, new() { Text = "Inside the body element only", IsCorrect = false }, new() { Text = "Inside HTML comments", IsCorrect = false } } },
+            }
+        };
+
         // ═══════════════════════════════════════════════════
-        //  JavaScript Quizzes (6 subcategories × 5 questions)
+        //  JavaScript Quizzes (9 subcategories × 5 questions)
         // ═══════════════════════════════════════════════════
 
         var jsBasics = new Quiz
@@ -341,10 +443,61 @@ public static class SeedData
             }
         };
 
+        var jsObjectsClasses = new Quiz
+        {
+            Title = "Objects & Classes",
+            Topic = "js-objects-classes",
+            Category = "JavaScript",
+            Description = "Objects, classes, inheritance, and prototypes.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which keyword is used to create a class in JavaScript?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "class", IsCorrect = true }, new() { Text = "function", IsCorrect = false }, new() { Text = "object", IsCorrect = false }, new() { Text = "struct", IsCorrect = false } } },
+                new() { Text = "What is the purpose of the 'new' keyword?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "To create an instance of an object from a constructor or class", IsCorrect = true }, new() { Text = "To delete an object", IsCorrect = false }, new() { Text = "To declare a variable", IsCorrect = false }, new() { Text = "To define a loop", IsCorrect = false } } },
+                new() { Text = "Which syntax is used to create an object literal?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = "{ name: 'Ada' }", IsCorrect = true }, new() { Text = "[ name: 'Ada' ]", IsCorrect = false }, new() { Text = "<object>Ad</object>", IsCorrect = false }, new() { Text = "name = 'Ada'", IsCorrect = false } } },
+                new() { Text = "What does inheritance allow in JavaScript classes?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "A child class to reuse and extend a parent class", IsCorrect = true }, new() { Text = "A class to inherit CSS styles", IsCorrect = false }, new() { Text = "A function to return a string", IsCorrect = false }, new() { Text = "A variable to become constant", IsCorrect = false } } },
+                new() { Text = "What is a prototype in JavaScript?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "An object that provides shared properties and methods to other objects", IsCorrect = true }, new() { Text = "The HTML DOM tree", IsCorrect = false }, new() { Text = "A special array type", IsCorrect = false }, new() { Text = "A compiler feature", IsCorrect = false } } },
+            }
+        };
+
+        var jsAsyncProgramming = new Quiz
+        {
+            Title = "Async Programming",
+            Topic = "js-async-programming",
+            Category = "JavaScript",
+            Description = "Promises, async/await, and asynchronous flow control.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does a Promise represent?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "A value that may be available now, later, or never", IsCorrect = true }, new() { Text = "A loop that runs forever", IsCorrect = false }, new() { Text = "A CSS animation", IsCorrect = false }, new() { Text = "A type of string", IsCorrect = false } } },
+                new() { Text = "What keyword is used to wait for a Promise to resolve?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "await", IsCorrect = true }, new() { Text = "yield", IsCorrect = false }, new() { Text = "break", IsCorrect = false }, new() { Text = "return", IsCorrect = false } } },
+                new() { Text = "Which method is used to handle a rejected Promise?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = ".catch()", IsCorrect = true }, new() { Text = ".then()", IsCorrect = false }, new() { Text = ".finally()", IsCorrect = false }, new() { Text = ".resolve()", IsCorrect = false } } },
+                new() { Text = "What does 'async' before a function do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "It makes the function return a Promise", IsCorrect = true }, new() { Text = "It makes the function faster", IsCorrect = false }, new() { Text = "It prevents the function from returning values", IsCorrect = false }, new() { Text = "It prevents errors", IsCorrect = false } } },
+                new() { Text = "Which API is commonly used to request data from a server?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "fetch()", IsCorrect = true }, new() { Text = "parse()", IsCorrect = false }, new() { Text = "request()", IsCorrect = false }, new() { Text = "load()", IsCorrect = false } } },
+            }
+        };
+
+        var jsModulesApis = new Quiz
+        {
+            Title = "Modules & Browser APIs",
+            Topic = "js-modules-browser-apis",
+            Category = "JavaScript",
+            Description = "ES modules, imports/exports, and browser APIs.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which keyword imports a named export from another module?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "import", IsCorrect = true }, new() { Text = "require", IsCorrect = false }, new() { Text = "include", IsCorrect = false }, new() { Text = "load", IsCorrect = false } } },
+                new() { Text = "Which keyword exports a value from a module?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "export", IsCorrect = true }, new() { Text = "send", IsCorrect = false }, new() { Text = "module", IsCorrect = false }, new() { Text = "return", IsCorrect = false } } },
+                new() { Text = "Which browser API is used to store data locally in the browser?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "localStorage", IsCorrect = true }, new() { Text = "window.open", IsCorrect = false }, new() { Text = "document.write", IsCorrect = false }, new() { Text = "console.log", IsCorrect = false } } },
+                new() { Text = "What does the DOM API let you do?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "Manipulate page elements and content", IsCorrect = true }, new() { Text = "Compile JavaScript files", IsCorrect = false }, new() { Text = "Create CSS files", IsCorrect = false }, new() { Text = "Handle server sockets", IsCorrect = false } } },
+                new() { Text = "What is the purpose of the History API?", Difficulty = "Intermediate", Answers = new List<Answer> { new() { Text = "To manipulate browser history entries and navigation state", IsCorrect = true }, new() { Text = "To create loops", IsCorrect = false }, new() { Text = "To update the CSS cascade", IsCorrect = false }, new() { Text = "To generate random numbers", IsCorrect = false } } },
+            }
+        };
+
         db.Quizzes.AddRange(
-            htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAdvanced,
-            cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced,
-            jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced
+            htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAdvanced, htmlAttributes, htmlMediaEmbeds, htmlAccessibility,
+            cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
+            jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced, jsObjectsClasses, jsAsyncProgramming, jsModulesApis
         );
         await db.SaveChangesAsync();
 

@@ -12,6 +12,7 @@ import { ArrowRight, BookOpen, Brain, Sparkles, Play, Zap } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { courses } from "@/data/courses";
 import { tutorials } from "@/data/tutorials";
+import { quizCategories } from "@/data/quiz-categories";
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
 
@@ -680,7 +681,7 @@ export default function Hero() {
               color: "text-red-500   dark:text-red-400",
             },
             {
-              value: 3,
+              value: quizCategories.length,
               suffix: "",
               label: "Quiz Topics",
               icon: Brain,
