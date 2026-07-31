@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "next-themes";
 import CustomCursor from "@/components/ui/CustomCursor";
+import CursorTrail from "@/components/ui/CursorTrail";
 import PageTransition from "@/components/ui/PageTransition";
 import { ToastProvider } from "@/context/ToastContext";
 
@@ -56,6 +57,7 @@ export default function RootLayout({
             </a>
             {/* Custom cursor — hidden automatically on touch */}
             <CustomCursor />
+            <CursorTrail />
             <Navbar />
             <main className="flex-1 pt-16" id="main-content">
               <PageTransition>

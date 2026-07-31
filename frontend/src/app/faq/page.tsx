@@ -12,14 +12,24 @@ const FAQS = [
       "Yes! All our core tracks (HTML, CSS, JavaScript) are 100% free forever. We believe foundational web development education should be accessible to everyone without paywalls.",
   },
   {
+    question: "Do I need to create an account?",
+    answer:
+      "No account is required to access lessons and tutorials! However, creating a free account lets you sync your progress across devices, track streaks, and access quiz history.",
+  },
+  {
     question: "Do I need any prior coding experience?",
     answer:
       "Not at all. Our HTML and CSS tracks are designed for complete beginners. If you know how to use a web browser, you can learn to code with us.",
   },
   {
+    question: "Can I use BeeCodeFi on my phone or tablet?",
+    answer:
+      "Yes, our entire platform is mobile-responsive and works on all devices. However, for the best experience with the live code editor, we highly recommend using a desktop or laptop with a physical keyboard.",
+  },
+  {
     question: "How long does it take to complete the curriculum?",
     answer:
-      "It depends on your pace! Most students complete the HTML and CSS tracks within 2-4 weeks, and JavaScript in another 4-6 weeks if they study for about an hour a day.",
+      "It depends on your pace! Most students complete the HTML and CSS tracks within 2-4 weeks, and JavaScript in another 4-6 weeks if they study for about an hour a day. You can learn at your own speed.",
   },
   {
     question: "Do I get a certificate when I finish?",
@@ -27,14 +37,24 @@ const FAQS = [
       "Yes, when you complete all lessons in a track, you'll receive a digital certificate of completion that you can share on your portfolio or LinkedIn.",
   },
   {
-    question: "Can I use BeeCodeFi on my phone?",
-    answer:
-      "Yes, our entire platform is mobile-responsive. However, for the best experience with the live code editor, we highly recommend using a desktop or tablet.",
-  },
-  {
     question: "What happens if I lose my daily streak?",
     answer:
-      "Your streak resets to zero, but don't worry! Streaks are just a fun way to stay motivated. You can always start a new one tomorrow.",
+      "Your streak resets to zero, but don't worry! Streaks are just a fun way to stay motivated. You can always start a new one tomorrow. Your learning progress is never lost.",
+  },
+  {
+    question: "Are there video tutorials or just text?",
+    answer:
+      "We offer both! Our main interactive tutorials use text with live code editors, but we also have dedicated video courses for HTML and CSS on the Courses page. More videos are coming soon.",
+  },
+  {
+    question: "Can I save lessons to review later?",
+    answer:
+      "Absolutely! Press the 'B' key while viewing any lesson to bookmark it. All your bookmarks are saved and accessible from the Bookmarks page in your account menu.",
+  },
+  {
+    question: "What if I find a bug or have a suggestion?",
+    answer:
+      "We love feedback! Please use the Contact page to report bugs, suggest features, or ask questions. We read every message and continuously improve the platform based on your input.",
   },
 ];
 

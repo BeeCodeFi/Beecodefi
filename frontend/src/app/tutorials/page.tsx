@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   FileCode2,
   Palette,
@@ -13,6 +14,7 @@ import {
   Signal,
   Sparkles,
   Brain,
+  Zap,
 } from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
@@ -28,6 +30,81 @@ const difficultyColors: Record<string, string> = {
   intermediate: "text-amber-600 dark:text-amber-400",
   advanced: "text-red-600 dark:text-red-400",
 };
+
+// Continue Learning Card Component
+function ContinueLearningCard() {
+  const [progress, setProgress] = useState<{ slug: string; lessonSlug: string; title: string; percent: number } | null>(null);
+
+  useEffect(() => {
+    // Get last visited lesson from localStorage
+    const lastLesson = localStorage.getItem("lastVisitedLesson");
+    if (lastLesson) {
+      try {
+        const data = JSON.parse(lastLesson);
+        const tutorial = tutorials.find((t) => t.slug === data.tutorialSlug);
+        if (tutorial) {
+          const lessonIndex = tutorial.lessons.findIndex((l) => l.slug === data.lessonSlug);
+          const percent = Math.round(((lessonIndex + 1) / tutorial.lessons.length) * 100);
+          setProgress({
+            slug: tutorial.slug,
+            lessonSlug: data.lessonSlug,
+            title: tutorial.title,
+            percent,
+          });
+        }
+      } catch {
+        // Invalid data, ignore
+      }
+    }
+  }, []);
+
+  if (!progress) return null;
+
+  const Icon = iconMap[tutorials.find((t) => t.slug === progress.slug)?.icon || "FileCode2"];
+  const color = tutorials.find((t) => t.slug === progress.slug)?.color || "from-indigo-500 to-purple-500";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 }}
+      className="mt-12 max-w-md mx-auto"
+    >
+      <Link
+        href={`/tutorials/${progress.slug}/${progress.lessonSlug}`}
+        className="group block bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700 transition-all"
+      >
+        <div className="flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+            <Icon className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1 uppercase tracking-wide">
+              Continue {progress.title}
+            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+              Resume learning
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="text-right">
+              <div className="text-lg font-bold text-gray-900 dark:text-white">{progress.percent}%</div>
+              <div className="text-[10px] text-gray-500">Complete</div>
+            </div>
+            <ArrowRight className="w-5 h-5 text-indigo-500 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div className="mt-4 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div
+            className={`h-full bg-gradient-to-r ${color} transition-all duration-500`}
+            style={{ width: `${progress.percent}%` }}
+          />
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
 
 export default function TutorialsPage() {
   return (
@@ -95,6 +172,9 @@ export default function TutorialsPage() {
               </div>
             ))}
           </motion.div>
+
+          {/* Continue Learning */}
+          <ContinueLearningCard />
         </div>
       </section>
 
