@@ -29,7 +29,7 @@ export default function Navbar() {
   const [scrolled, setScrolled]     = useState(false);
 
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const { theme, setTheme } = useTheme();
   const streak = useStreak(!!user);
 
@@ -195,8 +195,10 @@ export default function Navbar() {
                 {mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
               </motion.button>
 
-              {/* User menu / auth */}
-              {user ? (
+              {/* User menu / auth — skeleton while auth resolves to prevent flash */}
+              {!mounted || authLoading ? (
+                <div className="w-20 h-8 rounded-lg bg-gray-100 dark:bg-gray-800/60 animate-pulse" />
+              ) : user ? (
                 <div className="relative">
                   <motion.button
                     whileTap={{ scale: 0.96 }}

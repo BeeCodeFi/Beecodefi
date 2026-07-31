@@ -58,7 +58,7 @@ export default function TutorialSidebar({
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {tutorial.lessons.length} lessons ·{" "}
-            {tutorial.lessons.reduce((s, l) => s + (l.estimatedMinutes || 0), 0)} min
+            {tutorial.lessons.reduce((s, l) => s + (l.estimatedMinutes || 0), 0)} min total
           </p>
         </div>
 
@@ -68,6 +68,22 @@ export default function TutorialSidebar({
           total={tutorial.lessons.length}
           label="Your Progress"
         />
+
+        {/* Time remaining — only shown when there's progress */}
+        {completedLessons.size > 0 && completedLessons.size < tutorial.lessons.length && (() => {
+          const remaining = tutorial.lessons
+            .filter((_, i) => !completedLessons.has(i))
+            .reduce((s, l) => s + (l.estimatedMinutes || 0), 0);
+          if (remaining === 0) return null;
+          const hrs = Math.floor(remaining / 60);
+          const mins = remaining % 60;
+          const label = hrs > 0 ? `~${hrs}h ${mins > 0 ? `${mins}m` : ""} remaining` : `~${mins}m remaining`;
+          return (
+            <p className="mt-2 text-[11px] font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+              <span>⏱</span> {label}
+            </p>
+          );
+        })()}
 
         {/* Lesson list */}
         <nav className="mt-5 space-y-0.5 flex-1">

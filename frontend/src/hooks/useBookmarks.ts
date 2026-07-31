@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useToast } from "@/context/ToastContext";
 
 interface Bookmark {
   tutorialSlug: string;
@@ -24,6 +25,7 @@ function saveBookmarks(bm: Bookmark[]) {
 
 export function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const { success, info } = useToast();
 
   useEffect(() => { setBookmarks(loadBookmarks()); }, []);
 
@@ -43,16 +45,25 @@ export function useBookmarks() {
           ? prev.filter((b) => !(b.tutorialSlug === bm.tutorialSlug && b.lessonSlug === bm.lessonSlug))
           : [...prev, { ...bm, savedAt: new Date().toISOString() }];
         saveBookmarks(next);
+
+        // Toast feedback
+        if (exists) {
+          info("Bookmark removed", bm.lessonTitle);
+        } else {
+          success("Lesson bookmarked!", `${bm.lessonTitle} saved · press B to toggle`);
+        }
+
         return next;
       });
     },
-    []
+    [success, info]
   );
 
   const clearBookmarks = useCallback(() => {
     setBookmarks([]);
     saveBookmarks([]);
-  }, []);
+    info("All bookmarks cleared");
+  }, [info]);
 
   return { bookmarks, isBookmarked, toggleBookmark, clearBookmarks };
 }

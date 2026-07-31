@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "next-themes";
 import CustomCursor from "@/components/ui/CustomCursor";
 import PageTransition from "@/components/ui/PageTransition";
+import { ToastProvider } from "@/context/ToastContext";
 
 // Inter — body text (readable, neutral)
 const inter = Inter({
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>
+            <ToastProvider>
             {/* Skip to content — visible on focus for keyboard users */}
             <a
               href="#main-content"
@@ -61,6 +63,7 @@ export default function RootLayout({
               </PageTransition>
             </main>
             <Footer />
+            </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

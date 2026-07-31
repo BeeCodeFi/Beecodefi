@@ -17,6 +17,7 @@ import {
   Layers,
   GraduationCap,
   CheckCircle2,
+  WifiOff,
 } from "lucide-react";
 import api from "@/lib/api";
 import { QuizTopic } from "@/types";
@@ -49,6 +50,7 @@ function QuizPageContent() {
 
   const [topics, setTopics] = useState<QuizTopic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [apiDown, setApiDown] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
@@ -57,9 +59,11 @@ function QuizPageContent() {
       try {
         const { data } = await api.get<QuizTopic[]>("/quiz/topics");
         setTopics(data);
+        setApiDown(false);
       } catch {
-        // Fallback for when backend is unavailable
+        // Backend unreachable — show offline banner, gracefully degrade
         setTopics([]);
+        setApiDown(true);
       } finally {
         setLoading(false);
       }
@@ -107,6 +111,23 @@ function QuizPageContent() {
 
   return (
     <div className="min-h-screen">
+      {/* Offline / API-down banner */}
+      {apiDown && (
+        <div className="sticky top-16 z-40 flex items-center gap-3 px-4 py-3 bg-amber-50 dark:bg-amber-950/50 border-b border-amber-200 dark:border-amber-800/60">
+          <WifiOff className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <p className="text-sm text-amber-800 dark:text-amber-300 flex-1">
+            <span className="font-semibold">Quiz server is offline.</span>{" "}
+            Quiz topics and score tracking are unavailable. Check your connection or try again later.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-xs font-semibold text-amber-700 dark:text-amber-300 hover:underline shrink-0"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <section className="bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-950 pt-20 pb-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

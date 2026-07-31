@@ -24,6 +24,7 @@ import { lessonQuizzes } from "@/data/lesson-quizzes";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useStreak } from "@/hooks/useStreak";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 // ─── Inline markdown helpers ────────────────────────────────────────────────
 
@@ -185,6 +186,7 @@ function TutorialPageContent({
   const [showCertificate, setShowCertificate] = useState(false);
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { user } = useAuth();
+  const { success, info } = useToast();
   useStreak(!!user); // ping streak only when logged in
 
   const tutorial = tutorials.find((t) => t.slug === slug);
@@ -273,6 +275,9 @@ function TutorialPageContent({
           .post("/progress/mark", { tutorialSlug: slug, lessonSlug })
           .catch(() => {});
       }
+      // Toast: lesson completed
+      const lessonTitle = tutorial.lessons[index]?.title;
+      if (lessonTitle) success("Lesson completed! ✓", lessonTitle);
     }
   };
 
@@ -314,6 +319,7 @@ function TutorialPageContent({
       setCourseComplete(true);
       setShowCertificate(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
+      info("🎉 Course complete!", `You finished the ${tutorial.title} track`);
     }
   };
 
@@ -557,6 +563,34 @@ function TutorialPageContent({
             {/* ── End-of-course quiz CTA ── */}
             {quizCategory && !hasNext && (
               <QuizCTA category={quizCategory} />
+            )}
+
+            {/* ── Up Next + other tracks ── */}
+            {hasNext && (
+              <div className="mt-10 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div className="px-5 py-3 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-800">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Up Next</span>
+                </div>
+                <button
+                  onClick={() => goToLesson(currentLessonIndex + 1)}
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-indigo-50/60 dark:hover:bg-indigo-950/20 transition-colors text-left group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/50 flex items-center justify-center shrink-0">
+                    <ChevronRight className="w-5 h-5 text-indigo-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+                      {tutorial.lessons[currentLessonIndex + 1].title}
+                    </p>
+                    {tutorial.lessons[currentLessonIndex + 1].estimatedMinutes && (
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        ⏱ {tutorial.lessons[currentLessonIndex + 1].estimatedMinutes} min · {tutorial.lessons[currentLessonIndex + 1].difficulty ?? "beginner"}
+                      </p>
+                    )}
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-400 transition-colors shrink-0" />
+                </button>
+              </div>
             )}
 
             {/* ── Bottom prev/next navigation ── */}

@@ -11,6 +11,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import type { User as UserType, AccountStats, QuizAttempt, CompletedCourse } from "@/types";
+import { useToast } from "@/context/ToastContext";
 
 const COURSES_STORAGE_KEY = "beeCodeFi_completedCourses";
 function loadCompletedCourses(): CompletedCourse[] {
@@ -27,6 +28,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
 export default function AccountPage() {
   const { user, isLoading, updateUser, logout } = useAuth();
   const router = useRouter();
+  const { success, error: toastError } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const CROP_SIZE = 256;
@@ -124,10 +126,12 @@ export default function AccountPage() {
       const { data } = await api.put<UserType>("/account/profile", { name, email });
       updateUser(data);
       setProfileMsg({ type: "success", text: "Profile updated successfully" });
+      success("Profile updated", "Your name and email have been saved");
     } catch (err: unknown) {
       console.error("Profile update error:", err);
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to update profile";
       setProfileMsg({ type: "error", text: msg });
+      toastError("Update failed", msg);
     } finally {
       setProfileSaving(false);
     }
@@ -138,6 +142,7 @@ export default function AccountPage() {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setPasswordMsg({ type: "error", text: "New passwords do not match" });
+      toastError("Passwords don't match", "Please confirm your new password correctly");
       return;
     }
     setPasswordSaving(true);
@@ -145,12 +150,14 @@ export default function AccountPage() {
     try {
       await api.put("/account/password", { currentPassword, newPassword });
       setPasswordMsg({ type: "success", text: "Password changed successfully" });
+      success("Password changed", "Your new password is now active");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to change password";
       setPasswordMsg({ type: "error", text: msg });
+      toastError("Password change failed", msg);
     } finally {
       setPasswordSaving(false);
     }
