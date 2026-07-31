@@ -237,12 +237,11 @@ const snippets = [
   },
 ];
 
-const beePerches = [
-  { x: 0, y: 0, rotate: -8 },
-  { x: -180, y: 80, rotate: 6 },
-  { x: 140, y: 170, rotate: -4 },
-  { x: 40, y: 280, rotate: 8 },
-];
+const beeFlight = {
+  left: ["4%", "38%", "72%", "72%", "78%", "42%", "2%", "2%", "4%"],
+  top: ["18%", "10%", "12%", "12%", "55%", "72%", "68%", "68%", "18%"],
+  rotate: [-8, 8, -5, -2, 7, -8, 5, 2, -8],
+};
 
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -252,19 +251,6 @@ export default function Hero() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const resumeLesson = useContinueLearning();
-  const [beePerch, setBeePerch] = useState(0);
-
-  useEffect(() => {
-    const perchTimer = setInterval(() => {
-      setBeePerch((current) => {
-        let next = Math.floor(Math.random() * beePerches.length);
-        while (next === current) next = Math.floor(Math.random() * beePerches.length);
-        return next;
-      });
-    }, 4500);
-
-    return () => clearInterval(perchTimer);
-  }, []);
 
   return (
     <section
@@ -357,9 +343,14 @@ export default function Hero() {
 
       {/* ── Bee ────────────────────────────────────────────────── */}
       <motion.div
-        className="absolute top-24 right-[13%] text-5xl hidden xl:block select-none pointer-events-none"
-        animate={beePerches[beePerch]}
-        transition={{ duration: 1.6, ease: "easeInOut" }}
+        className="absolute text-5xl hidden xl:block select-none pointer-events-none"
+        animate={beeFlight}
+        transition={{
+          duration: 18,
+          times: [0, 0.16, 0.29, 0.36, 0.5, 0.66, 0.79, 0.86, 1],
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
       >
         <motion.span
           className="inline-block"
