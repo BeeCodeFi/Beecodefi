@@ -154,6 +154,42 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     { id: "css-mod-3", question: "What does 'aspect-ratio: 16 / 9' do?", options: ["Maintains a 16:9 width-to-height ratio", "Sets the element to 16px by 9px", "Creates a 16-column grid with 9 rows", "Sets font size to 16/9 rem"], correctIndex: 0, explanation: "aspect-ratio maintains proportional dimensions — the element will always be 16 units wide for every 9 units tall." },
   ],
 
+  "css/css-units": [
+    { id: "css-units-1", question: "Which unit is relative to the root element's font size?", options: ["rem", "em", "vh", "px"], correctIndex: 0, explanation: "rem units scale from the root html font size, making them predictable for accessible responsive sizing." },
+    { id: "css-units-2", question: "What does 100vh represent?", options: ["The viewport height", "The parent height", "The root font size", "The viewport width"], correctIndex: 0, explanation: "vh means viewport height, so 100vh is equal to the visible viewport height." },
+    { id: "css-units-3", question: "When is em useful?", options: ["For sizing relative to the current element's font size", "Only for screen widths", "For database values", "Only for fixed pixels"], correctIndex: 0, explanation: "em is relative to the current element's font size, which makes it useful for component-scaled spacing and typography." },
+  ],
+
+  "css/borders-shadows-outlines": [
+    { id: "css-border-1", question: "Which property creates a shadow outside an element?", options: ["box-shadow", "text-shadow", "drop-border", "outline-shadow"], correctIndex: 0, explanation: "box-shadow adds one or more shadows around an element's border box." },
+    { id: "css-border-2", question: "How is an outline different from a border?", options: ["An outline does not take up layout space", "An outline changes the element width", "A border only works on text", "They are identical"], correctIndex: 0, explanation: "Outlines are drawn outside the border and do not affect the element's dimensions or layout." },
+    { id: "css-border-3", question: "Which value makes a border completely round?", options: ["border-radius: 50%", "border-round: true", "corner: round", "radius: full"], correctIndex: 0, explanation: "A 50% border-radius creates a circle when the element has equal width and height." },
+  ],
+
+  "css/backgrounds": [
+    { id: "css-bg-1", question: "Which property controls how a background image covers an element?", options: ["background-size", "background-fit", "image-size", "cover-image"], correctIndex: 0, explanation: "background-size: cover scales an image to cover the entire element while preserving its aspect ratio." },
+    { id: "css-bg-2", question: "What does background-position: center do?", options: ["Centers the background image", "Centers the text only", "Repeats the image", "Removes the image"], correctIndex: 0, explanation: "background-position controls the image's alignment inside its background area." },
+    { id: "css-bg-3", question: "Which CSS function creates a smooth color transition?", options: ["linear-gradient()", "color-transition()", "smooth-color()", "gradient-color()"], correctIndex: 0, explanation: "linear-gradient() creates a gradient along a straight line between two or more colors." },
+  ],
+
+  "css/overflow-and-scrolling": [
+    { id: "css-overflow-1", question: "What does overflow: hidden do?", options: ["Clips content that extends outside the box", "Hides the entire element", "Adds a scrollbar", "Expands the element"], correctIndex: 0, explanation: "overflow: hidden clips content outside the element's padding box and does not show scrollbars." },
+    { id: "css-overflow-2", question: "Which value enables scrolling when content overflows?", options: ["auto", "scrollable", "overflowing", "move"], correctIndex: 0, explanation: "overflow: auto adds scrollbars only when the content needs them." },
+    { id: "css-overflow-3", question: "What does scroll-behavior: smooth affect?", options: ["Programmatic scrolling animation", "The element's width", "Mouse cursor speed", "CSS transitions"], correctIndex: 0, explanation: "scroll-behavior: smooth makes supported programmatic and anchor scrolling animate smoothly." },
+  ],
+
+  "css/filters-and-blend-modes": [
+    { id: "css-filter-1", question: "Which filter makes an element grayscale?", options: ["filter: grayscale(100%)", "filter: gray(100%)", "color: grayscale", "blend: gray"], correctIndex: 0, explanation: "The grayscale() filter converts an element's colors to gray values." },
+    { id: "css-filter-2", question: "What does mix-blend-mode control?", options: ["How an element blends with content behind it", "How flex items wrap", "How text is aligned", "How a shadow is sized"], correctIndex: 0, explanation: "mix-blend-mode controls pixel blending between an element and the layers beneath it." },
+    { id: "css-filter-3", question: "Which filter creates a soft blur?", options: ["blur()", "soft()", "fuzz()", "smooth()"], correctIndex: 0, explanation: "filter: blur(8px) applies a Gaussian blur effect to the element." },
+  ],
+
+  "css/css-architecture": [
+    { id: "css-arch-1", question: "Why use a consistent naming convention such as BEM?", options: ["To make styles predictable and reduce naming collisions", "To make CSS execute faster", "To replace HTML", "To remove all classes"], correctIndex: 0, explanation: "Naming conventions make component ownership and relationships clear in large stylesheets." },
+    { id: "css-arch-2", question: "What is a design token?", options: ["A reusable named value for design decisions", "A CSS syntax error", "A browser cookie", "A JavaScript event"], correctIndex: 0, explanation: "Design tokens represent reusable values such as colors, spacing, type sizes, and radii." },
+    { id: "css-arch-3", question: "What is the main benefit of CSS layers?", options: ["They provide explicit control over cascade order", "They add 3D depth", "They compress images", "They replace media queries"], correctIndex: 0, explanation: "@layer lets teams organize styles and control cascade precedence without relying only on selector specificity." },
+  ],
+
   // ═══════════════════════════════════════
   //  JavaScript Tutorials
   // ═══════════════════════════════════════
@@ -222,6 +258,36 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     { id: "js-storage-3", question: "What is Intersection Observer used for?", options: ["Detecting when elements enter or leave the viewport", "Observing CSS changes", "Watching for JavaScript errors", "Monitoring network requests"], correctIndex: 0, explanation: "Intersection Observer detects when elements become visible in the viewport — used for lazy loading, infinite scroll, and scroll-triggered animations." },
   ],
 
+  "javascript/strings": [
+    { id: "js-string-1", question: "Which method converts a string to uppercase?", options: ["toUpperCase()", "upper()", "capitalize()", "toCaps()"], correctIndex: 0, explanation: "String.prototype.toUpperCase() returns a new string with alphabetic characters converted to uppercase." },
+    { id: "js-string-2", question: "What do template literals use for interpolation?", options: ["${value}", "#{value}", "{{value}}", "%value%"], correctIndex: 0, explanation: "Template literals use backticks and ${expression} placeholders to interpolate values." },
+    { id: "js-string-3", question: "What does includes() return?", options: ["A boolean indicating whether a value occurs", "The matching index only", "A new object", "The string length"], correctIndex: 0, explanation: "includes() returns true when the search string is found and false otherwise." },
+  ],
+
+  "javascript/numbers-math-dates": [
+    { id: "js-number-1", question: "Which method rounds a number down?", options: ["Math.floor()", "Math.down()", "Math.roundDown()", "Number.floorDown()"], correctIndex: 0, explanation: "Math.floor() returns the largest integer less than or equal to the number." },
+    { id: "js-number-2", question: "What does new Date() create?", options: ["A Date object for the current time", "A formatted date string only", "A timer", "A number of days"], correctIndex: 0, explanation: "new Date() creates a Date object initialized to the current date and time." },
+    { id: "js-number-3", question: "What does Number.isNaN(value) check?", options: ["Whether value is the actual NaN value", "Whether value is any string", "Whether value is zero", "Whether value is an integer"], correctIndex: 0, explanation: "Number.isNaN() performs a strict check for the special numeric NaN value without coercion." },
+  ],
+
+  "javascript/higher-order-functions": [
+    { id: "js-hof-1", question: "What is a higher-order function?", options: ["A function that accepts or returns another function", "A function with a higher number", "A function that runs on a server", "A function without parameters"], correctIndex: 0, explanation: "Higher-order functions treat functions as values by accepting them as arguments or returning them." },
+    { id: "js-hof-2", question: "Which method keeps array elements that pass a test?", options: ["filter()", "keep()", "selectOnly()", "where()"], correctIndex: 0, explanation: "filter() returns a new array containing elements for which the callback returns true." },
+    { id: "js-hof-3", question: "What does forEach() return?", options: ["undefined", "A transformed array", "A promise", "The last element"], correctIndex: 0, explanation: "forEach() performs a callback for each item and returns undefined; use map() when you need a new array." },
+  ],
+
+  "javascript/modules": [
+    { id: "js-module-1", question: "Which keyword exports a named value from an ES module?", options: ["export", "send", "expose", "module"], correctIndex: 0, explanation: "The export keyword makes declarations available to other modules." },
+    { id: "js-module-2", question: "Which syntax imports a default export?", options: ["import value from './module.js'", "include value from './module.js'", "require default './module.js'", "use './module.js'"], correctIndex: 0, explanation: "A default export is imported without braces using import value from './module.js'." },
+    { id: "js-module-3", question: "What is a benefit of modules?", options: ["They isolate and organize code with explicit dependencies", "They remove the need for functions", "They only work in CSS", "They make every variable global"], correctIndex: 0, explanation: "Modules provide boundaries, reusable exports, and explicit dependency relationships." },
+  ],
+
+  "javascript/regular-expressions": [
+    { id: "js-regex-1", question: "What does the ^ anchor match in a regular expression?", options: ["The start of a string", "The end of a string", "Any digit", "A literal caret only"], correctIndex: 0, explanation: "The ^ anchor asserts that the match begins at the start of the input." },
+    { id: "js-regex-2", question: "What does the g flag do?", options: ["Finds all matches instead of stopping at the first", "Makes the pattern global across files", "Ignores case", "Matches only groups"], correctIndex: 0, explanation: "The global flag continues searching after the first match." },
+    { id: "js-regex-3", question: "Which method tests whether a pattern matches a string?", options: ["regex.test(value)", "regex.check(value)", "regex.matching(value)", "regex.find(value)"], correctIndex: 0, explanation: "RegExp.prototype.test() returns true or false depending on whether the pattern matches." },
+  ],
+
   "javascript/error-handling": [
     { id: "js-err-1", question: "What does the 'finally' block do in try/catch/finally?", options: ["Always runs regardless of whether an error occurred", "Only runs if there's an error", "Only runs if there's no error", "Runs the code one final time"], correctIndex: 0, explanation: "finally always executes after try (and catch if triggered) — perfect for cleanup like closing connections." },
     { id: "js-err-2", question: "How do you create a custom error?", options: ["Extend the Error class", "Use console.error()", "Throw a string", "Use try without catch"], correctIndex: 0, explanation: "class MyError extends Error { } creates a custom error type that can be caught specifically with instanceof." },
@@ -233,4 +299,15 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     { id: "js-api-2", question: "How do you send JSON data in a POST request?", options: ["Set Content-Type header and use JSON.stringify() on the body", "Just pass the object directly", "Use response.json()", "Set method to 'JSON'"], correctIndex: 0, explanation: "You must set the Content-Type header to 'application/json' and stringify the body with JSON.stringify()." },
     { id: "js-api-3", question: "What is AbortController used for?", options: ["Cancelling in-flight fetch requests", "Aborting page load", "Stopping event propagation", "Ending a loop"], correctIndex: 0, explanation: "AbortController provides a signal that can be passed to fetch() to cancel the request when needed." },
   ],
+
+  "javascript/objects-and-destructuring": [
+    { id: "js-object-1", question: "How do you access a property named name on user?", options: ["user.name", "user->name", "user::name", "user[name()]"], correctIndex: 0, explanation: "Dot notation accesses a known object property, so user.name reads the name value." },
+    { id: "js-object-2", question: "What does Object.keys(object) return?", options: ["An array of the object's own property names", "The values only", "A JSON string", "A cloned object"], correctIndex: 0, explanation: "Object.keys() returns an array containing the enumerable own property names." },
+    { id: "js-object-3", question: "What does object destructuring allow you to do?", codeSnippet: "const { name } = user;", options: ["Extract properties into variables", "Delete the object", "Freeze the object", "Convert the object to JSON"], correctIndex: 0, explanation: "Destructuring extracts selected properties into variables using a concise declaration syntax." },
+  ],
 };
+
+// Compatibility aliases for lesson slugs used by earlier quiz content.
+lessonQuizzes["html/html-attributes"] = lessonQuizzes["html/attributes"];
+lessonQuizzes["html/html5-apis-and-best-practices"] = lessonQuizzes["html/html5-apis"];
+lessonQuizzes["javascript/arrays"] = lessonQuizzes["javascript/arrays-and-objects"];
