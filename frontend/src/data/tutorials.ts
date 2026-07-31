@@ -17,7 +17,7 @@ export const tutorials: TutorialCategory[] = [
   {
     slug: "css",
     title: "CSS Mastery",
-    description: "Style your websites beautifully. Master selectors, flexbox, grid, animations, and responsive design.",
+    description: "Make things beautiful. Flexbox, Grid, animations, responsive design, and modern CSS features. Transform raw HTML into stunning, polished interfaces that users love.",
     icon: "Palette",
     color: "from-blue-500 to-indigo-500",
     totalLessons: cssLessons.length,
@@ -27,7 +27,7 @@ export const tutorials: TutorialCategory[] = [
   {
     slug: "javascript",
     title: "JavaScript Essentials",
-    description: "Add interactivity to your sites. Learn variables, functions, DOM manipulation, async/await, and ES6+.",
+    description: "Bring pages to life. Functions, DOM, async/await, APIs, classes, and modern ES6+ features. Turn static websites into dynamic, interactive web applications.",
     icon: "Braces",
     color: "from-yellow-500 to-amber-500",
     totalLessons: jsLessons.length,
