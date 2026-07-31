@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Code2, Mail, Heart } from "lucide-react";
+import NewsletterSignup from "@/components/newsletter/NewsletterSignup";
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -100,6 +101,11 @@ export default function Footer() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="mt-12 max-w-md">
+          <NewsletterSignup />
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
