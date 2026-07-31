@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertCircle } from "lucide-react";
+import { logError } from "@/lib/errorTracking";
 
 export default function Error({
   error,
@@ -11,7 +12,8 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    // Log error to console and tracking system
+    logError(error, undefined, { digest: error.digest });
   }, [error]);
 
   return (
