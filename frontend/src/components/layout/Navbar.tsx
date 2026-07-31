@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/tutorials", label: "Tutorials" },
   { href: "/courses", label: "Courses" },
   { href: "/quiz", label: "Quiz" },
+  { href: "/leaderboard", label: "Leaderboard" },
   { href: "/roadmap", label: "Roadmap" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -236,16 +237,6 @@ export default function Navbar() {
                           onClick={() => setShowUserMenu(false)}>
                           <Target className="w-4 h-4" /> My Learning
                         </Link>
-                        <Link href="/quiz/history"
-                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
-                          onClick={() => setShowUserMenu(false)}>
-                          <User className="w-4 h-4" /> Quiz History
-                        </Link>
-                        <Link href="/account"
-                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
-                          onClick={() => setShowUserMenu(false)}>
-                          <Settings className="w-4 h-4" /> Account Settings
-                        </Link>
                         <div className="border-t border-gray-200/60 dark:border-white/8 my-1.5 mx-3" />
                         <motion.button
                           whileTap={{ scale: 0.97 }}
@@ -358,9 +349,9 @@ export default function Navbar() {
                 </button>
                   {user ? (
                     <>
-                      <Link href="/account" onClick={() => setIsOpen(false)}
+                      <Link href="/dashboard" onClick={() => setIsOpen(false)}
                         className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 rounded-xl">
-                        <Settings className="w-4 h-4" /> Account Settings
+                        <Target className="w-4 h-4" /> My Learning
                       </Link>
                       <button onClick={() => { logout(); setIsOpen(false); }}
                         className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl">
