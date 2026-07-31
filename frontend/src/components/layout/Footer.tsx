@@ -41,6 +41,10 @@ const footerLinks = {
     { href: "/privacy",   label: "Privacy"   },
     { href: "/terms",     label: "Terms"     },
   ],
+  Community: [
+    { href: "https://github.com/BeeCodeFi", label: "GitHub", external: true },
+    { href: "https://discord.gg/beecodefi", label: "Discord", external: true },
+  ],
 };
 
 export default function Footer() {
@@ -84,17 +88,28 @@ export default function Footer() {
           </div>
 
           {/* Nav columns — shifted right to align with "Made with Ayush" */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-16 md:pl-32 lg:pl-40">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-16 md:pl-32 lg:pl-40">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
                 <ul className="space-y-2">
                   {links.map((link) => (
                     <li key={link.href}>
-                      <Link href={link.href}
-                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                        {link.label}
-                      </Link>
+                      {(link as any).external ? (
+                        <a 
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link href={link.href}
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
