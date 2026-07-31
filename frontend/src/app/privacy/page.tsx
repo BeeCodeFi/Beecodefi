@@ -62,7 +62,7 @@ export default function PrivacyPage() {
 
             <h2>Contact Us</h2>
             <p>
-              If you have any questions about this Privacy Policy, please contact us at <a href="mailto:privacy@beecodefi.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">privacy@beecodefi.com</a>.
+              If you have any questions about this Privacy Policy, please contact us at <a href="mailto:kumaryursh@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">kumaryursh@gmail.com</a>.
             </p>
           </div>
         </div>

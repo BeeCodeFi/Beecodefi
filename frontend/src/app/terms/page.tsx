@@ -63,7 +63,7 @@ export default function TermsPage() {
 
             <h2>Contact Us</h2>
             <p>
-              If you have any questions about these Terms of Service, please contact us at <a href="mailto:terms@beecodefi.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">terms@beecodefi.com</a>.
+              If you have any questions about these Terms of Service, please contact us at <a href="mailto:kumaryursh@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">kumaryursh@gmail.com</a>.
             </p>
           </div>
         </div>
