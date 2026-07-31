@@ -81,8 +81,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Nav columns — flex-1 so they fill the rest */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          {/* Nav columns — shifted right to align with "Made with Ayush" */}
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-16 md:pl-32 lg:pl-40">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
@@ -111,7 +111,7 @@ export default function Footer() {
             Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> by{" "}
             <a href="https://www.linkedin.com/in/ayushku" target="_blank" rel="noopener noreferrer"
               className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
-              Ayush Kumar
+              Ayush
             </a>
           </p>
         </div>
