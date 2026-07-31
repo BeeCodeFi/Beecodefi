@@ -91,7 +91,7 @@ export default function TutorialPreview() {
                   <motion.div
                     whileHover={{ y: -8, transition: { type: "spring", stiffness: 300, damping: 22 } }}
                     whileTap={{ scale: 0.97, transition: { duration: 0.12 } }}
-                    className={`relative h-full rounded-2xl border ${m.border} ${m.bg} p-7 overflow-hidden transition-shadow duration-300 ${m.glow} hover:shadow-xl bg-white dark:bg-transparent`}
+                    className={`relative h-full rounded-2xl border ${m.border} ${m.bg} p-7 overflow-hidden transition-shadow duration-300 ${m.glow} hover:shadow-xl bg-white dark:bg-transparent flex flex-col`}
                     data-cursor-grow
                   >
                     {/* Icon */}
@@ -105,9 +105,9 @@ export default function TutorialPreview() {
 
                     <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-0.5">{m.title}</h3>
                     <p className={`text-sm font-semibold ${m.accent} mb-3`}>{m.subtitle}</p>
-                    <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed mb-6">{m.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed mb-6 min-h-[3rem]">{m.description}</p>
 
-                    <ul className="space-y-2 mb-7">
+                    <ul className="space-y-2 mb-7 flex-grow">
                       {m.topics.map((t) => (
                         <li key={t} className="flex items-center gap-2 text-sm text-gray-700 dark:text-slate-300">
                           <CheckCircle2 className={`w-3.5 h-3.5 ${m.checkColor} shrink-0`} />
@@ -116,7 +116,7 @@ export default function TutorialPreview() {
                       ))}
                     </ul>
 
-                    <div className="flex items-center justify-between mt-auto">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-500">
                         <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5" />{lessons} lessons</span>
                         <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />~{hours}h</span>
