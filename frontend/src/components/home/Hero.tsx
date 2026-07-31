@@ -237,15 +237,35 @@ const snippets = [
   },
 ];
 
-function closestSnippetIndex(fromIndex: number) {
-  const from = snippets[fromIndex];
+type SnippetPosition = { left: string; top: string };
+
+const initialSnippetPositions: SnippetPosition[] = snippets.map(({ left, top }) => ({
+  left,
+  top,
+}));
+
+function randomSnippetPosition(): SnippetPosition {
+  let left = 4 + Math.round(Math.random() * 82);
+  let top = 10 + Math.round(Math.random() * 72);
+
+  // Keep snippets around the central copy so they do not cover the headline.
+  while (left > 24 && left < 66 && top > 24 && top < 66) {
+    left = 4 + Math.round(Math.random() * 82);
+    top = 10 + Math.round(Math.random() * 72);
+  }
+
+  return { left: `${left}%`, top: `${top}%` };
+}
+
+function closestSnippetIndex(fromIndex: number, positions: SnippetPosition[]) {
+  const from = positions[fromIndex];
   let closestIndex = fromIndex === 0 ? 1 : 0;
   let closestDistance = Number.POSITIVE_INFINITY;
 
-  snippets.forEach((snippet, index) => {
+  positions.forEach((position, index) => {
     if (index === fromIndex) return;
-    const horizontalDistance = parseFloat(snippet.left) - parseFloat(from.left);
-    const verticalDistance = parseFloat(snippet.top) - parseFloat(from.top);
+    const horizontalDistance = parseFloat(position.left) - parseFloat(from.left);
+    const verticalDistance = parseFloat(position.top) - parseFloat(from.top);
     const distance = Math.hypot(horizontalDistance, verticalDistance);
     if (distance < closestDistance) {
       closestDistance = distance;
@@ -266,6 +286,7 @@ export default function Hero() {
   const resumeLesson = useContinueLearning();
   const [activeSnippet, setActiveSnippet] = useState<number | null>(0);
   const [beeTarget, setBeeTarget] = useState(0);
+  const [snippetPositions, setSnippetPositions] = useState(initialSnippetPositions);
 
   useEffect(() => {
     if (activeSnippet === null) {
@@ -276,14 +297,19 @@ export default function Hero() {
       return () => clearTimeout(arrivalTimer);
     }
 
-    const nextSnippet = closestSnippetIndex(activeSnippet);
+    const nextSnippet = closestSnippetIndex(activeSnippet, snippetPositions);
     const fadeOutTimer = setTimeout(() => {
       setActiveSnippet(null);
       setBeeTarget(nextSnippet);
+      setSnippetPositions((current) =>
+        current.map((position, index) =>
+          index === nextSnippet ? randomSnippetPosition() : position,
+        ),
+      );
     }, 3600);
 
     return () => clearTimeout(fadeOutTimer);
-  }, [activeSnippet, beeTarget]);
+  }, [activeSnippet, beeTarget, snippetPositions]);
 
   return (
     <section
@@ -357,7 +383,10 @@ export default function Hero() {
           <motion.div
             key={i}
             className="absolute"
-            style={{ left: s.left, top: s.top }}
+            style={{
+              left: snippetPositions[i].left,
+              top: snippetPositions[i].top,
+            }}
             initial={{ opacity: 0, y: 16 }}
             animate={
               activeSnippet === i
@@ -380,8 +409,8 @@ export default function Hero() {
       <motion.div
         className="absolute text-5xl hidden xl:block select-none pointer-events-none"
         animate={{
-          left: snippets[beeTarget].left,
-          top: snippets[beeTarget].top,
+          left: snippetPositions[beeTarget].left,
+          top: `calc(${snippetPositions[beeTarget].top} - 3.25rem)`,
           rotate: beeTarget % 2 === 0 ? -6 : 6,
         }}
         transition={{
