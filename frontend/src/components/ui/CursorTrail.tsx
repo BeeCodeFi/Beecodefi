@@ -42,8 +42,8 @@ export default function CursorTrail() {
 
     let points: Point[] = [];
     let animationFrameId: number;
-    let colorIndex = 0;
-    let colorTick = 0;
+    let lastMoveTime = 0;
+    let currentColor = COLORS[Math.floor(Math.random() * COLORS.length)];
 
     // Handle resizing
     const updateSize = () => {
@@ -55,14 +55,19 @@ export default function CursorTrail() {
 
     // Handle mouse movement
     const handleMouseMove = (e: MouseEvent) => {
-      // Cycle colors slowly as the mouse moves
-      colorTick++;
-      if (colorTick > 15) {
-        colorIndex = (colorIndex + 1) % COLORS.length;
-        colorTick = 0;
+      const now = performance.now();
+      // If there was a pause of more than 150ms, pick a new random color for this new stroke
+      if (now - lastMoveTime > 150) {
+        let newColor;
+        // Ensure it picks a different color than the current one
+        do {
+          newColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+        } while (newColor === currentColor && COLORS.length > 1);
+        currentColor = newColor;
       }
+      lastMoveTime = now;
       
-      points.push(new Point(e.clientX, e.clientY, COLORS[colorIndex]));
+      points.push(new Point(e.clientX, e.clientY, currentColor));
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
@@ -75,15 +80,15 @@ export default function CursorTrail() {
         const p = points[i];
         p.age++;
 
-        // Remove old points
-        if (p.age > 40) {
+        // Remove old points (increased from 40 to 80 for slower fade)
+        if (p.age > 80) {
           points.splice(i, 1);
           i--;
           continue;
         }
 
         // The older the point, the thinner and more transparent it gets
-        const life = 1 - p.age / 40;
+        const life = 1 - p.age / 80;
         
         ctx.beginPath();
         // A thick brush look — connecting to the previous point
