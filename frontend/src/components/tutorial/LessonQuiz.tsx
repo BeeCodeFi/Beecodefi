@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getUserStorageKey } from "@/lib/userStorage";
 import { useAuth } from "@/context/AuthContext";
+import { readQuizProgress, saveQuizProgress } from "@/lib/quizProgress";
 
 export interface LessonQuizQuestion {
   id: string;
@@ -27,6 +28,7 @@ interface Props {
   questions: LessonQuizQuestion[];
   lessonTitle: string;
   storageKey: string;
+  quizTopic?: string;
 }
 
 interface SavedResult {
@@ -38,6 +40,7 @@ export default function LessonQuiz({
   questions,
   lessonTitle,
   storageKey,
+  quizTopic,
 }: Props) {
   const { user, isLoading: authLoading } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,12 +60,24 @@ export default function LessonQuiz({
         const saved = localStorage.getItem(
           getUserStorageKey(user?.id, `lesson-quiz-${storageKey}`),
         );
+        const sharedProgress = quizTopic
+          ? readQuizProgress(user?.id, quizTopic)
+          : null;
+
+        if (sharedProgress) {
+          setBestResult({
+            score: sharedProgress.score,
+            total: sharedProgress.total,
+          });
+          return;
+        }
+
         setBestResult(saved ? JSON.parse(saved) : null);
       } catch {
         setBestResult(null);
       }
     });
-  }, [authLoading, storageKey, user?.id]);
+  }, [authLoading, quizTopic, storageKey, user?.id]);
 
   const q = questions[currentIndex];
   const isLast = currentIndex === questions.length - 1;
@@ -93,6 +108,10 @@ export default function LessonQuiz({
           getUserStorageKey(user?.id, `lesson-quiz-${storageKey}`),
           JSON.stringify(best),
         );
+
+        if (quizTopic) {
+          saveQuizProgress(user?.id, quizTopic, best, "lesson");
+        }
         return best;
       });
       setFinished(true);

@@ -17,6 +17,8 @@ import {
 import api from "@/lib/api";
 import { QuizQuestion, QuizResult } from "@/types";
 import { cn } from "@/lib/utils";
+import { saveQuizProgress } from "@/lib/quizProgress";
+import { useAuth } from "@/context/AuthContext";
 
 type QuizState = "loading" | "ready" | "playing" | "results" | "review";
 
@@ -26,6 +28,7 @@ export default function QuizSessionPage({
   params: Promise<{ topic: string }>;
 }) {
   const { topic } = use(params);
+  const { user } = useAuth();
   const [state, setState] = useState<QuizState>("loading");
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -68,6 +71,35 @@ export default function QuizSessionPage({
         quizId,
         answers,
       });
+      const categoryKey = quizTitle?.toLowerCase().includes("html")
+        ? "html"
+        : quizTitle?.toLowerCase().includes("css")
+          ? "css"
+          : quizTitle?.toLowerCase().includes("javascript")
+            ? "javascript"
+            : "";
+
+      saveQuizProgress(
+        user?.id,
+        topic,
+        {
+          score: data.score,
+          total: data.totalQuestions,
+        },
+        "quiz",
+      );
+
+      if (categoryKey) {
+        saveQuizProgress(
+          user?.id,
+          categoryKey,
+          {
+            score: data.score,
+            total: data.totalQuestions,
+          },
+          "quiz",
+        );
+      }
       setResult(data);
       setState("results");
     } catch {

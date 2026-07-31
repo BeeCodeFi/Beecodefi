@@ -23,6 +23,8 @@ import api from "@/lib/api";
 import { QuizTopic } from "@/types";
 import { quizCategories, type QuizCategoryMeta } from "@/data/quiz-categories";
 import { cn } from "@/lib/utils";
+import { readQuizProgress, mergeQuizBestScore } from "@/lib/quizProgress";
+import { useAuth } from "@/context/AuthContext";
 
 const categoryIcons: Record<string, React.ElementType> = {
   HTML: FileCode2,
@@ -50,6 +52,7 @@ export default function QuizPage() {
 function QuizPageContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "all";
+  const { user } = useAuth();
 
   const [topics, setTopics] = useState<QuizTopic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +66,22 @@ function QuizPageContent() {
     const fetchTopics = async () => {
       try {
         const { data } = await api.get<QuizTopic[]>("/quiz/topics");
-        setTopics(data);
+        const mergedTopics = data.map((topic) => {
+          const localProgress = readQuizProgress(user?.id, topic.topic);
+          const categoryProgress = readQuizProgress(
+            user?.id,
+            topic.category.toLowerCase(),
+          );
+          const bestScore = mergeQuizBestScore(
+            topic.bestScore,
+            mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+          );
+          return {
+            ...topic,
+            bestScore,
+          };
+        });
+        setTopics(mergedTopics);
         setApiDown(false);
       } catch {
         // Backend unreachable — show offline banner, gracefully degrade
