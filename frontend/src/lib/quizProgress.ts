@@ -30,6 +30,11 @@ export function readQuizProgress(
   }
 }
 
+export function notifyQuizProgressChanged() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("quiz-progress-updated"));
+}
+
 export function saveQuizProgress(
   userId: number | null | undefined,
   topic: string,
@@ -50,6 +55,7 @@ export function saveQuizProgress(
       getQuizProgressStorageKey(userId, topic),
       JSON.stringify(nextProgress),
     );
+    notifyQuizProgressChanged();
   } catch {
     // Ignore storage failures gracefully.
   }

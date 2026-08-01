@@ -22,6 +22,8 @@ import {
 import api from "@/lib/api";
 import { QuizTopic } from "@/types";
 import { quizCategories, type QuizCategoryMeta } from "@/data/quiz-categories";
+import { tutorials } from "@/data/tutorials";
+import { lessonQuizzes } from "@/data/lesson-quizzes";
 import { cn } from "@/lib/utils";
 import { readQuizProgress, mergeQuizBestScore } from "@/lib/quizProgress";
 import { useAuth } from "@/context/AuthContext";
@@ -66,7 +68,7 @@ function QuizPageContent() {
     const fetchTopics = async () => {
       try {
         const { data } = await api.get<QuizTopic[]>("/quiz/topics");
-        const mergedTopics = data.map((topic) => {
+        const backendTopics = data.map((topic) => {
           const localProgress = readQuizProgress(user?.id, topic.topic);
           const categoryProgress = readQuizProgress(
             user?.id,
@@ -81,7 +83,44 @@ function QuizPageContent() {
             bestScore,
           };
         });
-        setTopics(mergedTopics);
+
+        const lessonQuizTopics: QuizTopic[] = [];
+
+        tutorials.forEach((tutorial) => {
+          tutorial.lessons.forEach((lesson) => {
+            const quizKey = `${tutorial.slug}/${lesson.slug}`;
+            const questions = lessonQuizzes[quizKey];
+            if (!questions || questions.length === 0) return;
+
+            const categoryMeta = quizCategories.find(
+              (cat) => cat.tutorialSlug === tutorial.slug,
+            );
+            const localProgress = readQuizProgress(user?.id, quizKey);
+            const categoryProgress = readQuizProgress(
+              user?.id,
+              categoryMeta?.categoryName?.toLowerCase() || tutorial.slug,
+            );
+            const bestScore = mergeQuizBestScore(
+              null,
+              mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+            );
+
+            lessonQuizTopics.push({
+              id: -(lessonQuizTopics.length + 1),
+              title: `${tutorial.title} • ${lesson.title}`,
+              topic: quizKey,
+              category: categoryMeta?.categoryName || tutorial.title,
+              description: `Lesson quiz for ${lesson.title}`,
+              difficulty: lesson.difficulty
+                ? lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)
+                : "Beginner",
+              questionCount: questions.length,
+              bestScore,
+            });
+          });
+        });
+
+        setTopics([...backendTopics, ...lessonQuizTopics]);
         setApiDown(false);
       } catch {
         // Backend unreachable — show offline banner, gracefully degrade
@@ -92,7 +131,78 @@ function QuizPageContent() {
       }
     };
     fetchTopics();
-  }, []);
+  }, [user?.id]);
+
+  useEffect(() => {
+    const handleProgressUpdate = () => {
+      if (!user?.id) return;
+      const refreshTopics = async () => {
+        try {
+          const { data } = await api.get<QuizTopic[]>("/quiz/topics");
+          const backendTopics = data.map((topic) => {
+            const localProgress = readQuizProgress(user.id, topic.topic);
+            const categoryProgress = readQuizProgress(
+              user.id,
+              topic.category.toLowerCase(),
+            );
+            const bestScore = mergeQuizBestScore(
+              topic.bestScore,
+              mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+            );
+            return {
+              ...topic,
+              bestScore,
+            };
+          });
+
+          const lessonQuizTopics: QuizTopic[] = [];
+          tutorials.forEach((tutorial) => {
+            tutorial.lessons.forEach((lesson) => {
+              const quizKey = `${tutorial.slug}/${lesson.slug}`;
+              const questions = lessonQuizzes[quizKey];
+              if (!questions || questions.length === 0) return;
+
+              const categoryMeta = quizCategories.find(
+                (cat) => cat.tutorialSlug === tutorial.slug,
+              );
+              const localProgress = readQuizProgress(user.id, quizKey);
+              const categoryProgress = readQuizProgress(
+                user.id,
+                categoryMeta?.categoryName?.toLowerCase() || tutorial.slug,
+              );
+              const bestScore = mergeQuizBestScore(
+                null,
+                mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+              );
+
+              lessonQuizTopics.push({
+                id: -(lessonQuizTopics.length + 1),
+                title: `${tutorial.title} • ${lesson.title}`,
+                topic: quizKey,
+                category: categoryMeta?.categoryName || tutorial.title,
+                description: `Lesson quiz for ${lesson.title}`,
+                difficulty: lesson.difficulty
+                  ? lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)
+                  : "Beginner",
+                questionCount: questions.length,
+                bestScore,
+              });
+            });
+          });
+
+          setTopics([...backendTopics, ...lessonQuizTopics]);
+        } catch {
+          setTopics([]);
+        }
+      };
+      void refreshTopics();
+    };
+
+    window.addEventListener("quiz-progress-updated", handleProgressUpdate);
+    return () => {
+      window.removeEventListener("quiz-progress-updated", handleProgressUpdate);
+    };
+  }, [user?.id]);
 
   // Auto-expand a category if coming from a tutorial link
   useEffect(() => {
@@ -462,7 +572,7 @@ function QuizCard({
 
   return (
     <Link
-      href={`/quiz/${quiz.topic}`}
+      href={quiz.topic.includes("/") ? `/tutorials/${quiz.topic.split("/")[0]}?lesson=${quiz.topic.split("/")[1]}` : `/quiz/${quiz.topic}`}
       className={cn(
         "group block bg-white dark:bg-gray-900 rounded-xl border p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
         completed

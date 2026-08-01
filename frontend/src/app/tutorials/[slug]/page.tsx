@@ -701,7 +701,7 @@ function TutorialPageContent({
                 questions={quizQuestions}
                 lessonTitle={lesson.title}
                 storageKey={quizKey}
-                quizTopic={quizCategory?.categoryName?.toLowerCase()}
+                quizTopic={quizKey}
               />
             )}
 
