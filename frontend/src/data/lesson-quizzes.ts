@@ -322,6 +322,48 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     },
   ],
 
+  "html/accessibility-and-seo": [
+    {
+      id: "html-a11y-1",
+      question: "Why are labels important for form inputs?",
+      options: [
+        "They help screen readers and users understand what the field is for",
+        "They make the form longer",
+        "They change the input value",
+        "They replace the input element",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Labels associate form controls with descriptive text, improving accessibility and usability.",
+    },
+    {
+      id: "html-a11y-2",
+      question: "What is the purpose of alt text?",
+      options: [
+        "To describe an image for users and assistive technologies",
+        "To make the image larger",
+        "To add a caption below the image",
+        "To change the image format",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Alt text gives screen-reader users a description of the image and also appears if the image fails to load.",
+    },
+    {
+      id: "html-a11y-3",
+      question: "Why is a descriptive title tag important for SEO?",
+      options: [
+        "It helps search engines and users understand the page topic",
+        "It changes the page color",
+        "It adds a button to the page",
+        "It improves JavaScript performance",
+      ],
+      correctIndex: 0,
+      explanation:
+        "A descriptive title helps search engines understand the page and improves click-through from search results.",
+    },
+  ],
+
   "html/semantic-html": [
     {
       id: "html-sem-1",
@@ -490,6 +532,38 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
       correctIndex: 0,
       explanation:
         "A period (.) prefix selects elements by class name. # selects by ID.",
+    },
+  ],
+
+  "css/cascade-and-inheritance": [
+    {
+      id: "css-cascade-1",
+      question: "Which CSS concept decides which conflicting rule wins?",
+      options: ["The cascade", "The selector", "The browser", "The DOM"],
+      correctIndex: 0,
+      explanation:
+        "The cascade determines which conflicting CSS rule has priority when multiple rules target the same element.",
+    },
+    {
+      id: "css-cascade-2",
+      question: "Which property is commonly inherited from parent to child?",
+      options: ["color", "border", "margin", "padding"],
+      correctIndex: 0,
+      explanation:
+        "Properties such as color and font-family are inherited by default, while border and spacing are not.",
+    },
+    {
+      id: "css-cascade-3",
+      question: "What does a higher specificity value do in CSS?",
+      options: [
+        "Makes a rule more likely to win over a less specific rule",
+        "Makes the element invisible",
+        "Turns the property into a variable",
+        "Disables inheritance",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Specificity helps the browser decide which rule is more important when multiple rules conflict.",
     },
   ],
 
@@ -1648,6 +1722,75 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
       correctIndex: 0,
       explanation:
         "Intersection Observer detects when elements become visible in the viewport — used for lazy loading, infinite scroll, and scroll-triggered animations.",
+    },
+  ],
+
+  "javascript/debugging-and-devtools": [
+    {
+      id: "js-debug-1",
+      question: "What is console.log() used for?",
+      options: [
+        "Printing values and debugging information",
+        "Creating a loop",
+        "Changing the DOM",
+        "Declaring variables",
+      ],
+      correctIndex: 0,
+      explanation:
+        "console.log() outputs information to the browser console so you can inspect values and debug behavior.",
+    },
+    {
+      id: "js-debug-2",
+      question: "What does try/catch help with?",
+      options: [
+        "Handling runtime errors without crashing the whole script",
+        "Creating variables",
+        "Rendering HTML",
+        "Removing event listeners",
+      ],
+      correctIndex: 0,
+      explanation:
+        "try/catch lets you recover from errors by running a fallback block when something throws.",
+    },
+    {
+      id: "js-debug-3",
+      question: "Which browser tool is best for inspecting HTML and CSS?",
+      options: ["Elements panel", "Console only", "Network only", "History panel"],
+      correctIndex: 0,
+      explanation:
+        "The Elements panel lets you inspect and edit the rendered HTML and CSS of a page.",
+    },
+  ],
+
+  "javascript/booleans-and-conditionals": [
+    {
+      id: "js-bool-1",
+      question: "Which values are falsy in JavaScript?",
+      options: ["false, 0, \"\", null, undefined, NaN", "true, 1, \"0\"", "[], {}", "all numbers"],
+      correctIndex: 0,
+      explanation:
+        "Falsy values include false, 0, empty strings, null, undefined, and NaN. Everything else is truthy.",
+    },
+    {
+      id: "js-bool-2",
+      question: "What does the ternary operator do?",
+      options: [
+        "It provides a compact if/else expression",
+        "It creates a loop",
+        "It defines a function",
+        "It checks array length",
+      ],
+      correctIndex: 0,
+      explanation:
+        "The ternary operator uses the form condition ? valueIfTrue : valueIfFalse as a compact conditional expression.",
+    },
+    {
+      id: "js-bool-3",
+      question: "Which operator checks if two values are equal and of the same type?",
+      options: ["===", "==", "=", "!=="],
+      correctIndex: 0,
+      explanation:
+        "=== performs strict equality and avoids type coercion surprises that == can cause.",
     },
   ],
 

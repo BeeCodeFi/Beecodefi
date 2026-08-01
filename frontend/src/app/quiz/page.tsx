@@ -43,6 +43,43 @@ const difficultyColor: Record<string, string> = {
     "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800",
 };
 
+function getQuizSortRank(quiz: QuizTopic, categoryName: string) {
+  if (quiz.topic.includes("/")) {
+    const [tutorialSlug, lessonSlug] = quiz.topic.split("/");
+    const tutorialIndex = tutorials.findIndex((item) => item.slug === tutorialSlug);
+
+    if (tutorialIndex !== -1) {
+      const lessonIndex = tutorials[tutorialIndex].lessons.findIndex(
+        (lesson) => lesson.slug === lessonSlug,
+      );
+      return tutorialIndex * 1000 + (lessonIndex >= 0 ? lessonIndex : 0);
+    }
+  }
+
+  const title = quiz.title.toLowerCase();
+  const fallbackTokens = [
+    "introduction",
+    "document",
+    "elements",
+    "nesting",
+    "structure",
+    "text",
+    "links",
+    "images",
+    "lists",
+    "tables",
+    "forms",
+    "semantic",
+    "attributes",
+    "api",
+    "best",
+    "practice",
+  ];
+
+  const tokenIndex = fallbackTokens.findIndex((token) => title.includes(token));
+  return tokenIndex >= 0 ? tokenIndex : 10000;
+}
+
 export default function QuizPage() {
   return (
     <Suspense>
@@ -102,7 +139,10 @@ function QuizPageContent() {
             );
             const bestScore = mergeQuizBestScore(
               null,
-              mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+              mergeQuizBestScore(
+                localProgress?.score ?? null,
+                categoryProgress,
+              ),
             );
 
             lessonQuizTopics.push({
@@ -112,7 +152,8 @@ function QuizPageContent() {
               category: categoryMeta?.categoryName || tutorial.title,
               description: `Lesson quiz for ${lesson.title}`,
               difficulty: lesson.difficulty
-                ? lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)
+                ? lesson.difficulty.charAt(0).toUpperCase() +
+                  lesson.difficulty.slice(1)
                 : "Beginner",
               questionCount: questions.length,
               bestScore,
@@ -147,7 +188,10 @@ function QuizPageContent() {
             );
             const bestScore = mergeQuizBestScore(
               topic.bestScore,
-              mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+              mergeQuizBestScore(
+                localProgress?.score ?? null,
+                categoryProgress,
+              ),
             );
             return {
               ...topic,
@@ -172,7 +216,10 @@ function QuizPageContent() {
               );
               const bestScore = mergeQuizBestScore(
                 null,
-                mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
+                mergeQuizBestScore(
+                  localProgress?.score ?? null,
+                  categoryProgress,
+                ),
               );
 
               lessonQuizTopics.push({
@@ -182,7 +229,8 @@ function QuizPageContent() {
                 category: categoryMeta?.categoryName || tutorial.title,
                 description: `Lesson quiz for ${lesson.title}`,
                 difficulty: lesson.difficulty
-                  ? lesson.difficulty.charAt(0).toUpperCase() + lesson.difficulty.slice(1)
+                  ? lesson.difficulty.charAt(0).toUpperCase() +
+                    lesson.difficulty.slice(1)
                   : "Beginner",
                 questionCount: questions.length,
                 bestScore,
@@ -216,9 +264,15 @@ function QuizPageContent() {
     .sort((a, b) => a.order - b.order)
     .map((cat) => ({
       ...cat,
-      quizzes: topics.filter(
-        (t) => t.category.toLowerCase() === cat.categoryName.toLowerCase(),
-      ),
+      quizzes: topics
+        .filter(
+          (t) => t.category.toLowerCase() === cat.categoryName.toLowerCase(),
+        )
+        .sort((a, b) => {
+          const rankDiff = getQuizSortRank(a, cat.categoryName) - getQuizSortRank(b, cat.categoryName);
+          if (rankDiff !== 0) return rankDiff;
+          return a.title.localeCompare(b.title);
+        }),
     }));
 
   const filteredCategories =
@@ -572,7 +626,11 @@ function QuizCard({
 
   return (
     <Link
-      href={quiz.topic.includes("/") ? `/tutorials/${quiz.topic.split("/")[0]}?lesson=${quiz.topic.split("/")[1]}` : `/quiz/${quiz.topic}`}
+      href={
+        quiz.topic.includes("/")
+          ? `/tutorials/${quiz.topic.split("/")[0]}?lesson=${quiz.topic.split("/")[1]}`
+          : `/quiz/${quiz.topic}`
+      }
       className={cn(
         "group block bg-white dark:bg-gray-900 rounded-xl border p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
         completed

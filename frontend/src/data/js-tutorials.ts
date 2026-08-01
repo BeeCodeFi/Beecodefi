@@ -211,7 +211,241 @@ console.log(greeting.includes("World")); // true`,
     ],
   },
 
-  // ─── Lesson 2: Strings & String Methods ─────────────────────────────────
+  // ─── Lesson 2: Debugging & Developer Tools ────────────────────────────
+  {
+    slug: "debugging-and-devtools",
+    title: "Debugging & Developer Tools",
+    difficulty: "beginner",
+    estimatedMinutes: 20,
+    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Testing_and_debugging",
+    content: `Debugging is a core skill for every developer. You will not write perfect code on the first try, so learning to inspect values and find problems quickly is essential.
+
+## console.log()
+Use \`console.log()\` to print values to the browser console.
+
+\`\`\`js
+const userName = "Ava";
+console.log(userName);
+\`\`\`
+
+## Developer Tools
+Most browsers include DevTools with:
+- **Console** — inspect logs and errors
+- **Elements** — inspect HTML and CSS
+- **Sources** — debug scripts and breakpoints
+- **Network** — watch requests and responses
+
+## Common Debugging Habits
+- Read the error message carefully
+- Log the values of variables at important points
+- Check whether the data type is what you expected
+- Test small pieces of code before trying larger changes
+
+## try / catch
+Use error handling to catch problems without crashing the whole app.
+
+\`\`\`js
+try {
+  const result = JSON.parse('{bad json}');
+  console.log(result);
+} catch (error) {
+  console.error("Parsing failed:", error);
+}
+\`\`\`
+
+Debugging is not just fixing bugs — it is understanding how your program behaves.`,
+    keyTakeaways: [
+      "console.log() is your first debugging tool",
+      "Browser DevTools help you inspect HTML, CSS, and JavaScript",
+      "Error messages usually point to the next place to look",
+      "try/catch helps prevent a script from crashing completely",
+    ],
+    codeExamples: [
+      {
+        title: "Logging and Errors",
+        language: "javascript",
+        description: "A simple debugging workflow using console output and try/catch.",
+        code: `const age = 18;
+console.log("Current age:", age);
+
+try {
+  console.log(JSON.parse('{"ok": true}'));
+} catch (error) {
+  console.error("Something went wrong:", error.message);
+}`,
+      },
+      {
+        title: "Inspecting Values",
+        language: "javascript",
+        description: "Use console.log to inspect intermediate values.",
+        code: `function calculateTotal(price, taxRate) {
+  const tax = price * taxRate;
+  const total = price + tax;
+  console.log({ price, tax, total });
+  return total;
+}
+
+console.log(calculateTotal(100, 0.2));`,
+      },
+    ],
+    interactiveExercises: [
+      {
+        id: "js-debug-1",
+        title: "Log a Value",
+        instruction: "Add a console.log statement that prints the variable userName.",
+        startingCode: `const userName = "Ava";\n`,
+        expectedOutput: `const userName = "Ava";\nconsole.log(userName);`,
+        hints: ["Use console.log() and pass the variable name"],
+      },
+      {
+        id: "js-debug-2",
+        title: "Catch an Error",
+        instruction: "Wrap the parsing code in a try/catch block and log the error.",
+        startingCode: `JSON.parse('{bad json}');`,
+        expectedOutput: `try {\n  JSON.parse('{bad json}');\n} catch (error) {\n  console.error(error);\n}`,
+        hints: ["try starts the protected block", "catch receives the error object"],
+      },
+    ],
+  },
+
+  // ─── Lesson 3: Booleans, Truthy & Falsy ────────────────────────────────
+  {
+    slug: "booleans-and-conditionals",
+    title: "Booleans, Truthy & Falsy",
+    difficulty: "beginner",
+    estimatedMinutes: 20,
+    mdnReference: "https://developer.mozilla.org/en-US/docs/Glossary/Truthy",
+    content: `Booleans are the simplest type of decision-maker in JavaScript. A boolean is either \`true\` or \`false\`, and you use it to control whether code should run.
+
+## Comparison Operators
+Use comparison operators to ask questions:
+
+- \`===\` — strictly equal
+- \`!==\` — strictly not equal
+- \`>\`, \`<\`, \`>=\`, \`<=\`
+
+## Truthy and Falsy
+In JavaScript, values are not just true or false — many values can behave like booleans in a condition.
+
+**Falsy values:** \`false\`, \`0\`, \`""\`, \`null\`, \`undefined\`, \`NaN\`
+
+**Truthy values:** everything else, including \`[]\`, \`{}\`, \`"0"\`, and \`-1\`
+
+This is why code like this works:
+
+\`\`\`js
+if ("hello") {
+  console.log("This runs");
+}
+\`\`\`
+
+## If / Else
+Conditionals let you run different code depending on a condition.
+
+\`\`\`js
+const age = 18;
+
+if (age >= 18) {
+  console.log("Adult");
+} else {
+  console.log("Minor");
+}
+\`\`\`
+
+## Ternary Operator
+A ternary is a compact way to write a simple if/else.
+
+\`\`\`js
+const status = age >= 18 ? "adult" : "minor";
+\`\`\`
+
+## Logical Operators
+- \`&&\` — AND
+- \`||\` — OR
+- \`!\` — NOT
+
+These are used all the time when you want to combine conditions.
+`,
+    keyTakeaways: [
+      "Booleans are true/false values used for decisions",
+      "Falsy values include false, 0, empty strings, null, undefined, and NaN",
+      "Everything else is truthy in a condition",
+      "if/else and ternary expressions control program flow",
+      "&&, || and ! combine conditions elegantly",
+    ],
+    codeExamples: [
+      {
+        title: "Conditionals & Truthy/Falsy",
+        language: "javascript",
+        description: "Use booleans and conditions to control behavior.",
+        code: `const age = 20;
+const hasTicket = true;
+
+if (age >= 18 && hasTicket) {
+  console.log("You can enter");
+} else {
+  console.log("You cannot enter");
+}
+
+const message = age >= 18 ? "Adult" : "Minor";
+console.log(message);
+
+console.log(Boolean(0));
+console.log(Boolean("hi"));
+console.log(Boolean([]));`,
+      },
+      {
+        title: "Short-Circuit Logic",
+        language: "javascript",
+        description: "Logical operators can short-circuit and return a value early.",
+        code: `const user = null;
+const fallbackName = user || "Guest";
+console.log(fallbackName);
+
+const count = 0;
+const safeCount = count || 1;
+console.log(safeCount);`,
+      },
+    ],
+    interactiveExercises: [
+      {
+        id: "js-bool-1",
+        title: "Check a Condition",
+        instruction: "Write an if statement that logs 'Ready' when score is 100 or more.",
+        startingCode: `const score = 100;
+
+if (/* condition */) {
+  console.log("Ready");
+}`,
+        expectedOutput: `const score = 100;
+
+if (score >= 100) {
+  console.log("Ready");
+}`,
+        hints: ["Use >= for '100 or more'", "The condition goes inside the parentheses"],
+      },
+      {
+        id: "js-bool-2",
+        title: "Ternary Expression",
+        instruction: "Write a ternary expression that returns 'open' when isOpen is true, otherwise 'closed'.",
+        startingCode: `const isOpen = true;
+const status = /* ternary */;` ,
+        expectedOutput: `const isOpen = true;
+const status = isOpen ? "open" : "closed";`,
+        hints: ["Ternary syntax is condition ? trueValue : falseValue"],
+      },
+      {
+        id: "js-bool-3",
+        title: "Truthy/Falsy Check",
+        instruction: "Use Boolean() to check whether the value '' is truthy or falsy.",
+        startingCode: `console.log(Boolean(/* value */));`,
+        expectedOutput: `console.log(Boolean(""));`,
+        hints: ["An empty string is falsy"],
+      },
+    ],
+  },
+
+  // ─── Lesson 3: Strings & String Methods ─────────────────────────────────
   {
     slug: "strings",
     title: "Strings & String Methods",

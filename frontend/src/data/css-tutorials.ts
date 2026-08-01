@@ -199,7 +199,153 @@ body { font-family: sans-serif; }`,
     ],
   },
 
-  // ─── Lesson 2: Selectors & Specificity ──────────────────────────────────
+  // ─── Lesson 2: The Cascade & Inheritance ──────────────────────────────
+  {
+    slug: "cascade-and-inheritance",
+    title: "The Cascade & Inheritance",
+    difficulty: "beginner",
+    estimatedMinutes: 20,
+    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade",
+    content: `CSS can feel magical because many rules can target the same element at once. The **cascade** decides which rule wins, while **inheritance** lets some properties flow from a parent to its children automatically.
+
+## How the Cascade Works
+When multiple rules apply to the same element, the browser uses a priority order:
+
+1. **Importance** — \`!important\` beats normal rules
+2. **Origin** — browser, user, and author styles
+3. **Specificity** — more specific selectors win
+4. **Source order** — later rules win if everything else is equal
+
+## Specificity in Plain English
+- **ID** selectors like \`#hero\` are very specific
+- **Class** selectors like \`.card\` are less specific
+- **Element** selectors like \`p\` are the least specific
+
+## Inheritance
+Some CSS properties **inherit** from parent to child automatically. For example, text color and font-family often pass down.
+
+Other properties, like borders, margins, and padding, do not inherit by default.
+
+## Why This Matters
+This is the reason one rule can override another unexpectedly. Understanding cascade and inheritance helps you write CSS that behaves predictably and stay easier to debug.
+
+### Example
+\`\`\`css
+body {
+  color: #222;
+  font-family: sans-serif;
+}
+
+.card {
+  color: blue;
+}
+\`\`\`
+
+Even though \`body\` sets a color, the more specific \`.card\` rule will override it for elements with that class.
+`,
+    keyTakeaways: [
+      "The cascade decides which conflicting rule wins",
+      "Specificity is a scoring system based on selector type",
+      "Inheritance passes some properties from parent to child",
+      "Later rules can win when specificity is equal",
+      "Understanding cascade and inheritance makes CSS easier to debug",
+    ],
+    codeExamples: [
+      {
+        title: "Cascade in Action",
+        language: "html",
+        description: "See how specificity and order change which rule is applied.",
+        code: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { color: #334155; font-family: sans-serif; }
+  .card { color: blue; }
+  p { color: green; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <p>This paragraph uses the more specific class rule.</p>
+  </div>
+</body>
+</html>`,
+        livePreview: true,
+      },
+      {
+        title: "Inherited vs Non-Inherited Properties",
+        language: "html",
+        description: "Color inherits, but border and margin do not.",
+        code: `<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .parent {
+    color: purple;
+    font-family: serif;
+    border: 2px solid #4f46e5;
+  }
+</style>
+</head>
+<body>
+  <div class="parent">
+    <p>This text inherits the parent's color and font.</p>
+  </div>
+</body>
+</html>`,
+        livePreview: true,
+      },
+    ],
+    interactiveExercises: [
+      {
+        id: "css-cascade-1",
+        title: "Specificity Order",
+        instruction: "Write a rule for .card that gives it color: purple and padding: 1rem.",
+        startingCode: `.card {
+
+}`,
+        expectedOutput: `.card {
+    color: purple;
+    padding: 1rem;
+}`,
+        hints: ["Use a class selector with a dot", "color changes text color", "padding adds space inside the box"],
+      },
+      {
+        id: "css-cascade-2",
+        title: "Inheritance Example",
+        instruction: "Write a rule for .parent that makes its children inherit a font-family of Georgia.",
+        startingCode: `.parent {
+
+}`,
+        expectedOutput: `.parent {
+    font-family: Georgia;
+}`,
+        hints: ["font-family is an inherited property", "Apply the rule to the parent element"],
+      },
+      {
+        id: "css-cascade-3",
+        title: "Later Rule Wins",
+        instruction: "Write two rules so the last one wins for all paragraphs: first color black, then color orange.",
+        startingCode: `p {
+    color: black;
+}
+
+p {
+
+}`,
+        expectedOutput: `p {
+    color: black;
+}
+
+p {
+    color: orange;
+}`,
+        hints: ["The later rule overrides the earlier one when specificity is the same"],
+      },
+    ],
+  },
+
+  // ─── Lesson 3: Selectors & Specificity ──────────────────────────────────
   {
     slug: "selectors-and-specificity",
     title: "Selectors & Specificity",

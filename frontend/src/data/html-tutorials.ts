@@ -6,7 +6,8 @@ export const htmlLessons: TutorialLesson[] = [
     title: "Introduction to HTML",
     difficulty: "beginner",
     estimatedMinutes: 15,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax",
     content: `Welcome to HTML! If you've ever wondered how websites are built, you're in the right place. HTML is the very first step in web development, and it's easier than you think.
 
 ## What is HTML, Really?
@@ -77,7 +78,8 @@ You can't paint walls before you build them.`,
       {
         title: "Anatomy of an HTML Element",
         language: "html",
-        description: "Understanding the parts of an HTML element — opening tag, content, and closing tag.",
+        description:
+          "Understanding the parts of an HTML element — opening tag, content, and closing tag.",
         code: `<!-- A complete HTML element has 3 parts -->
 
 <!-- 1. Opening Tag  2. Content  3. Closing Tag -->
@@ -96,7 +98,8 @@ You can't paint walls before you build them.`,
       {
         title: "Your First HTML Page",
         language: "html",
-        description: "A minimal but complete HTML document with all essential parts.",
+        description:
+          "A minimal but complete HTML document with all essential parts.",
         code: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,7 +120,8 @@ You can't paint walls before you build them.`,
       {
         id: "intro-1",
         title: "Create Your First Element",
-        instruction: "Wrap the text below in a paragraph tag (<p>) to make it a proper HTML paragraph.",
+        instruction:
+          "Wrap the text below in a paragraph tag (<p>) to make it a proper HTML paragraph.",
         startingCode: "Hello, I am learning HTML!",
         expectedOutput: "<p>Hello, I am learning HTML!</p>",
         hints: [
@@ -129,9 +133,10 @@ You can't paint walls before you build them.`,
       {
         id: "intro-2",
         title: "Make Text Bold",
-        instruction: "Make the word 'important' bold using the <strong> tag inside this paragraph.",
-        startingCode: '<p>This is an important message.</p>',
-        expectedOutput: '<p>This is an <strong>important</strong> message.</p>',
+        instruction:
+          "Make the word 'important' bold using the <strong> tag inside this paragraph.",
+        startingCode: "<p>This is an important message.</p>",
+        expectedOutput: "<p>This is an <strong>important</strong> message.</p>",
         hints: [
           "Wrap just the word 'important' with <strong> tags",
           "Nesting means putting one element inside another",
@@ -141,9 +146,10 @@ You can't paint walls before you build them.`,
       {
         id: "intro-3",
         title: "Add a Line Break",
-        instruction: "Add a line break (<br>) between the two sentences so they appear on separate lines.",
-        startingCode: '<p>First sentence. Second sentence.</p>',
-        expectedOutput: '<p>First sentence.<br>Second sentence.</p>',
+        instruction:
+          "Add a line break (<br>) between the two sentences so they appear on separate lines.",
+        startingCode: "<p>First sentence. Second sentence.</p>",
+        expectedOutput: "<p>First sentence.<br>Second sentence.</p>",
         hints: [
           "The <br> tag forces content to the next line",
           "It goes BETWEEN the two sentences",
@@ -153,7 +159,8 @@ You can't paint walls before you build them.`,
       {
         id: "intro-4",
         title: "Create a Heading",
-        instruction: "Create a heading using the <h1> tag with the text 'Welcome to My Website'.",
+        instruction:
+          "Create a heading using the <h1> tag with the text 'Welcome to My Website'.",
         startingCode: "Welcome to My Website",
         expectedOutput: "<h1>Welcome to My Website</h1>",
         hints: [
@@ -168,7 +175,8 @@ You can't paint walls before you build them.`,
     title: "Elements, Nesting & Structure",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/HTML_basics",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/HTML_basics",
     content: `HTML pages are built from elements that nest inside one another to form a clear structure. Understanding how elements relate to each other is one of the most important skills in HTML.
 
 ## Elements and Tags
@@ -228,7 +236,8 @@ Using these correctly helps prevent HTML from being misinterpreted.`,
       {
         title: "Nesting Elements Properly",
         language: "html",
-        description: "A simple example showing nested elements and correct structure.",
+        description:
+          "A simple example showing nested elements and correct structure.",
         code: `<p>This is a <strong>very important</strong> message.</p>
 <div>
     <h2>Welcome</h2>
@@ -249,7 +258,8 @@ Using these correctly helps prevent HTML from being misinterpreted.`,
       {
         id: "elements-1",
         title: "Create a Nested Structure",
-        instruction: "Wrap the text 'HTML is amazing' in a paragraph and make the word 'amazing' bold using a nested strong element.",
+        instruction:
+          "Wrap the text 'HTML is amazing' in a paragraph and make the word 'amazing' bold using a nested strong element.",
         startingCode: "HTML is amazing",
         expectedOutput: "<p>HTML is <strong>amazing</strong></p>",
         hints: [
@@ -264,7 +274,8 @@ Using these correctly helps prevent HTML from being misinterpreted.`,
     title: "HTML Document Structure",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax#anatomy_of_an_html_document",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax#anatomy_of_an_html_document",
     content: `Every HTML document follows a specific structure. Understanding this structure is essential — it's the skeleton that holds every web page together.
 
 ## The DOCTYPE Declaration
@@ -302,7 +313,8 @@ Always set \`<meta charset="utf-8">\` in your \`<head>\`. UTF-8 supports charact
       {
         title: "Complete HTML5 Document Structure",
         language: "html",
-        description: "The standard boilerplate for every HTML5 page with all essential meta tags.",
+        description:
+          "The standard boilerplate for every HTML5 page with all essential meta tags.",
         code: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -337,7 +349,8 @@ Always set \`<meta charset="utf-8">\` in your \`<head>\`. UTF-8 supports charact
       {
         title: "Essential Meta Tags",
         language: "html",
-        description: "Common meta tags you should include in every web page for SEO and social sharing.",
+        description:
+          "Common meta tags you should include in every web page for SEO and social sharing.",
         code: `<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -364,7 +377,8 @@ Always set \`<meta charset="utf-8">\` in your \`<head>\`. UTF-8 supports charact
       {
         id: "structure-1",
         title: "Build a Document Skeleton",
-        instruction: "Complete the HTML document structure by adding the missing tags. You need: DOCTYPE, html (with lang), head, title, and body.",
+        instruction:
+          "Complete the HTML document structure by adding the missing tags. You need: DOCTYPE, html (with lang), head, title, and body.",
         startingCode: `<!-- Add DOCTYPE here -->
 <!-- Add html tag with lang="en" -->
 <!-- Add head section with a title "My Page" -->
@@ -383,7 +397,8 @@ Always set \`<meta charset="utf-8">\` in your \`<head>\`. UTF-8 supports charact
     title: "Text Fundamentals",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Headings_and_paragraphs",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Headings_and_paragraphs",
     content: `Text is the foundation of web content. HTML provides a rich set of elements to structure and format text semantically, giving meaning to every piece of content on your page.
 
 ## Headings (\`<h1>\` to \`<h6>\`)
@@ -432,7 +447,8 @@ The \`<pre>\` element preserves whitespace and line breaks exactly as written in
       {
         title: "Heading Hierarchy",
         language: "html",
-        description: "Proper heading structure creates a clear document outline for accessibility and SEO.",
+        description:
+          "Proper heading structure creates a clear document outline for accessibility and SEO.",
         code: `<h1>Web Development Guide</h1>
 
 <h2>Chapter 1: HTML Basics</h2>
@@ -454,7 +470,8 @@ The \`<pre>\` element preserves whitespace and line breaks exactly as written in
       {
         title: "Text Formatting Elements",
         language: "html",
-        description: "Different HTML elements for formatting and adding semantic meaning to text.",
+        description:
+          "Different HTML elements for formatting and adding semantic meaning to text.",
         code: `<p>This is <strong>very important</strong> text.</p>
 <p>This word has <em>emphasis</em> on it.</p>
 <p>This is <mark>highlighted</mark> text.</p>
@@ -475,7 +492,8 @@ The \`<pre>\` element preserves whitespace and line breaks exactly as written in
       {
         id: "text-1",
         title: "Create a Heading Hierarchy",
-        instruction: "Create a proper heading structure: a main title 'My Blog', a section heading 'Latest Posts', and a subsection heading 'Post Title'. Add a paragraph under the subsection.",
+        instruction:
+          "Create a proper heading structure: a main title 'My Blog', a section heading 'Latest Posts', and a subsection heading 'Post Title'. Add a paragraph under the subsection.",
         startingCode: "<!-- Create heading hierarchy here -->",
         expectedOutput: `<h1>My Blog</h1>\n<h2>Latest Posts</h2>\n<h3>Post Title</h3>\n<p>This is my blog post content.</p>`,
         hints: [
@@ -490,7 +508,8 @@ The \`<pre>\` element preserves whitespace and line breaks exactly as written in
     title: "Links & Navigation",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
     content: `Links are what make the web a "web" — they connect pages together, enabling navigation between documents. The \`<a>\` (anchor) element is one of the most fundamental HTML elements.
 
 ## The Anchor Element (\`<a>\`)
@@ -523,7 +542,7 @@ As MDN emphasizes, link text should clearly indicate where the link goes. **Don'
     keyTakeaways: [
       "The <a> element creates hyperlinks with the href attribute",
       "Use relative URLs for internal links, absolute for external",
-      "target=\"_blank\" opens links in a new tab",
+      'target="_blank" opens links in a new tab',
       "Link text should be descriptive, never 'click here'",
       "Use mailto: for email links and tel: for phone links",
     ],
@@ -531,7 +550,8 @@ As MDN emphasizes, link text should clearly indicate where the link goes. **Don'
       {
         title: "Types of HTML Links",
         language: "html",
-        description: "Different link types: absolute, relative, anchor, email, and phone links.",
+        description:
+          "Different link types: absolute, relative, anchor, email, and phone links.",
         code: `<!-- Absolute URL (external site) -->
 <a href="https://developer.mozilla.org">MDN Web Docs</a>
 
@@ -564,7 +584,8 @@ As MDN emphasizes, link text should clearly indicate where the link goes. **Don'
       {
         title: "Navigation Menu",
         language: "html",
-        description: "A proper semantic navigation structure using <nav> and anchor elements.",
+        description:
+          "A proper semantic navigation structure using <nav> and anchor elements.",
         code: `<nav aria-label="Main navigation">
     <ul>
         <li><a href="/">Home</a></li>
@@ -590,11 +611,12 @@ As MDN emphasizes, link text should clearly indicate where the link goes. **Don'
       {
         id: "links-1",
         title: "Create Different Link Types",
-        instruction: "Create three links: one to 'https://example.com' that opens in a new tab, one email link to 'info@example.com', and one anchor link to '#footer'.",
+        instruction:
+          "Create three links: one to 'https://example.com' that opens in a new tab, one email link to 'info@example.com', and one anchor link to '#footer'.",
         startingCode: "<!-- Create your links here -->",
         expectedOutput: `<a href="https://example.com" target="_blank">Visit Example</a>\n<a href="mailto:info@example.com">Email Us</a>\n<a href="#footer">Go to Footer</a>`,
         hints: [
-          "Use target=\"_blank\" to open in a new tab",
+          'Use target="_blank" to open in a new tab',
           "Email links use mailto: in the href",
           "Anchor links start with # followed by the target element's id",
         ],
@@ -606,7 +628,8 @@ As MDN emphasizes, link text should clearly indicate where the link goes. **Don'
     title: "Images & Media",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/HTML_images",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/HTML_images",
     content: `Images bring web pages to life. The \`<img>\` element is a void element (no closing tag) that embeds images into your HTML documents.
 
 ## The \`<img>\` Element
@@ -644,7 +667,7 @@ Use the \`<picture>\` element and \`srcset\` attribute to serve different images
       "Always include alt text for accessibility and SEO",
       "Set width and height to prevent layout shift",
       "Use <figure> and <figcaption> for images with captions",
-      "Use empty alt=\"\" for purely decorative images",
+      'Use empty alt="" for purely decorative images',
       "Use srcset for responsive images on different screen sizes",
     ],
     codeExamples: [
@@ -680,7 +703,8 @@ Use the \`<picture>\` element and \`srcset\` attribute to serve different images
       {
         title: "Responsive Images",
         language: "html",
-        description: "Serving different image sizes for different screen widths to improve performance.",
+        description:
+          "Serving different image sizes for different screen widths to improve performance.",
         code: `<!-- srcset: browser chooses best size -->
 <img
     src="photo-800.jpg"
@@ -709,7 +733,8 @@ Use the \`<picture>\` element and \`srcset\` attribute to serve different images
       {
         id: "images-1",
         title: "Add an Image with Caption",
-        instruction: "Create a figure containing an image (any src) with proper alt text, width, height, and a figcaption describing the image.",
+        instruction:
+          "Create a figure containing an image (any src) with proper alt text, width, height, and a figcaption describing the image.",
         startingCode: "<!-- Create a figure with image and caption -->",
         expectedOutput: `<figure>\n    <img src="photo.jpg" alt="Description of the photo" width="400" height="300">\n    <figcaption>A beautiful photo</figcaption>\n</figure>`,
         hints: [
@@ -725,7 +750,8 @@ Use the \`<picture>\` element and \`srcset\` attribute to serve different images
     title: "HTML Lists",
     difficulty: "beginner",
     estimatedMinutes: 15,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul",
     content: `Lists are one of the most commonly used HTML structures. They organize content into ordered sequences, unordered collections, or term-definition pairs.
 
 ## Unordered Lists (\`<ul>\`)
@@ -768,7 +794,8 @@ Lists have built-in semantic meaning. Screen readers announce the type and numbe
       {
         title: "Unordered & Ordered Lists",
         language: "html",
-        description: "Basic list types — unordered for bullet points and ordered for numbered items.",
+        description:
+          "Basic list types — unordered for bullet points and ordered for numbered items.",
         code: `<!-- Unordered list (bullets) -->
 <h3>Skills</h3>
 <ul>
@@ -799,7 +826,8 @@ Lists have built-in semantic meaning. Screen readers announce the type and numbe
       {
         title: "Description Lists & Nested Lists",
         language: "html",
-        description: "Description lists for glossaries and nested lists for hierarchical content.",
+        description:
+          "Description lists for glossaries and nested lists for hierarchical content.",
         code: `<!-- Description list (glossary) -->
 <dl>
     <dt>HTML</dt>
@@ -837,7 +865,8 @@ Lists have built-in semantic meaning. Screen readers announce the type and numbe
       {
         id: "lists-1",
         title: "Create a Shopping List",
-        instruction: "Create an unordered list with 3 items: Bread, Milk, and Eggs.",
+        instruction:
+          "Create an unordered list with 3 items: Bread, Milk, and Eggs.",
         startingCode: "<!-- Create your shopping list here -->",
         expectedOutput: `<ul>\n    <li>Bread</li>\n    <li>Milk</li>\n    <li>Eggs</li>\n</ul>`,
         hints: [
@@ -852,7 +881,8 @@ Lists have built-in semantic meaning. Screen readers announce the type and numbe
     title: "HTML Tables",
     difficulty: "intermediate",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table",
     content: `Tables are used to display **tabular data** — information best presented in rows and columns, like spreadsheets, schedules, or comparison charts.
 
 **Important:** Tables should NOT be used for page layout. Use CSS Flexbox or Grid for layout purposes.
@@ -895,7 +925,8 @@ By default, HTML tables look plain. Use CSS to add borders, padding, alternating
       {
         title: "Complete Table Example",
         language: "html",
-        description: "A properly structured, accessible HTML table with header, body, and footer.",
+        description:
+          "A properly structured, accessible HTML table with header, body, and footer.",
         code: `<table>
     <caption>Monthly Web Traffic Report</caption>
 
@@ -943,7 +974,8 @@ By default, HTML tables look plain. Use CSS to add borders, padding, alternating
       {
         title: "Spanning Cells",
         language: "html",
-        description: "Using colspan and rowspan to merge table cells for complex layouts.",
+        description:
+          "Using colspan and rowspan to merge table cells for complex layouts.",
         code: `<table>
     <caption>Course Schedule</caption>
     <thead>
@@ -980,7 +1012,8 @@ By default, HTML tables look plain. Use CSS to add borders, padding, alternating
       {
         id: "tables-1",
         title: "Create a Simple Table",
-        instruction: "Create a table with 2 columns (Name, Score) and 2 rows of data. Include proper <thead> and <tbody>.",
+        instruction:
+          "Create a table with 2 columns (Name, Score) and 2 rows of data. Include proper <thead> and <tbody>.",
         startingCode: "<!-- Create your table here -->",
         expectedOutput: `<table>\n    <thead>\n        <tr><th>Name</th><th>Score</th></tr>\n    </thead>\n    <tbody>\n        <tr><td>Alice</td><td>95</td></tr>\n        <tr><td>Bob</td><td>87</td></tr>\n    </tbody>\n</table>`,
         hints: [
@@ -995,7 +1028,8 @@ By default, HTML tables look plain. Use CSS to add borders, padding, alternating
     title: "Forms & Inputs",
     difficulty: "intermediate",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms",
     content: `Forms are the primary way users interact with web applications — logging in, searching, submitting data, uploading files. HTML5 provides powerful form elements with built-in validation.
 
 ## The \`<form>\` Element
@@ -1046,7 +1080,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
       {
         title: "Complete Registration Form",
         language: "html",
-        description: "A well-structured form with various input types, labels, validation, and grouping.",
+        description:
+          "A well-structured form with various input types, labels, validation, and grouping.",
         code: `<form action="/register" method="POST">
     <fieldset>
         <legend>Personal Information</legend>
@@ -1120,7 +1155,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
       {
         title: "HTML5 Input Types",
         language: "html",
-        description: "Exploring various HTML5 input types with built-in validation and appropriate keyboards.",
+        description:
+          "Exploring various HTML5 input types with built-in validation and appropriate keyboards.",
         code: `<form>
     <div>
         <label for="search">Search:</label>
@@ -1165,14 +1201,105 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
       {
         id: "forms-1",
         title: "Build a Login Form",
-        instruction: "Create a simple login form with email and password inputs, each with proper labels. Add a submit button.",
-        startingCode: "<form>\n    <!-- Add email input with label -->\n    <!-- Add password input with label -->\n    <!-- Add submit button -->\n</form>",
+        instruction:
+          "Create a simple login form with email and password inputs, each with proper labels. Add a submit button.",
+        startingCode:
+          "<form>\n    <!-- Add email input with label -->\n    <!-- Add password input with label -->\n    <!-- Add submit button -->\n</form>",
         expectedOutput: `<form>\n    <label for="email">Email:</label>\n    <input type="email" id="email" required>\n    <label for="password">Password:</label>\n    <input type="password" id="password" required>\n    <button type="submit">Log In</button>\n</form>`,
         hints: [
-          "Use type=\"email\" and type=\"password\" for proper input types",
+          'Use type="email" and type="password" for proper input types',
           "Connect labels to inputs using for/id attributes",
           "Add required attribute for validation",
         ],
+      },
+    ],
+  },
+  {
+    slug: "accessibility-and-seo",
+    title: "Accessibility & SEO Basics",
+    difficulty: "intermediate",
+    estimatedMinutes: 20,
+    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn/Accessibility",
+    content: `Accessibility and SEO are part of building professional web pages. Good accessibility helps people using screen readers, keyboards, and assistive tools. Good SEO helps search engines understand your content.
+
+## Accessibility Basics
+- Use meaningful heading structure with \`<h1>\` to \`<h6>\`
+- Always pair form controls with \`<label>\`
+- Provide descriptive \`alt\` text for images
+- Ensure interactive elements are keyboard reachable
+- Use semantic landmarks like \`<header>\`, \`<main>\`, \`<nav>\`, and \`<footer>\`
+
+## ARIA and Screen Readers
+ARIA attributes can improve accessibility when native HTML is not enough. Common examples:
+- \`aria-label\` — gives an element a clear accessible name
+- \`aria-describedby\` — points to helper text
+- \`aria-hidden\` — hides decorative content from assistive tech
+
+## SEO Basics
+Search engines rely on clear structure and good metadata:
+- Use a descriptive \`<title>\`
+- Add a meta description
+- Use meaningful headings and text content
+- Use descriptive link text instead of generic text like "click here"
+
+These habits make your pages easier to use, easier to understand, and easier to find.`,
+    keyTakeaways: [
+      "Accessibility improves usability for everyone, especially assistive technology users",
+      "Good labels, alt text, and keyboard support are essential",
+      "ARIA helps when semantic HTML alone is not enough",
+      "SEO benefits from clear structure, meaningful content, and good metadata",
+    ],
+    codeExamples: [
+      {
+        title: "Accessible Form Example",
+        language: "html",
+        description: "A form that is accessible to screen readers and keyboard users.",
+        code: `<form>
+  <label for="name">Name</label>
+  <input id="name" name="name" type="text" required>
+
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required>
+
+  <button type="submit">Send</button>
+</form>`,
+        livePreview: true,
+      },
+      {
+        title: "Accessible Navigation",
+        language: "html",
+        description: "Semantic landmarks and aria-label improve navigation for assistive technology.",
+        code: `<header>
+  <nav aria-label="Main navigation">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+<main>
+  <h1>Welcome</h1>
+</main>`,
+        livePreview: true,
+      },
+    ],
+    interactiveExercises: [
+      {
+        id: "a11y-1",
+        title: "Add an Accessible Label",
+        instruction: "Add a label for the email input and connect it with for/id.",
+        startingCode: `<label>Email</label>
+<input type="email">`,
+        expectedOutput: `<label for="email">Email</label>
+<input id="email" type="email">`,
+        hints: ["Use for on the label and id on the input", "This helps screen readers associate the text with the field"],
+      },
+      {
+        id: "a11y-2",
+        title: "Add Alt Text",
+        instruction: "Add descriptive alt text to the image.",
+        startingCode: `<img src="cat.jpg">`,
+        expectedOutput: `<img src="cat.jpg" alt="A brown cat sleeping on a sofa">`,
+        hints: ["Alt text should describe the image meaningfully"],
       },
     ],
   },
@@ -1181,7 +1308,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
     title: "Semantic HTML5",
     difficulty: "intermediate",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html",
     content: `Semantic HTML uses elements that clearly describe their **meaning** to both the browser and the developer. Instead of using generic \`<div>\` and \`<span>\` for everything, semantic elements tell browsers, developers, and assistive technologies what role each piece of content plays.
 
 ## Why Semantic HTML Matters
@@ -1228,7 +1356,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
       {
         title: "Semantic Page Layout",
         language: "html",
-        description: "A complete page structure using semantic HTML5 elements instead of generic <div> containers.",
+        description:
+          "A complete page structure using semantic HTML5 elements instead of generic <div> containers.",
         code: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1293,7 +1422,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
       {
         title: "Details, Dialog & Time Elements",
         language: "html",
-        description: "Interactive semantic elements for expandable content, dialogs, and machine-readable dates.",
+        description:
+          "Interactive semantic elements for expandable content, dialogs, and machine-readable dates.",
         code: `<!-- Expandable disclosure widget -->
 <details>
     <summary>What is HTML?</summary>
@@ -1329,7 +1459,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
       {
         id: "semantic-1",
         title: "Semantify a Page",
-        instruction: "Replace the generic <div> tags with appropriate semantic elements: header, main, nav, article, and footer.",
+        instruction:
+          "Replace the generic <div> tags with appropriate semantic elements: header, main, nav, article, and footer.",
         startingCode: `<div class="header">\n    <div class="nav">Navigation</div>\n</div>\n<div class="content">\n    <div class="post">Blog post content</div>\n</div>\n<div class="footer">Footer</div>`,
         expectedOutput: `<header>\n    <nav>Navigation</nav>\n</header>\n<main>\n    <article>Blog post content</article>\n</main>\n<footer>Footer</footer>`,
         hints: [
@@ -1346,7 +1477,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
     title: "Attributes & Global Attributes",
     difficulty: "intermediate",
     estimatedMinutes: 15,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes",
     content: `Attributes provide additional information about HTML elements. They appear in the opening tag and usually come in **name="value"** pairs.
 
 ## Attribute Syntax
@@ -1392,7 +1524,7 @@ ARIA (Accessible Rich Internet Applications) attributes enhance accessibility:
 - \`aria-hidden\` — Hides from assistive technology
 - \`role\` — Defines the element's role`,
     keyTakeaways: [
-      "Attributes provide extra information in name=\"value\" pairs",
+      'Attributes provide extra information in name="value" pairs',
       "Global attributes (id, class, style, title) work on any element",
       "data-* attributes store custom data accessible via JavaScript",
       "Boolean attributes (required, disabled) don't need a value",
@@ -1402,7 +1534,8 @@ ARIA (Accessible Rich Internet Applications) attributes enhance accessibility:
       {
         title: "Common Attributes in Action",
         language: "html",
-        description: "Demonstrating global attributes, data attributes, and ARIA attributes.",
+        description:
+          "Demonstrating global attributes, data attributes, and ARIA attributes.",
         code: `<!-- ID and Class -->
 <div id="hero" class="section hero-section">
     <h1 class="title text-gradient">Welcome</h1>
@@ -1448,12 +1581,13 @@ ARIA (Accessible Rich Internet Applications) attributes enhance accessibility:
       {
         id: "attrs-1",
         title: "Add Data Attributes",
-        instruction: "Add data-price=\"29.99\" and data-category=\"electronics\" to the product div below.",
+        instruction:
+          'Add data-price="29.99" and data-category="electronics" to the product div below.',
         startingCode: `<div id="product-1" class="product">\n    <h3>Wireless Mouse</h3>\n</div>`,
         expectedOutput: `<div id="product-1" class="product" data-price="29.99" data-category="electronics">\n    <h3>Wireless Mouse</h3>\n</div>`,
         hints: [
           "Data attributes go in the opening tag",
-          "They follow the pattern data-name=\"value\"",
+          'They follow the pattern data-name="value"',
         ],
       },
     ],
@@ -1524,7 +1658,7 @@ Special characters in HTML:
     keyTakeaways: [
       "HTML5 provides native <video> and <audio> without plugins",
       "Always validate HTML with the W3C Validator",
-      "Use loading=\"lazy\" on images for better performance",
+      'Use loading="lazy" on images for better performance',
       "Use async/defer attributes on <script> tags",
       "Special characters use entity references like &lt; and &amp;",
     ],
@@ -1532,7 +1666,8 @@ Special characters in HTML:
       {
         title: "HTML5 Multimedia",
         language: "html",
-        description: "Embedding video and audio content with fallbacks and accessibility features.",
+        description:
+          "Embedding video and audio content with fallbacks and accessibility features.",
         code: `<!-- Video with controls and fallback -->
 <video controls width="640" poster="thumbnail.jpg" preload="metadata">
     <source src="intro.webm" type="video/webm">
@@ -1566,7 +1701,8 @@ Special characters in HTML:
       {
         title: "HTML5 Interactive Elements",
         language: "html",
-        description: "Modern HTML5 elements for interactive content: details, dialog, progress, and meter.",
+        description:
+          "Modern HTML5 elements for interactive content: details, dialog, progress, and meter.",
         code: `<!-- Progress bar -->
 <label for="download">Download Progress:</label>
 <progress id="download" value="70" max="100">70%</progress>
@@ -1602,11 +1738,12 @@ Special characters in HTML:
       {
         id: "advanced-1",
         title: "Optimize a Page",
-        instruction: "Add loading=\"lazy\" to the image, defer to the script tag, and wrap the image in a figure with a caption.",
+        instruction:
+          'Add loading="lazy" to the image, defer to the script tag, and wrap the image in a figure with a caption.',
         startingCode: `<img src="photo.jpg" alt="Mountain view" width="800" height="600">\n<script src="app.js"></script>`,
         expectedOutput: `<figure>\n    <img src="photo.jpg" alt="Mountain view" width="800" height="600" loading="lazy">\n    <figcaption>Beautiful mountain view</figcaption>\n</figure>\n<script src="app.js" defer></script>`,
         hints: [
-          "Add loading=\"lazy\" attribute to the img element",
+          'Add loading="lazy" attribute to the img element',
           "Add defer attribute to the script tag",
           "Wrap img in <figure> and add <figcaption>",
         ],
