@@ -147,6 +147,7 @@ type HybridStage = {
   title: string;
   duration: string;
   icon: typeof FileCode2;
+  accent: string;
   summary: string;
   focus: string;
   learn: string[];
@@ -160,6 +161,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
     title: "Foundations",
     duration: "1–2 weeks",
     icon: FileCode2,
+    accent: "#ea6b1a",
     summary:
       "Learn how the web is structured, then build your first real page.",
     focus: "HTML structure, semantic markup, forms, accessibility",
@@ -181,6 +183,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
     title: "Visual Design",
     duration: "1–2 weeks",
     icon: Palette,
+    accent: "#2563eb",
     summary: "Turn structure into beautiful layouts and responsive interfaces.",
     focus: "CSS layout, spacing, responsiveness, design systems",
     learn: [
@@ -200,6 +203,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
     title: "Interactive Logic",
     duration: "2–3 weeks",
     icon: Braces,
+    accent: "#b45309",
     summary: "Make pages feel alive with JavaScript and user interaction.",
     focus: "Events, DOM updates, functions, async JavaScript",
     learn: [
@@ -216,6 +220,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
     title: "Modern Frontend",
     duration: "2–4 weeks",
     icon: Rocket,
+    accent: "#7c3aed",
     summary: "Use React and Next.js to build scalable, component-based apps.",
     focus: "Components, state, routing, UI architecture",
     learn: [
@@ -236,6 +241,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
     title: "Backend & Data",
     duration: "2–4 weeks",
     icon: Layers,
+    accent: "#0f766e",
     summary:
       "Connect your frontend to real data and learn how apps persist information.",
     focus: "APIs, authentication, databases, deployment basics",
@@ -257,6 +263,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
     title: "Launch & Growth",
     duration: "2+ weeks",
     icon: BookOpen,
+    accent: "#2563eb",
     summary:
       "Ship your work, get feedback, and level up with production habits.",
     focus: "Testing, deployment, analytics, AI-enhanced workflows",
@@ -282,6 +289,7 @@ function HybridRoadmapCard({
   onToggle,
   statusLabel,
   isActive,
+  isComplete,
 }: {
   item: HybridStage;
   isDark: boolean;
@@ -289,206 +297,172 @@ function HybridRoadmapCard({
   onToggle: () => void;
   statusLabel: string;
   isActive: boolean;
+  isComplete: boolean;
 }) {
   const Icon = item.icon;
+  const markerBg = isActive
+    ? item.accent
+    : isComplete
+      ? "#10b981"
+      : isDark
+        ? "#111827"
+        : "#ffffff";
+  const markerBorder = isActive ? item.accent : isComplete ? "#10b981" : item.accent;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="rounded-3xl border p-6 transition-all"
-      style={{
-        background: isDark ? "#111827" : "#ffffff",
-        borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
-        boxShadow: isDark
-          ? "0 20px 45px rgba(0,0,0,0.18)"
-          : "0 20px 45px rgba(15,23,42,0.06)",
-      }}
+      className="relative pl-10 pb-4"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div
-            className="text-[11px] font-black uppercase tracking-[0.3em] mb-2"
-            style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
-          >
-            {item.phase}
-          </div>
-          <h3
-            className="text-xl font-black"
-            style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-          >
-            {item.title}
-          </h3>
-          <p
-            className="mt-2 text-sm leading-relaxed"
-            style={{ color: isDark ? "#cbd5e1" : "#475569" }}
-          >
-            {item.summary}
-          </p>
-        </div>
-        <div
-          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-          style={{
-            background: isDark
-              ? "rgba(59,130,246,0.16)"
-              : "rgba(37,99,235,0.10)",
-            color: isDark ? "#93c5fd" : "#2563eb",
-          }}
-        >
-          <Icon className="w-5 h-5" />
-        </div>
+      <div
+        className="absolute left-4 top-0 bottom-0 w-0.5"
+        style={{
+          background: `linear-gradient(to bottom, ${item.accent} 0%, ${item.accent} 100%)`,
+          opacity: 0.35,
+        }}
+      />
+      <div
+        className="absolute left-[0.4rem] top-4 h-2.5 rounded-full"
+        style={{
+          width: isComplete ? "100%" : isActive ? "70%" : "30%",
+          background: `linear-gradient(90deg, ${item.accent}, ${item.accent}55)`,
+          height: "2px",
+        }}
+      />
+      <div
+        className="absolute left-0 top-4 w-8 h-8 rounded-full border-4 flex items-center justify-center shadow-lg"
+        style={{
+          borderColor: markerBorder,
+          background: markerBg,
+          boxShadow: `0 0 0 4px ${item.accent}18`,
+        }}
+      >
+        {isComplete ? (
+          <CheckCircle2 className="w-4 h-4 text-white" />
+        ) : isActive ? (
+          <Compass className="w-4 h-4 text-white" />
+        ) : (
+          <Icon className="w-4 h-4 text-white" />
+        )}
       </div>
 
       <div
-        className="mt-4 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.24em]"
-        style={{ color: isDark ? "#9ca3af" : "#64748b" }}
+        className="rounded-3xl border p-5 ml-2 transition-all"
+        style={{
+          background: isDark ? "#111827" : "#ffffff",
+          borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+          boxShadow: isDark
+            ? "0 20px 45px rgba(0,0,0,0.18)"
+            : "0 20px 45px rgba(15,23,42,0.06)",
+        }}
       >
-        <span>{item.duration}</span>
-        <span>{item.focus}</span>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span
-          className="rounded-full px-3 py-1 text-xs font-semibold"
-          style={{
-            background: isActive
-              ? isDark
-                ? "rgba(96,165,250,0.16)"
-                : "rgba(37,99,235,0.10)"
-              : isDark
-                ? "rgba(255,255,255,0.06)"
-                : "#f8fafc",
-            color: isActive
-              ? isDark
-                ? "#93c5fd"
-                : "#2563eb"
-              : isDark
-                ? "#d1d5db"
-                : "#475569",
-          }}
-        >
-          {statusLabel}
-        </span>
-        {isActive && (
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div
+              className="text-[11px] font-black uppercase tracking-[0.3em] mb-2"
+              style={{ color: item.accent }}
+            >
+              {item.phase} · {item.duration}
+            </div>
+            <h3
+              className="text-xl font-black"
+              style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+            >
+              {item.title}
+            </h3>
+            <p
+              className="mt-2 text-sm leading-relaxed"
+              style={{ color: isDark ? "#cbd5e1" : "#475569" }}
+            >
+              {item.summary}
+            </p>
+          </div>
           <span
             className="rounded-full px-3 py-1 text-xs font-semibold"
             style={{
-              background: isDark
-                ? "rgba(250,204,21,0.14)"
-                : "rgba(245,158,11,0.12)",
-              color: isDark ? "#fcd34d" : "#b45309",
+              background: `${item.accent}14`,
+              color: item.accent,
             }}
           >
-            Next up
+            {statusLabel}
           </span>
-        )}
-      </div>
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div
-          className="rounded-2xl p-3"
-          style={{
-            background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-          }}
-        >
-          <div
-            className="text-sm font-bold mb-2"
-            style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-          >
-            Learn
-          </div>
-          <ul
-            className="space-y-1.5 text-sm"
-            style={{ color: isDark ? "#9ca3af" : "#475569" }}
-          >
-            {item.learn.map((point) => (
-              <li key={point} className="flex gap-2">
-                <CheckCircle2
-                  className="w-4 h-4 mt-0.5 shrink-0"
-                  style={{ color: isDark ? "#60a5fa" : "#2563eb" }}
-                />
-                {point}
-              </li>
-            ))}
-          </ul>
         </div>
-        <div
-          className="rounded-2xl p-3"
-          style={{
-            background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-          }}
-        >
-          <div
-            className="text-sm font-bold mb-2"
-            style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-          >
-            Build
+
+        <div className="mt-4 rounded-2xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc" }}>
+          <div className="text-xs font-semibold uppercase tracking-[0.24em] mb-2" style={{ color: item.accent }}>
+            {item.focus}
           </div>
-          <ul
-            className="space-y-1.5 text-sm"
-            style={{ color: isDark ? "#9ca3af" : "#475569" }}
-          >
-            {item.build.map((point) => (
-              <li key={point} className="flex gap-2">
-                <CheckCircle2
-                  className="w-4 h-4 mt-0.5 shrink-0"
-                  style={{ color: isDark ? "#a78bfa" : "#7c3aed" }}
-                />
-                {point}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <button
-        onClick={onToggle}
-        className="mt-5 flex items-center gap-2 text-sm font-semibold transition-colors"
-        style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
-      >
-        {expanded ? "Hide details" : "Explore this step"}
-        <motion.span
-          animate={{ rotate: expanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDown className="w-4 h-4" />
-        </motion.span>
-      </button>
-
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
-          >
-            <div
-              className="mt-4 rounded-2xl p-4"
-              style={{
-                background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-              }}
-            >
-              <div
-                className="text-sm font-bold mb-2"
-                style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-              >
-                Why this step matters
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <div className="text-sm font-bold mb-2" style={{ color: isDark ? "#f9fafb" : "#0f172a" }}>
+                Learn
               </div>
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: isDark ? "#9ca3af" : "#475569" }}
-              >
-                {item.outcome}
-              </p>
+              <ul className="space-y-1.5 text-sm" style={{ color: isDark ? "#9ca3af" : "#475569" }}>
+                {item.learn.map((point) => (
+                  <li key={point} className="flex gap-2">
+                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: item.accent }} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div>
+              <div className="text-sm font-bold mb-2" style={{ color: isDark ? "#f9fafb" : "#0f172a" }}>
+                Build
+              </div>
+              <ul className="space-y-1.5 text-sm" style={{ color: isDark ? "#9ca3af" : "#475569" }}>
+                {item.build.map((point) => (
+                  <li key={point} className="flex gap-2">
+                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: item.accent }} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <button
+            onClick={onToggle}
+            className="flex items-center gap-2 text-sm font-semibold transition-colors"
+            style={{ color: item.accent }}
+          >
+            {expanded ? "Hide details" : "Explore this step"}
+            <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown className="w-4 h-4" />
+            </motion.span>
+          </button>
+          {isActive && (
+            <span className="rounded-full px-3 py-1 text-xs font-semibold" style={{ background: `${item.accent}14`, color: item.accent }}>
+              You are here
+            </span>
+          )}
+        </div>
+
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 rounded-2xl p-4" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc" }}>
+                <div className="text-sm font-bold mb-2" style={{ color: isDark ? "#f9fafb" : "#0f172a" }}>
+                  Why this step matters
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: isDark ? "#9ca3af" : "#475569" }}>
+                  {item.outcome}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }
@@ -1456,7 +1430,7 @@ export default function RoadmapPage() {
             </motion.div>
           )}
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="space-y-3">
             {stageCompletion.map((item, index) => (
               <HybridRoadmapCard
                 key={item.phase}
@@ -1478,6 +1452,7 @@ export default function RoadmapPage() {
                         : "Upcoming"
                 }
                 isActive={index === activeStageIndex}
+                isComplete={item.complete}
               />
             ))}
           </div>
