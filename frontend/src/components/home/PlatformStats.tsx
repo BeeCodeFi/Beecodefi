@@ -11,6 +11,7 @@ const stats = [
     description: "Hands-on coding in HTML, CSS & JavaScript",
     gradient: "from-blue-500 to-cyan-500",
     iconBg: "bg-blue-100 dark:bg-blue-900/40",
+    iconColor: "text-blue-600 dark:text-blue-400",
   },
   {
     icon: Target,
@@ -19,6 +20,7 @@ const stats = [
     description: "Test your knowledge with detailed feedback",
     gradient: "from-purple-500 to-pink-500",
     iconBg: "bg-purple-100 dark:bg-purple-900/40",
+    iconColor: "text-purple-600 dark:text-purple-400",
   },
   {
     icon: Award,
@@ -27,6 +29,7 @@ const stats = [
     description: "Unlock rewards as you learn and progress",
     gradient: "from-amber-500 to-orange-500",
     iconBg: "bg-amber-100 dark:bg-amber-900/40",
+    iconColor: "text-amber-600 dark:text-amber-400",
   },
   {
     icon: Zap,
@@ -35,6 +38,7 @@ const stats = [
     description: "No paywalls, no limits, no credit card",
     gradient: "from-green-500 to-emerald-500",
     iconBg: "bg-green-100 dark:bg-green-900/40",
+    iconColor: "text-green-600 dark:text-green-400",
   },
   {
     icon: Users,
@@ -43,6 +47,7 @@ const stats = [
     description: "Join a growing community of developers",
     gradient: "from-indigo-500 to-purple-500",
     iconBg: "bg-indigo-100 dark:bg-indigo-900/40",
+    iconColor: "text-indigo-600 dark:text-indigo-400",
   },
   {
     icon: TrendingUp,
@@ -51,6 +56,7 @@ const stats = [
     description: "See your journey visualized on the roadmap",
     gradient: "from-rose-500 to-red-500",
     iconBg: "bg-rose-100 dark:bg-rose-900/40",
+    iconColor: "text-rose-600 dark:text-rose-400",
   },
 ];
 
@@ -102,7 +108,7 @@ export default function PlatformStats() {
                   transition={{ type: "spring", stiffness: 400 }}
                   className={`w-12 h-12 rounded-xl ${stat.iconBg} flex items-center justify-center mb-4`}
                 >
-                  <stat.icon className={`w-6 h-6 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`} />
+                  <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
                 </motion.div>
 
                 {/* Value */}
