@@ -14,8 +14,6 @@ import {
   CheckCircle2,
   ChevronDown,
   Layers,
-  Trophy,
-  Sparkles,
   Compass,
 } from "lucide-react";
 import { tutorials } from "@/data/tutorials";
@@ -28,6 +26,8 @@ const STEPS = [
   {
     id: 1,
     number: "01",
+    arc: "Foundations",
+    level: "Beginner",
     emoji: "🏗️",
     title: "HTML",
     fullTitle: "HTML Fundamentals",
@@ -56,6 +56,8 @@ const STEPS = [
   {
     id: 2,
     number: "02",
+    arc: "Foundations",
+    level: "Beginner",
     emoji: "🎨",
     title: "CSS",
     fullTitle: "CSS Mastery",
@@ -84,6 +86,8 @@ const STEPS = [
   {
     id: 3,
     number: "03",
+    arc: "Foundations",
+    level: "Beginner",
     emoji: "⚡",
     title: "JavaScript",
     fullTitle: "JavaScript Essentials",
@@ -106,34 +110,415 @@ const STEPS = [
       "Async / Await",
       "ES6+ Features",
     ],
-    stat: "18",
+    stat: "24",
     statUnit: "lessons",
   },
   {
     id: 4,
     number: "04",
-    emoji: "🚀",
-    title: "React",
-    fullTitle: "React & Next.js",
-    tagline: "Build production apps",
-    desc: "With the fundamentals solid, you are ready for React — the world most in-demand frontend library. Components, hooks, routing, and deploying real apps with Next.js.",
-    accent: "#7c3aed",
-    darkBg: "#07000f",
-    lightCardBg: "#f7f5ff",
-    lightBorder: "#c4b5fd",
-    lightNumColor: "#a78bfa",
-    gradient: "from-violet-500 to-purple-600",
-    shadow: "0 20px 60px rgba(124,58,237,0.14)",
+    arc: "Foundations",
+    level: "Intermediate",
+    emoji: "🔷",
+    title: "TypeScript",
+    fullTitle: "TypeScript",
+    tagline: "Types before bugs find you",
+    desc: "Make JavaScript safer and easier to refactor with expressive types, interfaces, generics, and a workflow that catches mistakes before they reach production.",
+    accent: "#3178c6",
+    darkBg: "#00111f",
+    lightCardBg: "#f1f7ff",
+    lightBorder: "#93c5fd",
+    lightNumColor: "#93c5fd",
+    gradient: "from-blue-600 to-cyan-500",
+    shadow: "0 20px 60px rgba(49,120,198,0.16)",
+    tutorialSlug: null,
+    time: "2–3 wks",
+    icon: Braces,
+    skills: ["TypeScript", "Interfaces", "Generics", "Type Narrowing"],
+    stat: "12",
+    statUnit: "lessons",
+  },
+  {
+    id: 5,
+    number: "05",
+    arc: "Foundations",
+    level: "Beginner",
+    emoji: "🔀",
+    title: "Git",
+    fullTitle: "Git & GitHub Collaboration",
+    tagline: "Work like a real team",
+    desc: "Build the collaboration habits used by professional teams: branching, pull requests, code review, conflict resolution, and a clean project history.",
+    accent: "#f05032",
+    darkBg: "#1c0804",
+    lightCardBg: "#fff5f2",
+    lightBorder: "#fdba74",
+    lightNumColor: "#fdba74",
+    gradient: "from-orange-600 to-red-500",
+    shadow: "0 20px 60px rgba(240,80,50,0.16)",
+    tutorialSlug: null,
+    time: "1 wk",
+    icon: Layers,
+    skills: ["Git", "GitHub", "Pull Requests", "Code Review"],
+    stat: "9",
+    statUnit: "lessons",
+  },
+  {
+    id: 6,
+    number: "06",
+    arc: "Frontend",
+    level: "Intermediate",
+    emoji: "⚛️",
+    title: "Frameworks",
+    fullTitle: "A Frontend Framework",
+    tagline: "Componentize everything",
+    desc: "Move from pages to reusable interfaces with component architecture, props, state, events, and the framework patterns behind modern frontend products.",
+    accent: "#06b6d4",
+    darkBg: "#001217",
+    lightCardBg: "#effcff",
+    lightBorder: "#67e8f9",
+    lightNumColor: "#67e8f9",
+    gradient: "from-cyan-500 to-blue-500",
+    shadow: "0 20px 60px rgba(6,182,212,0.16)",
     tutorialSlug: null,
     time: "6–8 wks",
     icon: Rocket,
-    skills: [
-      "Components & Props",
-      "State & Hooks",
-      "React Router",
-      "Next.js",
-      "Deployment",
-    ],
+    skills: ["React", "Vue", "Angular", "Svelte"],
+    stat: "20",
+    statUnit: "lessons",
+  },
+  {
+    id: 7,
+    number: "07",
+    arc: "Frontend",
+    level: "Intermediate",
+    emoji: "🌐",
+    title: "SSR",
+    fullTitle: "Meta-Frameworks & SSR",
+    tagline: "Production-grade frontend",
+    desc: "Learn how routing, server rendering, caching, and full-stack frontend conventions turn a component library into a production-ready application.",
+    accent: "#0f766e",
+    darkBg: "#001713",
+    lightCardBg: "#effcf9",
+    lightBorder: "#5eead4",
+    lightNumColor: "#5eead4",
+    gradient: "from-teal-500 to-emerald-500",
+    shadow: "0 20px 60px rgba(15,118,110,0.16)",
+    tutorialSlug: null,
+    time: "4–6 wks",
+    icon: Layers,
+    skills: ["Next.js", "Remix", "Nuxt", "SSR"],
+    stat: "16",
+    statUnit: "lessons",
+  },
+  {
+    id: 8,
+    number: "08",
+    arc: "Frontend",
+    level: "Intermediate",
+    emoji: "🔄",
+    title: "State",
+    fullTitle: "State & Data Fetching",
+    tagline: "Keep your app in sync",
+    desc: "Coordinate local state, server state, loading, errors, caching, and optimistic updates so interfaces stay predictable as they grow.",
+    accent: "#0891b2",
+    darkBg: "#00131a",
+    lightCardBg: "#effaff",
+    lightBorder: "#67e8f9",
+    lightNumColor: "#67e8f9",
+    gradient: "from-cyan-600 to-teal-500",
+    shadow: "0 20px 60px rgba(8,145,178,0.16)",
+    tutorialSlug: null,
+    time: "3–4 wks",
+    icon: Brain,
+    skills: ["Redux Toolkit", "Zustand", "TanStack Query", "Caching"],
+    stat: "14",
+    statUnit: "lessons",
+  },
+  {
+    id: 9,
+    number: "09",
+    arc: "Backend",
+    level: "Intermediate",
+    emoji: "🧠",
+    title: "Node.js",
+    fullTitle: "Backend with Node.js",
+    tagline: "Give it a brain",
+    desc: "Build server-side applications with JavaScript, from request handling and middleware to structured services and scalable backend architecture.",
+    accent: "#16a34a",
+    darkBg: "#031408",
+    lightCardBg: "#f0fdf4",
+    lightBorder: "#86efac",
+    lightNumColor: "#86efac",
+    gradient: "from-green-600 to-emerald-500",
+    shadow: "0 20px 60px rgba(22,163,74,0.16)",
+    tutorialSlug: null,
+    time: "6–8 wks",
+    icon: Braces,
+    skills: ["Node.js", "Express", "NestJS", "Middleware"],
+    stat: "22",
+    statUnit: "lessons",
+  },
+  {
+    id: 10,
+    number: "10",
+    arc: "Backend",
+    level: "Intermediate",
+    emoji: "🔗",
+    title: "APIs",
+    fullTitle: "REST & GraphQL APIs",
+    tagline: "Let systems talk to each other",
+    desc: "Design clear contracts between services and clients with resource modeling, validation, errors, authentication boundaries, and flexible query patterns.",
+    accent: "#059669",
+    darkBg: "#00140e",
+    lightCardBg: "#ecfdf5",
+    lightBorder: "#6ee7b7",
+    lightNumColor: "#6ee7b7",
+    gradient: "from-emerald-600 to-teal-500",
+    shadow: "0 20px 60px rgba(5,150,105,0.16)",
+    tutorialSlug: null,
+    time: "3–4 wks",
+    icon: ArrowRight,
+    skills: ["REST", "GraphQL", "tRPC", "API Design"],
+    stat: "14",
+    statUnit: "lessons",
+  },
+  {
+    id: 11,
+    number: "11",
+    arc: "Backend",
+    level: "Intermediate",
+    emoji: "🗄️",
+    title: "Databases",
+    fullTitle: "Databases & ORMs",
+    tagline: "Give it memory",
+    desc: "Model persistent data, choose the right storage approach, write efficient queries, and use an ORM without losing sight of the database underneath.",
+    accent: "#0284c7",
+    darkBg: "#00121d",
+    lightCardBg: "#f0f9ff",
+    lightBorder: "#7dd3fc",
+    lightNumColor: "#7dd3fc",
+    gradient: "from-sky-600 to-blue-500",
+    shadow: "0 20px 60px rgba(2,132,199,0.16)",
+    tutorialSlug: null,
+    time: "4–5 wks",
+    icon: Layers,
+    skills: ["PostgreSQL", "MongoDB", "Redis", "Prisma"],
+    stat: "18",
+    statUnit: "lessons",
+  },
+  {
+    id: 12,
+    number: "12",
+    arc: "Backend",
+    level: "Intermediate",
+    emoji: "🔒",
+    title: "Security",
+    fullTitle: "Auth & Security",
+    tagline: "Lock it down",
+    desc: "Protect user accounts and application data with secure password handling, sessions, tokens, OAuth flows, authorization, and threat-aware defaults.",
+    accent: "#dc2626",
+    darkBg: "#1b0505",
+    lightCardBg: "#fff5f5",
+    lightBorder: "#fca5a5",
+    lightNumColor: "#fca5a5",
+    gradient: "from-red-600 to-orange-500",
+    shadow: "0 20px 60px rgba(220,38,38,0.16)",
+    tutorialSlug: null,
+    time: "2–3 wks",
+    icon: Compass,
+    skills: ["JWT", "OAuth 2.0", "bcrypt", "OWASP Top 10"],
+    stat: "12",
+    statUnit: "lessons",
+  },
+  {
+    id: 13,
+    number: "13",
+    arc: "Quality & Ops",
+    level: "Intermediate",
+    emoji: "🧪",
+    title: "Testing",
+    fullTitle: "Testing",
+    tagline: "Trust your own code",
+    desc: "Create confidence at every level with unit, component, integration, and end-to-end tests that protect behavior while your product evolves.",
+    accent: "#7c3aed",
+    darkBg: "#0c0517",
+    lightCardBg: "#faf5ff",
+    lightBorder: "#c4b5fd",
+    lightNumColor: "#c4b5fd",
+    gradient: "from-violet-600 to-fuchsia-500",
+    shadow: "0 20px 60px rgba(124,58,237,0.16)",
+    tutorialSlug: null,
+    time: "3–4 wks",
+    icon: CheckCircle2,
+    skills: ["Jest", "React Testing Library", "Playwright", "Test Strategy"],
+    stat: "16",
+    statUnit: "lessons",
+  },
+  {
+    id: 14,
+    number: "14",
+    arc: "Quality & Ops",
+    level: "Intermediate",
+    emoji: "📦",
+    title: "Containers",
+    fullTitle: "Docker & Containers",
+    tagline: "Same app, everywhere",
+    desc: "Package applications and their dependencies into repeatable environments that behave consistently from a laptop to a deployment pipeline.",
+    accent: "#2563eb",
+    darkBg: "#020b1f",
+    lightCardBg: "#eff6ff",
+    lightBorder: "#93c5fd",
+    lightNumColor: "#93c5fd",
+    gradient: "from-blue-600 to-cyan-500",
+    shadow: "0 20px 60px rgba(37,99,235,0.16)",
+    tutorialSlug: null,
+    time: "2 wks",
+    icon: Layers,
+    skills: ["Docker", "Docker Compose", "Images", "Networking"],
+    stat: "10",
+    statUnit: "lessons",
+  },
+  {
+    id: 15,
+    number: "15",
+    arc: "Quality & Ops",
+    level: "Intermediate",
+    emoji: "⚙️",
+    title: "CI/CD",
+    fullTitle: "CI/CD & Git Workflows",
+    tagline: "Ship without fear",
+    desc: "Automate checks, builds, releases, and team workflows so every change gets feedback quickly and shipping becomes a dependable routine.",
+    accent: "#f59e0b",
+    darkBg: "#171004",
+    lightCardBg: "#fffbeb",
+    lightBorder: "#fcd34d",
+    lightNumColor: "#fcd34d",
+    gradient: "from-amber-500 to-orange-500",
+    shadow: "0 20px 60px rgba(245,158,11,0.16)",
+    tutorialSlug: null,
+    time: "2 wks",
+    icon: Rocket,
+    skills: ["GitHub Actions", "Jenkins", "Trunk-based Dev", "Releases"],
+    stat: "10",
+    statUnit: "lessons",
+  },
+  {
+    id: 16,
+    number: "16",
+    arc: "Quality & Ops",
+    level: "Advanced",
+    emoji: "☁️",
+    title: "Cloud",
+    fullTitle: "Cloud & Deployment",
+    tagline: "Take it live",
+    desc: "Deploy real applications, understand environments and infrastructure, and make informed choices across hosted platforms and cloud providers.",
+    accent: "#0284c7",
+    darkBg: "#00121d",
+    lightCardBg: "#f0f9ff",
+    lightBorder: "#7dd3fc",
+    lightNumColor: "#7dd3fc",
+    gradient: "from-sky-600 to-indigo-500",
+    shadow: "0 20px 60px rgba(2,132,199,0.16)",
+    tutorialSlug: null,
+    time: "4 wks",
+    icon: Layers,
+    skills: ["AWS", "Vercel", "Google Cloud", "Azure"],
+    stat: "16",
+    statUnit: "lessons",
+  },
+  {
+    id: 17,
+    number: "17",
+    arc: "Advanced",
+    level: "Advanced",
+    emoji: "☸️",
+    title: "Kubernetes",
+    fullTitle: "Kubernetes & Orchestration",
+    tagline: "Scale beyond one server",
+    desc: "Understand how containerized workloads are scheduled, configured, exposed, and scaled across clusters with infrastructure defined as code.",
+    accent: "#326ce5",
+    darkBg: "#020a1b",
+    lightCardBg: "#eff6ff",
+    lightBorder: "#93c5fd",
+    lightNumColor: "#93c5fd",
+    gradient: "from-blue-600 to-indigo-500",
+    shadow: "0 20px 60px rgba(50,108,229,0.16)",
+    tutorialSlug: null,
+    time: "4–5 wks",
+    icon: Layers,
+    skills: ["Kubernetes", "Helm", "Terraform", "Clusters"],
+    stat: "14",
+    statUnit: "lessons",
+    comingSoon: true,
+  },
+  {
+    id: 18,
+    number: "18",
+    arc: "Advanced",
+    level: "Advanced",
+    emoji: "🏛️",
+    title: "System Design",
+    fullTitle: "System Design & Scalability",
+    tagline: "Think in systems, not files",
+    desc: "Reason about the tradeoffs behind resilient systems: traffic, data, latency, reliability, boundaries, and the components that keep services moving.",
+    accent: "#9333ea",
+    darkBg: "#11051d",
+    lightCardBg: "#faf5ff",
+    lightBorder: "#d8b4fe",
+    lightNumColor: "#d8b4fe",
+    gradient: "from-purple-600 to-fuchsia-500",
+    shadow: "0 20px 60px rgba(147,51,234,0.16)",
+    tutorialSlug: null,
+    time: "4–6 wks",
+    icon: Layers,
+    skills: ["Load Balancing", "Caching", "Microservices", "Message Queues"],
+    stat: "12",
+    statUnit: "lessons",
+  },
+  {
+    id: 19,
+    number: "19",
+    arc: "Advanced",
+    level: "Advanced",
+    emoji: "📈",
+    title: "Observability",
+    fullTitle: "Monitoring & Observability",
+    tagline: "Know before your users tell you",
+    desc: "Make production behavior visible with metrics, logs, traces, dashboards, alerts, and the habits that turn incidents into learning.",
+    accent: "#0d9488",
+    darkBg: "#001412",
+    lightCardBg: "#f0fdfa",
+    lightBorder: "#5eead4",
+    lightNumColor: "#5eead4",
+    gradient: "from-teal-600 to-cyan-500",
+    shadow: "0 20px 60px rgba(13,148,136,0.16)",
+    tutorialSlug: null,
+    time: "2–3 wks",
+    icon: Compass,
+    skills: ["Grafana", "Datadog", "Prometheus", "Alerting"],
+    stat: "10",
+    statUnit: "lessons",
+  },
+  {
+    id: 20,
+    number: "20",
+    arc: "Advanced",
+    level: "Advanced",
+    emoji: "✨",
+    title: "Specialties",
+    fullTitle: "Beyond Full-Stack",
+    tagline: "Choose your specialty",
+    desc: "Use your full-stack foundation to explore the direction that fits your interests, from mobile and AI engineering to platform and SRE work.",
+    accent: "#7c3aed",
+    darkBg: "#0c0517",
+    lightCardBg: "#faf5ff",
+    lightBorder: "#c4b5fd",
+    lightNumColor: "#c4b5fd",
+    gradient: "from-violet-600 to-pink-500",
+    shadow: "0 20px 60px rgba(124,58,237,0.16)",
+    tutorialSlug: null,
+    time: "Ongoing",
+    icon: Brain,
+    skills: ["React Native", "AI Engineering", "Platform", "SRE"],
     stat: "Soon",
     statUnit: "coming",
     comingSoon: true,
@@ -141,6 +526,30 @@ const STEPS = [
 ] as const;
 
 type Step = (typeof STEPS)[number];
+
+function ArcHeading({ name, isDark }: { name: string; isDark: boolean }) {
+  return (
+    <div
+      className="mb-6 mt-10 flex items-center gap-3 first:mt-0"
+      style={{ color: isDark ? "#cbd5e1" : "#334155" }}
+    >
+      <span
+        className="h-px flex-1"
+        style={{ background: isDark ? "rgba(255,255,255,0.14)" : "#cbd5e1" }}
+      />
+      <span
+        className="relative z-10 px-3 text-xs font-black uppercase tracking-[0.28em]"
+        style={{ background: isDark ? "#030712" : "#ffffff" }}
+      >
+        {name}
+      </span>
+      <span
+        className="h-px flex-1"
+        style={{ background: isDark ? "rgba(255,255,255,0.14)" : "#cbd5e1" }}
+      />
+    </div>
+  );
+}
 
 type HybridStage = {
   phase: string;
@@ -307,7 +716,11 @@ function HybridRoadmapCard({
       : isDark
         ? "#111827"
         : "#ffffff";
-  const markerBorder = isActive ? item.accent : isComplete ? "#10b981" : item.accent;
+  const markerBorder = isActive
+    ? item.accent
+    : isComplete
+      ? "#10b981"
+      : item.accent;
 
   return (
     <motion.div
@@ -390,32 +803,56 @@ function HybridRoadmapCard({
           </span>
         </div>
 
-        <div className="mt-4 rounded-2xl p-3" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc" }}>
-          <div className="text-xs font-semibold uppercase tracking-[0.24em] mb-2" style={{ color: item.accent }}>
+        <div
+          className="mt-4 rounded-2xl p-3"
+          style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc" }}
+        >
+          <div
+            className="text-xs font-semibold uppercase tracking-[0.24em] mb-2"
+            style={{ color: item.accent }}
+          >
             {item.focus}
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <div>
-              <div className="text-sm font-bold mb-2" style={{ color: isDark ? "#f9fafb" : "#0f172a" }}>
+              <div
+                className="text-sm font-bold mb-2"
+                style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+              >
                 Learn
               </div>
-              <ul className="space-y-1.5 text-sm" style={{ color: isDark ? "#9ca3af" : "#475569" }}>
+              <ul
+                className="space-y-1.5 text-sm"
+                style={{ color: isDark ? "#9ca3af" : "#475569" }}
+              >
                 {item.learn.map((point) => (
                   <li key={point} className="flex gap-2">
-                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: item.accent }} />
+                    <CheckCircle2
+                      className="w-4 h-4 mt-0.5 shrink-0"
+                      style={{ color: item.accent }}
+                    />
                     {point}
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <div className="text-sm font-bold mb-2" style={{ color: isDark ? "#f9fafb" : "#0f172a" }}>
+              <div
+                className="text-sm font-bold mb-2"
+                style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+              >
                 Build
               </div>
-              <ul className="space-y-1.5 text-sm" style={{ color: isDark ? "#9ca3af" : "#475569" }}>
+              <ul
+                className="space-y-1.5 text-sm"
+                style={{ color: isDark ? "#9ca3af" : "#475569" }}
+              >
                 {item.build.map((point) => (
                   <li key={point} className="flex gap-2">
-                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: item.accent }} />
+                    <CheckCircle2
+                      className="w-4 h-4 mt-0.5 shrink-0"
+                      style={{ color: item.accent }}
+                    />
                     {point}
                   </li>
                 ))}
@@ -431,12 +868,18 @@ function HybridRoadmapCard({
             style={{ color: item.accent }}
           >
             {expanded ? "Hide details" : "Explore this step"}
-            <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <motion.span
+              animate={{ rotate: expanded ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
               <ChevronDown className="w-4 h-4" />
             </motion.span>
           </button>
           {isActive && (
-            <span className="rounded-full px-3 py-1 text-xs font-semibold" style={{ background: `${item.accent}14`, color: item.accent }}>
+            <span
+              className="rounded-full px-3 py-1 text-xs font-semibold"
+              style={{ background: `${item.accent}14`, color: item.accent }}
+            >
               You are here
             </span>
           )}
@@ -451,11 +894,22 @@ function HybridRoadmapCard({
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="mt-4 rounded-2xl p-4" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc" }}>
-                <div className="text-sm font-bold mb-2" style={{ color: isDark ? "#f9fafb" : "#0f172a" }}>
+              <div
+                className="mt-4 rounded-2xl p-4"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
+                }}
+              >
+                <div
+                  className="text-sm font-bold mb-2"
+                  style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                >
                   Why this step matters
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: isDark ? "#9ca3af" : "#475569" }}>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: isDark ? "#9ca3af" : "#475569" }}
+                >
                   {item.outcome}
                 </p>
               </div>
@@ -582,6 +1036,15 @@ function StepCard({
                   >
                     {step.tagline}
                   </p>
+                  <span
+                    className="mt-2 inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                    style={{
+                      background: `${step.accent}15`,
+                      color: step.accent,
+                    }}
+                  >
+                    {step.level}
+                  </span>
                 </div>
               </div>
               <p
@@ -766,8 +1229,8 @@ function StepCard({
                 `0 0 0 12px ${step.accent}00`,
               ],
             }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-            className="w-14 h-14 rounded-full border-4 flex items-center justify-center text-2xl"
+            transition={{ duration: 0.25, repeat: Infinity }}
+            className="relative z-10 w-14 h-14 rounded-full border-4 flex items-center justify-center text-2xl"
             style={{
               borderColor: step.accent,
               background: isDark ? "#111827" : step.lightCardBg,
@@ -781,8 +1244,11 @@ function StepCard({
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.4 }}
-          className="mt-2 text-[11px] font-black uppercase tracking-wider text-center"
-          style={{ color: step.accent }}
+          className="relative z-10 mt-2 px-2 text-[11px] font-black uppercase tracking-wider text-center"
+          style={{
+            color: step.accent,
+            background: isDark ? "#030712" : "#ffffff",
+          }}
         >
           {step.title}
         </motion.span>
@@ -828,7 +1294,7 @@ function MobileStepCard({
         initial={{ scale: 0 }}
         animate={inView ? { scale: 1 } : {}}
         transition={{ type: "spring", stiffness: 400, delay: 0.1 }}
-        className="absolute left-0 top-4 w-8 h-8 rounded-full border-4 flex items-center justify-center text-sm z-10"
+        className="absolute left-0 top-4 z-10 w-8 h-8 rounded-full border-4 flex items-center justify-center text-sm"
         style={{
           borderColor: step.accent,
           background: isDark ? "#111827" : step.lightCardBg,
@@ -857,8 +1323,11 @@ function MobileStepCard({
           </div>
           <div>
             <span
-              className="text-[10px] font-black uppercase tracking-widest block"
-              style={{ color: step.accent }}
+              className="relative z-10 px-1 text-[10px] font-black uppercase tracking-widest block"
+              style={{
+                color: step.accent,
+                background: isDark ? "#111827" : step.lightCardBg,
+              }}
             >
               Stage {step.number} · {step.time}
             </span>
@@ -980,7 +1449,6 @@ export default function RoadmapPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [isDark, setIsDark] = useState(false);
-  const [expandedStage, setExpandedStage] = useState<string | null>("01");
 
   useEffect(() => {
     const check = () =>
@@ -1022,64 +1490,10 @@ export default function RoadmapPage() {
     totalCompletedLessons > 0
       ? Math.round((completedLessons / totalCompletedLessons) * 100)
       : 0;
-  const stageCompletion = HYBRID_ROADMAP.map((stage, index) => {
-    const isComplete =
-      index === 0
-        ? (tutorialProgress.find((item) => item.slug === "html")?.completed ??
-            0) >=
-          (tutorials.find((item) => item.slug === "html")?.lessons.length ?? 0)
-        : index === 1
-          ? (tutorialProgress.find((item) => item.slug === "css")?.completed ??
-              0) >=
-            (tutorials.find((item) => item.slug === "css")?.lessons.length ?? 0)
-          : index === 2
-            ? (tutorialProgress.find((item) => item.slug === "javascript")
-                ?.completed ?? 0) >=
-              (tutorials.find((item) => item.slug === "javascript")?.lessons
-                .length ?? 0)
-            : index === 3
-              ? overallProgressPercent >= 40
-              : index === 4
-                ? overallProgressPercent >= 70
-                : overallProgressPercent >= 90;
-    return { ...stage, complete: isComplete };
-  });
-  const currentStageIndex = stageCompletion.findIndex(
-    (stage) => !stage.complete,
-  );
-  const activeStageIndex =
-    currentStageIndex === -1 ? stageCompletion.length - 1 : currentStageIndex;
-  const activeStage = stageCompletion[activeStageIndex] ?? stageCompletion[0];
-  const nextStage =
-    stageCompletion[
-      Math.min(activeStageIndex + 1, stageCompletion.length - 1)
-    ] ?? stageCompletion[0];
-  const progressBadge =
-    overallProgressPercent === 0
-      ? "Just getting started"
-      : overallProgressPercent < 25
-        ? "First steps"
-        : overallProgressPercent < 50
-          ? "Momentum building"
-          : overallProgressPercent < 75
-            ? "Steady progress"
-            : overallProgressPercent < 100
-              ? "Almost there"
-              : "Roadmap champion";
-  const roadmapContinueHref =
-    activeStageIndex === 0
-      ? "/tutorials/html"
-      : activeStageIndex === 1
-        ? "/tutorials/css"
-        : activeStageIndex === 2
-          ? "/tutorials/javascript"
-          : "/tutorials";
   const badgeBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.07)";
   const badgeBdr = isDark ? "rgba(255,255,255,0.10)" : "rgba(99,102,241,0.18)";
   const badgeText = isDark ? "rgba(255,255,255,0.50)" : "#3730a3";
   const headText = isDark ? "text-white" : "text-gray-900";
-  const scrollCue = isDark ? "rgba(255,255,255,0.25)" : "rgba(99,102,241,0.40)";
-  const scrollTxt = isDark ? "rgba(255,255,255,0.28)" : "#6366f1";
   const tipsBg = isDark ? "#0d1117" : "#f1f5f9";
   const tipsCard = isDark ? "#111827" : "#ffffff";
   const tipsCardB = isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0";
@@ -1196,8 +1610,21 @@ export default function RoadmapPage() {
                 key={s.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.7 + i * 0.08 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold"
+                whileHover={{
+                  y: -5,
+                  scale: 1.08,
+                  filter: "brightness(1.3) saturate(1.25)",
+                  backgroundColor: `${s.accent}28`,
+                  borderColor: `${s.accent}90`,
+                  boxShadow: `0 8px 22px ${s.accent}35`,
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{
+                  default: { duration: 0.1 },
+                  opacity: { delay: 0.7 + i * 0.08, duration: 0.4 },
+                  scale: { delay: 0.7 + i * 0.08, duration: 0.4 },
+                }}
+                className="flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-[filter,box-shadow] duration-200"
                 style={{
                   border: `1px solid ${s.accent}30`,
                   color: s.accent,
@@ -1209,174 +1636,9 @@ export default function RoadmapPage() {
             ))}
           </motion.div>
 
+          {/*
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
-            className="flex flex-col items-center gap-3"
-          >
-            <span
-              className="text-[11px] uppercase tracking-[0.3em] font-medium"
-              style={{ color: scrollTxt }}
-            >
-              Scroll to explore
-            </span>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
-              style={{ border: `2px solid ${scrollCue}` }}
-            >
-              <motion.div
-                className="w-1.5 h-2 rounded-full"
-                style={{ background: scrollCue }}
-                animate={{ y: [0, 14, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section
-        className="relative py-20 overflow-hidden"
-        style={{ background: isDark ? "#030712" : "#f8fafc" }}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8"
-          >
-            <p
-              className="text-sm font-semibold uppercase tracking-[0.3em] mb-3"
-              style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
-            >
-              Hybrid roadmap
-            </p>
-            <h2
-              className="text-3xl sm:text-4xl font-black tracking-tight"
-              style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-            >
-              Learn and build in the right order
-            </h2>
-            <p
-              className="mt-3 text-base mx-auto max-w-3xl"
-              style={{ color: isDark ? "#9ca3af" : "#475569" }}
-            >
-              Every stage combines the core concepts you need with a practical
-              project idea so your learning always has a real-world purpose.
-            </p>
-          </motion.div>
-
-          {user ? (
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-6 rounded-3xl border p-6"
-              style={{
-                background: isDark ? "#0f172a" : "#ffffff",
-                borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
-              }}
-            >
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Trophy
-                      className="w-5 h-5"
-                      style={{ color: isDark ? "#fcd34d" : "#f59e0b" }}
-                    />
-                    <span
-                      className="text-sm font-semibold uppercase tracking-[0.24em]"
-                      style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
-                    >
-                      Your learning pulse
-                    </span>
-                  </div>
-                  <h3
-                    className="text-2xl font-black"
-                    style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-                  >
-                    {user.name}, you are {overallProgressPercent}% through the
-                    roadmap
-                  </h3>
-                  <p
-                    className="mt-2 text-sm leading-relaxed"
-                    style={{ color: isDark ? "#9ca3af" : "#475569" }}
-                  >
-                    Current focus:{" "}
-                    <span
-                      className="font-semibold"
-                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-                    >
-                      {activeStage.title}
-                    </span>
-                    . Next step:{" "}
-                    <span
-                      className="font-semibold"
-                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-                    >
-                      {nextStage.title}
-                    </span>
-                    .
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <div
-                    className="rounded-2xl px-4 py-3"
-                    style={{
-                      background: isDark ? "rgba(255,255,255,0.05)" : "#f8fafc",
-                      border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-                    }}
-                  >
-                    <div
-                      className="flex items-center gap-2 text-sm font-semibold"
-                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-                    >
-                      <Sparkles
-                        className="w-4 h-4"
-                        style={{ color: isDark ? "#a78bfa" : "#7c3aed" }}
-                      />
-                      {progressBadge}
-                    </div>
-                  </div>
-                  <div
-                    className="rounded-2xl px-4 py-3"
-                    style={{
-                      background: isDark ? "rgba(255,255,255,0.05)" : "#f8fafc",
-                      border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-                    }}
-                  >
-                    <div
-                      className="flex items-center gap-2 text-sm font-semibold"
-                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
-                    >
-                      <Compass
-                        className="w-4 h-4"
-                        style={{ color: isDark ? "#60a5fa" : "#2563eb" }}
-                      />
-                      {completedLessons}/{totalCompletedLessons} lessons
-                      completed
-                    </div>
-                  </div>
-                  <Link
-                    href={roadmapContinueHref}
-                    className="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
-                    style={{
-                      background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-                    }}
-                  >
-                    Continue learning
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-              <div className="mt-5">
-                <div
-                  className="flex items-center justify-between text-sm font-semibold mb-2"
-                  style={{ color: isDark ? "#d1d5db" : "#475569" }}
                 >
                   <span>Roadmap progress</span>
                   <span>{overallProgressPercent}%</span>
@@ -1506,6 +1768,7 @@ export default function RoadmapPage() {
               ))}
             </div>
           </motion.div>
+          */}
         </div>
       </section>
 
@@ -1522,7 +1785,12 @@ export default function RoadmapPage() {
         />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {STEPS.map((step, i) => (
-            <StepCard key={step.id} step={step} index={i} isDark={isDark} />
+            <div key={step.id}>
+              {step.arc !== STEPS[i - 1]?.arc && (
+                <ArcHeading name={step.arc} isDark={isDark} />
+              )}
+              <StepCard step={step} index={i} isDark={isDark} />
+            </div>
           ))}
         </div>
       </section>
@@ -1539,7 +1807,12 @@ export default function RoadmapPage() {
           }}
         />
         {STEPS.map((step, i) => (
-          <MobileStepCard key={step.id} step={step} index={i} isDark={isDark} />
+          <div key={step.id}>
+            {step.arc !== STEPS[i - 1]?.arc && (
+              <ArcHeading name={step.arc} isDark={isDark} />
+            )}
+            <MobileStepCard step={step} index={i} isDark={isDark} />
+          </div>
         ))}
       </section>
 
