@@ -20,6 +20,7 @@ import { tutorials } from "@/data/tutorials";
 import SplitText from "@/components/ui/SplitText";
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
+import { useBadges } from "@/hooks/useBadges";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const STEPS = [
@@ -925,10 +926,14 @@ function StepCard({
   step,
   index,
   isDark,
+  badge,
+  tutorialProgress,
 }: {
   step: Step;
   index: number;
   isDark: boolean;
+  badge?: { id: number; name: string; description: string; icon: string; isUnlocked: boolean; progress: number; requiredCount: number; color: string };
+  tutorialProgress?: { slug: string; completed: number; total: number };
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -1002,7 +1007,7 @@ function StepCard({
                 >
                   <step.icon className="w-7 h-7 text-white" />
                 </motion.div>
-                <div>
+                <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span
                       className="text-[11px] font-black uppercase tracking-[0.25em]"
@@ -1023,6 +1028,18 @@ function StepCard({
                         Coming Soon
                       </span>
                     )}
+                    {badge && badge.isUnlocked && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        className={`flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r ${badge.color} text-white text-[10px] font-bold`}
+                        title={badge.description}
+                      >
+                        <span>{badge.icon}</span>
+                        <span>Earned</span>
+                      </motion.div>
+                    )}
                   </div>
                   <h3
                     className="text-2xl font-extrabold leading-tight"
@@ -1036,6 +1053,21 @@ function StepCard({
                   >
                     {step.tagline}
                   </p>
+                  {tutorialProgress && tutorialProgress.completed > 0 && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex-1 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden max-w-[120px]">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(tutorialProgress.completed / tutorialProgress.total) * 100}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className={`h-full bg-gradient-to-r ${step.gradient}`}
+                        />
+                      </div>
+                      <span className="text-xs font-semibold" style={{ color: step.accent }}>
+                        {tutorialProgress.completed}/{tutorialProgress.total}
+                      </span>
+                    </div>
+                  )}
                   <span
                     className="mt-2 inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
                     style={{
@@ -1262,10 +1294,14 @@ function MobileStepCard({
   step,
   index,
   isDark,
+  badge,
+  tutorialProgress,
 }: {
   step: Step;
   index: number;
   isDark: boolean;
+  badge?: { id: number; name: string; description: string; icon: string; isUnlocked: boolean; progress: number; requiredCount: number; color: string };
+  tutorialProgress?: { slug: string; completed: number; total: number };
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
@@ -1448,6 +1484,7 @@ export default function RoadmapPage() {
   const totalLessons = tutorials.reduce((s, t) => s + t.lessons.length, 0);
   const heroRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const { getTutorialBadge } = useBadges();
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -1534,6 +1571,33 @@ export default function RoadmapPage() {
 
   const currentStage = getCurrentStage();
   const hasStarted = completedLessons > 0;
+
+  // Calculate user's position on the roadmap (0-1 scale)
+  const getUserProgressPosition = () => {
+    const htmlProgress = tutorialProgress.find((t) => t.slug === "html");
+    const cssProgress = tutorialProgress.find((t) => t.slug === "css");
+    const jsProgress = tutorialProgress.find((t) => t.slug === "javascript");
+
+    let totalCompletedInCore = 0;
+    let totalLessonsInCore = 0;
+
+    // Count only HTML, CSS, JS for the core roadmap position (first 3 stages)
+    [htmlProgress, cssProgress, jsProgress].forEach((progress) => {
+      if (progress) {
+        totalCompletedInCore += progress.completed;
+        totalLessonsInCore += progress.total;
+      }
+    });
+
+    // Return progress as a percentage (0-1) through the first 3 stages
+    if (totalLessonsInCore === 0) return 0;
+    const coreProgress = totalCompletedInCore / totalLessonsInCore;
+    
+    // Map to specific step position (each step gets ~33%)
+    return Math.min(coreProgress * 3, 3) / STEPS.length; // Normalize to 0-1 across all steps
+  };
+
+  const userPosition = getUserProgressPosition();
   const badgeBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.07)";
   const badgeBdr = isDark ? "rgba(255,255,255,0.10)" : "rgba(99,102,241,0.18)";
   const badgeText = isDark ? "rgba(255,255,255,0.50)" : "#3730a3";
@@ -1827,13 +1891,81 @@ export default function RoadmapPage() {
               "linear-gradient(to bottom, transparent, #ea6b1a 10%, #2563eb 35%, #b45309 65%, #7c3aed 90%, transparent)",
           }}
         />
+        
+        {/* User Position Indicator */}
+        {hasStarted && user && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
+            className="absolute left-1/2 -translate-x-1/2 z-10"
+            style={{
+              top: `${userPosition * 100}%`,
+            }}
+          >
+            <motion.div
+              animate={{
+                y: [-2, 2, -2],
+                boxShadow: [
+                  "0 4px 20px rgba(99, 102, 241, 0.4)",
+                  "0 6px 30px rgba(99, 102, 241, 0.6)",
+                  "0 4px 20px rgba(99, 102, 241, 0.4)",
+                ],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-4 border-white dark:border-gray-900"
+            >
+              <div className="text-white text-lg">👤</div>
+              
+              {/* Pulsing ring effect */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.6, 0, 0.6],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeOut",
+                }}
+                className="absolute inset-0 rounded-full bg-indigo-500"
+              />
+            </motion.div>
+            
+            {/* Tooltip */}
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.2 }}
+              className="absolute left-14 top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 whitespace-nowrap"
+            >
+              <div className="text-xs font-bold text-gray-900 dark:text-white">
+                You are here
+              </div>
+              <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                {completedLessons} lessons completed
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {STEPS.map((step, i) => (
             <div key={step.id}>
               {step.arc !== STEPS[i - 1]?.arc && (
                 <ArcHeading name={step.arc} isDark={isDark} />
               )}
-              <StepCard step={step} index={i} isDark={isDark} />
+              <StepCard 
+                step={step} 
+                index={i} 
+                isDark={isDark} 
+                badge={step.tutorialSlug ? getTutorialBadge(step.tutorialSlug) : undefined}
+                tutorialProgress={tutorialProgress.find((t) => t.slug === step.tutorialSlug)}
+              />
             </div>
           ))}
         </div>
@@ -1850,12 +1982,64 @@ export default function RoadmapPage() {
               "linear-gradient(to bottom, transparent, #ea6b1a 10%, #2563eb 35%, #b45309 65%, #7c3aed 90%, transparent)",
           }}
         />
+        
+        {/* Mobile User Position Indicator */}
+        {hasStarted && user && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
+            className="absolute left-4 -translate-x-1/2 z-10"
+            style={{
+              top: `${userPosition * 100}%`,
+            }}
+          >
+            <motion.div
+              animate={{
+                y: [-2, 2, -2],
+                boxShadow: [
+                  "0 4px 20px rgba(99, 102, 241, 0.4)",
+                  "0 6px 30px rgba(99, 102, 241, 0.6)",
+                  "0 4px 20px rgba(99, 102, 241, 0.4)",
+                ],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-3 border-white dark:border-gray-900"
+            >
+              <div className="text-white text-sm">👤</div>
+              
+              <motion.div
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.6, 0, 0.6],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeOut",
+                }}
+                className="absolute inset-0 rounded-full bg-indigo-500"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+        
         {STEPS.map((step, i) => (
           <div key={step.id}>
             {step.arc !== STEPS[i - 1]?.arc && (
               <ArcHeading name={step.arc} isDark={isDark} />
             )}
-            <MobileStepCard step={step} index={i} isDark={isDark} />
+            <MobileStepCard 
+              step={step} 
+              index={i} 
+              isDark={isDark}
+              badge={step.tutorialSlug ? getTutorialBadge(step.tutorialSlug) : undefined}
+              tutorialProgress={tutorialProgress.find((t) => t.slug === step.tutorialSlug)}
+            />
           </div>
         ))}
       </section>

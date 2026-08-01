@@ -154,8 +154,38 @@ public class BadgeController : ControllerBase
             "3_day_streak" => await GetUserStreak(userId),
             "7_day_streak" => await GetUserStreak(userId),
             "30_day_streak" => await GetUserStreak(userId),
+            "complete_html" => await _db.TutorialProgress
+                .Where(p => p.UserId == userId && p.TutorialSlug == "html")
+                .CountAsync(),
+            "complete_css" => await _db.TutorialProgress
+                .Where(p => p.UserId == userId && p.TutorialSlug == "css")
+                .CountAsync(),
+            "complete_javascript" => await _db.TutorialProgress
+                .Where(p => p.UserId == userId && p.TutorialSlug == "javascript")
+                .CountAsync(),
+            "complete_foundations" => await GetFoundationsProgress(userId),
             _ => 0
         };
+    }
+
+    private async Task<int> GetFoundationsProgress(int userId)
+    {
+        var htmlCount = await _db.TutorialProgress
+            .Where(p => p.UserId == userId && p.TutorialSlug == "html")
+            .CountAsync();
+        var cssCount = await _db.TutorialProgress
+            .Where(p => p.UserId == userId && p.TutorialSlug == "css")
+            .CountAsync();
+        var jsCount = await _db.TutorialProgress
+            .Where(p => p.UserId == userId && p.TutorialSlug == "javascript")
+            .CountAsync();
+        
+        int completed = 0;
+        if (htmlCount >= 11) completed++; // HTML has 11 lessons
+        if (cssCount >= 18) completed++;  // CSS has 18 lessons
+        if (jsCount >= 24) completed++;   // JS has 24 lessons
+        
+        return completed;
     }
 
     private async Task<int> GetUserStreak(int userId)

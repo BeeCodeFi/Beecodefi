@@ -509,6 +509,12 @@ public static class SeedData
         {
             var badges = new List<Badge>
             {
+                // Tutorial Completion Badges
+                new() { Name = "HTML Master", Description = "Complete all HTML lessons", Icon = "🏗️", Category = "tutorial", Requirement = "complete_html", RequiredCount = 11, Color = "from-orange-400 to-red-600" },
+                new() { Name = "CSS Wizard", Description = "Complete all CSS lessons", Icon = "🎨", Category = "tutorial", Requirement = "complete_css", RequiredCount = 18, Color = "from-blue-400 to-indigo-600" },
+                new() { Name = "JavaScript Pro", Description = "Complete all JavaScript lessons", Icon = "⚡", Category = "tutorial", Requirement = "complete_javascript", RequiredCount = 24, Color = "from-yellow-400 to-amber-600" },
+                new() { Name = "Frontend Foundations", Description = "Complete HTML, CSS, and JavaScript", Icon = "🚀", Category = "tutorial", Requirement = "complete_foundations", RequiredCount = 3, Color = "from-purple-400 to-pink-600" },
+
                 // Quiz Badges
                 new() { Name = "First Steps", Description = "Complete your first quiz", Icon = "🎯", Category = "quiz", Requirement = "first_quiz", RequiredCount = 1, Color = "from-blue-400 to-blue-600" },
                 new() { Name = "Quiz Novice", Description = "Complete 5 quizzes", Icon = "📝", Category = "quiz", Requirement = "5_quizzes", RequiredCount = 5, Color = "from-green-400 to-green-600" },
