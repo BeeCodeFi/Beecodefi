@@ -46,7 +46,9 @@ const difficultyColor: Record<string, string> = {
 function getQuizSortRank(quiz: QuizTopic, categoryName: string) {
   if (quiz.topic.includes("/")) {
     const [tutorialSlug, lessonSlug] = quiz.topic.split("/");
-    const tutorialIndex = tutorials.findIndex((item) => item.slug === tutorialSlug);
+    const tutorialIndex = tutorials.findIndex(
+      (item) => item.slug === tutorialSlug,
+    );
 
     if (tutorialIndex !== -1) {
       const lessonIndex = tutorials[tutorialIndex].lessons.findIndex(
@@ -269,7 +271,9 @@ function QuizPageContent() {
           (t) => t.category.toLowerCase() === cat.categoryName.toLowerCase(),
         )
         .sort((a, b) => {
-          const rankDiff = getQuizSortRank(a, cat.categoryName) - getQuizSortRank(b, cat.categoryName);
+          const rankDiff =
+            getQuizSortRank(a, cat.categoryName) -
+            getQuizSortRank(b, cat.categoryName);
           if (rankDiff !== 0) return rankDiff;
           return a.title.localeCompare(b.title);
         }),

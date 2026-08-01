@@ -7,7 +7,8 @@ export const cssLessons: TutorialLesson[] = [
     title: "Introduction to CSS",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/What_is_CSS",
     content: `You know how HTML gives your page structure — headings, paragraphs, buttons. But everything looks plain and boring. That's where CSS comes in.
 
 **CSS** stands for **Cascading Style Sheets**. It controls how your HTML looks — colors, fonts, sizes, spacing, layout, animations. Every beautiful website you've ever visited uses CSS.
@@ -73,7 +74,8 @@ Just like HTML, CSS has no logic — no if-statements, no loops. It's a **descri
       {
         title: "Your First CSS Rules",
         language: "html",
-        description: "See how CSS transforms plain HTML into something beautiful.",
+        description:
+          "See how CSS transforms plain HTML into something beautiful.",
         code: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -151,7 +153,8 @@ body { font-family: sans-serif; }`,
       {
         id: "css-intro-1",
         title: "Style a Heading",
-        instruction: "Write a CSS rule that makes all <h1> elements have color: indigo and font-size: 2rem.",
+        instruction:
+          "Write a CSS rule that makes all <h1> elements have color: indigo and font-size: 2rem.",
         startingCode: `h1 {\n\n}`,
         expectedOutput: `h1 {\n    color: indigo;\n    font-size: 2rem;\n}`,
         hints: [
@@ -163,7 +166,8 @@ body { font-family: sans-serif; }`,
       {
         id: "css-intro-2",
         title: "Style by Class",
-        instruction: "Write a CSS rule for elements with class 'card' — give it a white background, 1rem padding, and a border-radius of 8px.",
+        instruction:
+          "Write a CSS rule for elements with class 'card' — give it a white background, 1rem padding, and a border-radius of 8px.",
         startingCode: `.card {\n\n}`,
         expectedOutput: `.card {\n    background: white;\n    padding: 1rem;\n    border-radius: 8px;\n}`,
         hints: [
@@ -175,7 +179,8 @@ body { font-family: sans-serif; }`,
       {
         id: "css-intro-3",
         title: "Multiple Properties",
-        instruction: "Style the body element: set font-family to sans-serif, background-color to #f9fafb, and color to #1f2937.",
+        instruction:
+          "Style the body element: set font-family to sans-serif, background-color to #f9fafb, and color to #1f2937.",
         startingCode: `body {\n\n}`,
         expectedOutput: `body {\n    font-family: sans-serif;\n    background-color: #f9fafb;\n    color: #1f2937;\n}`,
         hints: [
@@ -187,7 +192,8 @@ body { font-family: sans-serif; }`,
       {
         id: "css-intro-4",
         title: "Comment Your CSS",
-        instruction: "Add a CSS comment that says 'Base styles' above this rule: body { margin: 0; }",
+        instruction:
+          "Add a CSS comment that says 'Base styles' above this rule: body { margin: 0; }",
         startingCode: `body {\n    margin: 0;\n}`,
         expectedOutput: `/* Base styles */\nbody {\n    margin: 0;\n}`,
         hints: [
@@ -254,7 +260,8 @@ Even though \`body\` sets a color, the more specific \`.card\` rule will overrid
       {
         title: "Cascade in Action",
         language: "html",
-        description: "See how specificity and order change which rule is applied.",
+        description:
+          "See how specificity and order change which rule is applied.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -300,7 +307,8 @@ Even though \`body\` sets a color, the more specific \`.card\` rule will overrid
       {
         id: "css-cascade-1",
         title: "Specificity Order",
-        instruction: "Write a rule for .card that gives it color: purple and padding: 1rem.",
+        instruction:
+          "Write a rule for .card that gives it color: purple and padding: 1rem.",
         startingCode: `.card {
 
 }`,
@@ -308,24 +316,33 @@ Even though \`body\` sets a color, the more specific \`.card\` rule will overrid
     color: purple;
     padding: 1rem;
 }`,
-        hints: ["Use a class selector with a dot", "color changes text color", "padding adds space inside the box"],
+        hints: [
+          "Use a class selector with a dot",
+          "color changes text color",
+          "padding adds space inside the box",
+        ],
       },
       {
         id: "css-cascade-2",
         title: "Inheritance Example",
-        instruction: "Write a rule for .parent that makes its children inherit a font-family of Georgia.",
+        instruction:
+          "Write a rule for .parent that makes its children inherit a font-family of Georgia.",
         startingCode: `.parent {
 
 }`,
         expectedOutput: `.parent {
     font-family: Georgia;
 }`,
-        hints: ["font-family is an inherited property", "Apply the rule to the parent element"],
+        hints: [
+          "font-family is an inherited property",
+          "Apply the rule to the parent element",
+        ],
       },
       {
         id: "css-cascade-3",
         title: "Later Rule Wins",
-        instruction: "Write two rules so the last one wins for all paragraphs: first color black, then color orange.",
+        instruction:
+          "Write two rules so the last one wins for all paragraphs: first color black, then color orange.",
         startingCode: `p {
     color: black;
 }
@@ -340,7 +357,9 @@ p {
 p {
     color: orange;
 }`,
-        hints: ["The later rule overrides the earlier one when specificity is the same"],
+        hints: [
+          "The later rule overrides the earlier one when specificity is the same",
+        ],
       },
     ],
   },
@@ -351,7 +370,8 @@ p {
     title: "Selectors & Specificity",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity",
     content: `Selectors are how you tell CSS *which* HTML elements to style. The more selectors you learn, the more precise control you have. Specificity is the scoring system that decides which rule wins when two rules conflict.
 
 ## The Basic Selectors
@@ -496,7 +516,8 @@ So \`.card p\` = 10+1 = **11 points**, but \`#hero p\` = 100+1 = **101 points** 
       {
         id: "css-sel-1",
         title: "PDF Link Selector",
-        instruction: "Write an attribute selector that targets links ending in '.pdf' and makes them red.",
+        instruction:
+          "Write an attribute selector that targets links ending in '.pdf' and makes them red.",
         startingCode: `/* Target PDF links */\n`,
         expectedOutput: `[href$=".pdf"] {\n    color: red;\n}`,
         hints: [
@@ -508,7 +529,8 @@ So \`.card p\` = 10+1 = **11 points**, but \`#hero p\` = 100+1 = **101 points** 
       {
         id: "css-sel-2",
         title: "Descendant vs Child",
-        instruction: "Write two rules: one using descendant selector for any .link inside .nav, one using direct child for only direct .link children of .nav.",
+        instruction:
+          "Write two rules: one using descendant selector for any .link inside .nav, one using direct child for only direct .link children of .nav.",
         startingCode: `/* Descendant */\n\n\n/* Direct child */`,
         expectedOutput: `.nav .link {\n    color: blue;\n}\n\n.nav > .link {\n    font-weight: bold;\n}`,
         hints: [
@@ -519,7 +541,8 @@ So \`.card p\` = 10+1 = **11 points**, but \`#hero p\` = 100+1 = **101 points** 
       {
         id: "css-sel-3",
         title: "Group Selectors",
-        instruction: "Write one CSS rule that sets font-weight: 700 on h1, h2, and h3 all at once.",
+        instruction:
+          "Write one CSS rule that sets font-weight: 700 on h1, h2, and h3 all at once.",
         startingCode: `/* Group these headings */`,
         expectedOutput: `h1, h2, h3 {\n    font-weight: 700;\n}`,
         hints: [
@@ -530,7 +553,8 @@ So \`.card p\` = 10+1 = **11 points**, but \`#hero p\` = 100+1 = **101 points** 
       {
         id: "css-sel-4",
         title: "Adjacent Sibling",
-        instruction: "Write a rule that targets a <p> that comes directly after an <h2> and gives it font-size: 1.125rem.",
+        instruction:
+          "Write a rule that targets a <p> that comes directly after an <h2> and gives it font-size: 1.125rem.",
         startingCode: `/* p right after h2 */`,
         expectedOutput: `h2 + p {\n    font-size: 1.125rem;\n}`,
         hints: [
@@ -547,7 +571,8 @@ So \`.card p\` = 10+1 = **11 points**, but \`#hero p\` = 100+1 = **101 points** 
     title: "Pseudo-classes & Pseudo-elements",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes",
     content: `Pseudo-classes and pseudo-elements let you style elements based on their **state** or **position** — without adding any extra HTML. They're how you make buttons change color on hover, style every other table row, or add decorative content automatically.
 
 ## Pseudo-classes (Single Colon :)
@@ -675,7 +700,8 @@ Pseudo-elements style **virtual parts** of an element — parts that don't liter
       {
         title: "Pseudo-elements",
         language: "html",
-        description: "::before, ::after, ::selection, and ::placeholder in action.",
+        description:
+          "::before, ::after, ::selection, and ::placeholder in action.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -730,7 +756,8 @@ Pseudo-elements style **virtual parts** of an element — parts that don't liter
       {
         id: "css-pseudo-1",
         title: "Hover Button",
-        instruction: "Write a :hover rule for .btn that changes background to #4f46e5.",
+        instruction:
+          "Write a :hover rule for .btn that changes background to #4f46e5.",
         startingCode: `.btn {\n    background: #6366f1;\n    color: white;\n    padding: 0.75rem 1.5rem;\n}\n\n/* Add hover rule */`,
         expectedOutput: `.btn {\n    background: #6366f1;\n    color: white;\n    padding: 0.75rem 1.5rem;\n}\n\n.btn:hover {\n    background: #4f46e5;\n}`,
         hints: [
@@ -741,7 +768,8 @@ Pseudo-elements style **virtual parts** of an element — parts that don't liter
       {
         id: "css-pseudo-2",
         title: "Zebra Stripe Table",
-        instruction: "Make even table rows have background #f9fafb using :nth-child.",
+        instruction:
+          "Make even table rows have background #f9fafb using :nth-child.",
         startingCode: `/* Style even rows */`,
         expectedOutput: `tr:nth-child(even) {\n    background: #f9fafb;\n}`,
         hints: [
@@ -752,19 +780,21 @@ Pseudo-elements style **virtual parts** of an element — parts that don't liter
       {
         id: "css-pseudo-3",
         title: "Required Field Asterisk",
-        instruction: "Use ::after to add a red asterisk (*) after any element with class 'required'.",
+        instruction:
+          "Use ::after to add a red asterisk (*) after any element with class 'required'.",
         startingCode: `.required::after {\n\n}`,
         expectedOutput: `.required::after {\n    content: " *";\n    color: red;\n}`,
         hints: [
           "::after MUST have a content property",
-          "content: \" *\" adds a space then asterisk",
+          'content: " *" adds a space then asterisk',
           "color: red makes it red",
         ],
       },
       {
         id: "css-pseudo-4",
         title: "Focus Ring",
-        instruction: "Write a :focus rule for input elements that adds a 2px solid #6366f1 outline with 2px offset.",
+        instruction:
+          "Write a :focus rule for input elements that adds a 2px solid #6366f1 outline with 2px offset.",
         startingCode: `/* Focus style for inputs */`,
         expectedOutput: `input:focus {\n    outline: 2px solid #6366f1;\n    outline-offset: 2px;\n}`,
         hints: [
@@ -857,7 +887,8 @@ The single most important typography setting: \`line-height: 1.5\` to \`1.75\` o
       {
         title: "Color Formats Side by Side",
         language: "html",
-        description: "The same color written six different ways — and gradients.",
+        description:
+          "The same color written six different ways — and gradients.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -951,7 +982,8 @@ The single most important typography setting: \`line-height: 1.5\` to \`1.75\` o
       {
         id: "css-color-1",
         title: "Define a CSS Variable",
-        instruction: "Define --primary-color as #6366f1 on :root, then use it as the background of .btn.",
+        instruction:
+          "Define --primary-color as #6366f1 on :root, then use it as the background of .btn.",
         startingCode: `:root {\n\n}\n\n.btn {\n\n}`,
         expectedOutput: `:root {\n    --primary-color: #6366f1;\n}\n\n.btn {\n    background: var(--primary-color);\n}`,
         hints: [
@@ -963,7 +995,8 @@ The single most important typography setting: \`line-height: 1.5\` to \`1.75\` o
       {
         id: "css-color-2",
         title: "RGBA Overlay",
-        instruction: "Create a .overlay element with a semi-transparent black background — rgba with 0 for all color channels and 0.5 alpha.",
+        instruction:
+          "Create a .overlay element with a semi-transparent black background — rgba with 0 for all color channels and 0.5 alpha.",
         startingCode: `.overlay {\n\n}`,
         expectedOutput: `.overlay {\n    background: rgba(0, 0, 0, 0.5);\n}`,
         hints: [
@@ -975,7 +1008,8 @@ The single most important typography setting: \`line-height: 1.5\` to \`1.75\` o
       {
         id: "css-color-3",
         title: "Readable Body Text",
-        instruction: "Style the body with font-family sans-serif, font-size 1rem, and line-height 1.6.",
+        instruction:
+          "Style the body with font-family sans-serif, font-size 1rem, and line-height 1.6.",
         startingCode: `body {\n\n}`,
         expectedOutput: `body {\n    font-family: sans-serif;\n    font-size: 1rem;\n    line-height: 1.6;\n}`,
         hints: [
@@ -986,7 +1020,8 @@ The single most important typography setting: \`line-height: 1.5\` to \`1.75\` o
       {
         id: "css-color-4",
         title: "Gradient Background",
-        instruction: "Give .hero a linear-gradient from #6366f1 to #8b5cf6 at 135 degrees.",
+        instruction:
+          "Give .hero a linear-gradient from #6366f1 to #8b5cf6 at 135 degrees.",
         startingCode: `.hero {\n\n}`,
         expectedOutput: `.hero {\n    background: linear-gradient(135deg, #6366f1, #8b5cf6);\n}`,
         hints: [
@@ -1003,7 +1038,8 @@ The single most important typography setting: \`line-height: 1.5\` to \`1.75\` o
     title: "CSS Units Deep Dive",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units",
     content: `Every time you set a size in CSS — font-size, padding, width — you need to pick a unit. Picking the right unit is one of the most important decisions in CSS. Use the wrong one and your layout breaks on mobile or ignores user accessibility settings.
 
 ## Absolute Units
@@ -1127,20 +1163,29 @@ This means: at least 1rem, scale with the viewport, but never bigger than 2.5rem
         instruction: "Set font-size on h1 to 2.5rem and on p to 1rem.",
         startingCode: `h1 {\n\n}\n\np {\n\n}`,
         expectedOutput: `h1 {\n    font-size: 2.5rem;\n}\n\np {\n    font-size: 1rem;\n}`,
-        hints: ["rem is relative to the root font size (usually 16px)", "1rem = 16px, 2.5rem = 40px"],
+        hints: [
+          "rem is relative to the root font size (usually 16px)",
+          "1rem = 16px, 2.5rem = 40px",
+        ],
       },
       {
         id: "css-units-2",
         title: "Full Viewport Height",
-        instruction: "Make .hero exactly the full height of the browser viewport.",
+        instruction:
+          "Make .hero exactly the full height of the browser viewport.",
         startingCode: `.hero {\n    display: flex;\n\n}`,
         expectedOutput: `.hero {\n    display: flex;\n    min-height: 100vh;\n}`,
-        hints: ["vh = viewport height", "100vh = 100% of the browser window height", "Use min-height so content can still grow"],
+        hints: [
+          "vh = viewport height",
+          "100vh = 100% of the browser window height",
+          "Use min-height so content can still grow",
+        ],
       },
       {
         id: "css-units-3",
         title: "Fluid Heading",
-        instruction: "Use clamp() to set font-size: minimum 1.5rem, preferred 4vw, maximum 3rem.",
+        instruction:
+          "Use clamp() to set font-size: minimum 1.5rem, preferred 4vw, maximum 3rem.",
         startingCode: `.heading {\n\n}`,
         expectedOutput: `.heading {\n    font-size: clamp(1.5rem, 4vw, 3rem);\n}`,
         hints: ["clamp(min, preferred, max)", "vw scales with viewport width"],
@@ -1154,7 +1199,8 @@ This means: at least 1rem, scale with the viewport, but never bigger than 2.5rem
     title: "The Box Model",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model",
     content: `Every single element on a web page is a box. Understanding the box model is the key to controlling spacing, sizing, and layout. Once it clicks, CSS spacing becomes predictable.
 
 ## The Four Layers of Every Box
@@ -1324,26 +1370,38 @@ This doesn't happen inside **flex** or **grid** containers.
       {
         id: "css-box-1",
         title: "Box Sizing Reset",
-        instruction: "Write the universal CSS reset that applies border-box to all elements including pseudo-elements.",
+        instruction:
+          "Write the universal CSS reset that applies border-box to all elements including pseudo-elements.",
         startingCode: `/* Box sizing reset */`,
         expectedOutput: `*, *::before, *::after {\n    box-sizing: border-box;\n}`,
-        hints: ["* selects all elements", "*::before and *::after include pseudo-elements"],
+        hints: [
+          "* selects all elements",
+          "*::before and *::after include pseudo-elements",
+        ],
       },
       {
         id: "css-box-2",
         title: "Center a Container",
-        instruction: "Make .container 960px wide, horizontally centered, with 2rem padding on all sides.",
+        instruction:
+          "Make .container 960px wide, horizontally centered, with 2rem padding on all sides.",
         startingCode: `.container {\n\n}`,
         expectedOutput: `.container {\n    width: 960px;\n    margin: 0 auto;\n    padding: 2rem;\n}`,
-        hints: ["margin: 0 auto centers a block element", "The element needs a fixed width to be centered"],
+        hints: [
+          "margin: 0 auto centers a block element",
+          "The element needs a fixed width to be centered",
+        ],
       },
       {
         id: "css-box-3",
         title: "Padding Shorthand",
-        instruction: "Set padding on .card using shorthand: 1rem top/bottom and 1.5rem left/right.",
+        instruction:
+          "Set padding on .card using shorthand: 1rem top/bottom and 1.5rem left/right.",
         startingCode: `.card {\n\n}`,
         expectedOutput: `.card {\n    padding: 1rem 1.5rem;\n}`,
-        hints: ["Two values: vertical horizontal", "First value = top and bottom, second = left and right"],
+        hints: [
+          "Two values: vertical horizontal",
+          "First value = top and bottom, second = left and right",
+        ],
       },
       {
         id: "css-box-4",
@@ -1351,7 +1409,10 @@ This doesn't happen inside **flex** or **grid** containers.
         instruction: "Make a span display as a block element with 200px width.",
         startingCode: `span.box {\n\n}`,
         expectedOutput: `span.box {\n    display: block;\n    width: 200px;\n}`,
-        hints: ["display: block makes the element take full width and start on new line", "Width works on block elements"],
+        hints: [
+          "display: block makes the element take full width and start on new line",
+          "Width works on block elements",
+        ],
       },
     ],
   },
@@ -1508,26 +1569,38 @@ Outlines are mainly for **accessibility** — they show which element has keyboa
       {
         id: "css-border-1",
         title: "Card Border",
-        instruction: "Give .card a 1px solid #e5e7eb border and 12px border-radius.",
+        instruction:
+          "Give .card a 1px solid #e5e7eb border and 12px border-radius.",
         startingCode: `.card {\n    padding: 1.5rem;\n\n}`,
         expectedOutput: `.card {\n    padding: 1.5rem;\n    border: 1px solid #e5e7eb;\n    border-radius: 12px;\n}`,
-        hints: ["border shorthand: width style color", "border-radius rounds all four corners"],
+        hints: [
+          "border shorthand: width style color",
+          "border-radius rounds all four corners",
+        ],
       },
       {
         id: "css-border-2",
         title: "Circle Avatar",
-        instruction: "Make .avatar exactly circular: set width and height to 48px, border-radius to 50%.",
+        instruction:
+          "Make .avatar exactly circular: set width and height to 48px, border-radius to 50%.",
         startingCode: `.avatar {\n    background: #6366f1;\n\n}`,
         expectedOutput: `.avatar {\n    background: #6366f1;\n    width: 48px;\n    height: 48px;\n    border-radius: 50%;\n}`,
-        hints: ["border-radius: 50% makes a circle when width = height", "Set both width and height to the same value"],
+        hints: [
+          "border-radius: 50% makes a circle when width = height",
+          "Set both width and height to the same value",
+        ],
       },
       {
         id: "css-border-3",
         title: "Drop Shadow",
-        instruction: "Add a box-shadow to .card: 0 offset-x, 4px offset-y, 12px blur, rgba(0,0,0,0.1) color.",
+        instruction:
+          "Add a box-shadow to .card: 0 offset-x, 4px offset-y, 12px blur, rgba(0,0,0,0.1) color.",
         startingCode: `.card {\n    background: white;\n\n}`,
         expectedOutput: `.card {\n    background: white;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\n}`,
-        hints: ["box-shadow: offsetX offsetY blur color", "rgba(0,0,0,0.1) = 10% opaque black"],
+        hints: [
+          "box-shadow: offsetX offsetY blur color",
+          "rgba(0,0,0,0.1) = 10% opaque black",
+        ],
       },
     ],
   },
@@ -1657,26 +1730,39 @@ Example: \`background: #1a1a2e url("bg.svg") center/cover no-repeat;\`
       {
         id: "css-bg-1",
         title: "Hero Background Image",
-        instruction: "Set .hero to use background-image url('hero.jpg'), cover size, center position, and no-repeat.",
+        instruction:
+          "Set .hero to use background-image url('hero.jpg'), cover size, center position, and no-repeat.",
         startingCode: `.hero {\n    height: 400px;\n\n}`,
         expectedOutput: `.hero {\n    height: 400px;\n    background-image: url('hero.jpg');\n    background-size: cover;\n    background-position: center;\n    background-repeat: no-repeat;\n}`,
-        hints: ["background-size: cover fills the container", "background-position: center keeps focus on the middle"],
+        hints: [
+          "background-size: cover fills the container",
+          "background-position: center keeps focus on the middle",
+        ],
       },
       {
         id: "css-bg-2",
         title: "Gradient Background",
-        instruction: "Give .card a linear gradient from #6366f1 to #8b5cf6 going to the right.",
+        instruction:
+          "Give .card a linear gradient from #6366f1 to #8b5cf6 going to the right.",
         startingCode: `.card {\n\n}`,
         expectedOutput: `.card {\n    background: linear-gradient(to right, #6366f1, #8b5cf6);\n}`,
-        hints: ["linear-gradient(direction, color1, color2)", "'to right' goes left to right"],
+        hints: [
+          "linear-gradient(direction, color1, color2)",
+          "'to right' goes left to right",
+        ],
       },
       {
         id: "css-bg-3",
         title: "Image with Overlay",
-        instruction: "Layer a semi-transparent black overlay (rgba(0,0,0,0.5)) on top of a background image url('bg.jpg') using multiple backgrounds.",
+        instruction:
+          "Layer a semi-transparent black overlay (rgba(0,0,0,0.5)) on top of a background image url('bg.jpg') using multiple backgrounds.",
         startingCode: `.hero {\n    height: 400px;\n\n}`,
         expectedOutput: `.hero {\n    height: 400px;\n    background:\n        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),\n        url('bg.jpg') center/cover no-repeat;\n}`,
-        hints: ["Multiple backgrounds are comma-separated", "The gradient goes first (on top)", "Use center/cover in the url() part"],
+        hints: [
+          "Multiple backgrounds are comma-separated",
+          "The gradient goes first (on top)",
+          "Use center/cover in the url() part",
+        ],
       },
     ],
   },
@@ -1687,7 +1773,8 @@ Example: \`background: #1a1a2e url("bg.svg") center/cover no-repeat;\`
     title: "Flexbox Layout",
     difficulty: "intermediate",
     estimatedMinutes: 30,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Flexbox",
     content: `Flexbox is the layout system you'll use every single day. It solves the layouts that used to require hacks — centering things, equal-height columns, distributing space. If you only learn one CSS layout system, make it Flexbox.
 
 ## What is Flexbox?
@@ -1756,7 +1843,8 @@ Common patterns:
       {
         title: "Common Flexbox Layouts",
         language: "html",
-        description: "Navbar, card row, centering, and sidebar — the patterns you'll use daily.",
+        description:
+          "Navbar, card row, centering, and sidebar — the patterns you'll use daily.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -1835,15 +1923,21 @@ Common patterns:
       {
         id: "css-flex-1",
         title: "Perfect Centering",
-        instruction: "Create a flex container that centers content both horizontally and vertically, with min-height 100vh.",
+        instruction:
+          "Create a flex container that centers content both horizontally and vertically, with min-height 100vh.",
         startingCode: `.center {\n\n}`,
         expectedOutput: `.center {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    min-height: 100vh;\n}`,
-        hints: ["display: flex turns on flexbox", "justify-content centers on main axis (horizontal)", "align-items centers on cross axis (vertical)"],
+        hints: [
+          "display: flex turns on flexbox",
+          "justify-content centers on main axis (horizontal)",
+          "align-items centers on cross axis (vertical)",
+        ],
       },
       {
         id: "css-flex-2",
         title: "Navbar Layout",
-        instruction: "Style .navbar as flex with space-between justify-content and center align-items.",
+        instruction:
+          "Style .navbar as flex with space-between justify-content and center align-items.",
         startingCode: `.navbar {\n    display: flex;\n\n}`,
         expectedOutput: `.navbar {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}`,
         hints: ["space-between puts items at each end with space in between"],
@@ -1851,10 +1945,14 @@ Common patterns:
       {
         id: "css-flex-3",
         title: "Equal Width Columns",
-        instruction: "Give .col flex: 1 so all columns share the available space equally.",
+        instruction:
+          "Give .col flex: 1 so all columns share the available space equally.",
         startingCode: `.row {\n    display: flex;\n    gap: 1rem;\n}\n\n.col {\n\n}`,
         expectedOutput: `.row {\n    display: flex;\n    gap: 1rem;\n}\n\n.col {\n    flex: 1;\n}`,
-        hints: ["flex: 1 is shorthand for flex: 1 1 0", "Each item gets an equal share of the space"],
+        hints: [
+          "flex: 1 is shorthand for flex: 1 1 0",
+          "Each item gets an equal share of the space",
+        ],
       },
       {
         id: "css-flex-4",
@@ -1862,7 +1960,10 @@ Common patterns:
         instruction: "Add flex-wrap: wrap and gap: 1.5rem to .card-container.",
         startingCode: `.card-container {\n    display: flex;\n\n}`,
         expectedOutput: `.card-container {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 1.5rem;\n}`,
-        hints: ["flex-wrap: wrap allows items to go to the next line", "gap adds space between items"],
+        hints: [
+          "flex-wrap: wrap allows items to go to the next line",
+          "gap adds space between items",
+        ],
       },
     ],
   },
@@ -1873,7 +1974,8 @@ Common patterns:
     title: "CSS Grid Layout",
     difficulty: "intermediate",
     estimatedMinutes: 30,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Grids",
     content: `If Flexbox is one-dimensional (a row OR a column), CSS Grid is two-dimensional — rows AND columns at the same time. It's the perfect tool for page layouts, image galleries, dashboards, and any design that needs a grid.
 
 ## Setting Up a Grid
@@ -1947,7 +2049,8 @@ Then assign items: \`grid-area: header;\` \`grid-area: sidebar;\` etc.
       {
         title: "Grid in Practice",
         language: "html",
-        description: "Auto-responsive grid, spanning items, and named template areas.",
+        description:
+          "Auto-responsive grid, spanning items, and named template areas.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -2015,18 +2118,26 @@ Then assign items: \`grid-area: header;\` \`grid-area: sidebar;\` etc.
       {
         id: "css-grid-1",
         title: "Three Column Grid",
-        instruction: "Create a .grid with 3 equal columns using the fr unit and 1.5rem gap.",
+        instruction:
+          "Create a .grid with 3 equal columns using the fr unit and 1.5rem gap.",
         startingCode: `.grid {\n    display: grid;\n\n}`,
         expectedOutput: `.grid {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 1.5rem;\n}`,
-        hints: ["repeat(3, 1fr) = 1fr 1fr 1fr", "fr distributes available space equally"],
+        hints: [
+          "repeat(3, 1fr) = 1fr 1fr 1fr",
+          "fr distributes available space equally",
+        ],
       },
       {
         id: "css-grid-2",
         title: "Responsive Grid",
-        instruction: "Create a grid that auto-fits columns with minimum 280px width using minmax.",
+        instruction:
+          "Create a grid that auto-fits columns with minimum 280px width using minmax.",
         startingCode: `.cards {\n    display: grid;\n    gap: 1rem;\n\n}`,
         expectedOutput: `.cards {\n    display: grid;\n    gap: 1rem;\n    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));\n}`,
-        hints: ["auto-fit fills the available space", "minmax(min, max) sets min and max column size"],
+        hints: [
+          "auto-fit fills the available space",
+          "minmax(min, max) sets min and max column size",
+        ],
       },
       {
         id: "css-grid-3",
@@ -2034,15 +2145,22 @@ Then assign items: \`grid-area: header;\` \`grid-area: sidebar;\` etc.
         instruction: "Make .featured span all columns using grid-column.",
         startingCode: `.featured {\n\n}`,
         expectedOutput: `.featured {\n    grid-column: 1 / -1;\n}`,
-        hints: ["1 = first grid line, -1 = last grid line", "grid-column: start / end"],
+        hints: [
+          "1 = first grid line, -1 = last grid line",
+          "grid-column: start / end",
+        ],
       },
       {
         id: "css-grid-4",
         title: "Named Grid Area",
-        instruction: "Assign .header the grid area named 'header' using grid-area.",
+        instruction:
+          "Assign .header the grid area named 'header' using grid-area.",
         startingCode: `.header {\n\n}`,
         expectedOutput: `.header {\n    grid-area: header;\n}`,
-        hints: ["grid-area assigns an element to a named area", "The name must match one defined in grid-template-areas"],
+        hints: [
+          "grid-area assigns an element to a named area",
+          "The name must match one defined in grid-template-areas",
+        ],
       },
     ],
   },
@@ -2181,26 +2299,38 @@ Controls which element appears *on top* when elements overlap. Higher value = on
       {
         id: "css-pos-1",
         title: "Sticky Header",
-        instruction: "Make .header sticky at the top of the screen with z-index 50.",
+        instruction:
+          "Make .header sticky at the top of the screen with z-index 50.",
         startingCode: `.header {\n    background: white;\n\n}`,
         expectedOutput: `.header {\n    background: white;\n    position: sticky;\n    top: 0;\n    z-index: 50;\n}`,
-        hints: ["position: sticky combines relative and fixed behavior", "top: 0 means stick at the very top"],
+        hints: [
+          "position: sticky combines relative and fixed behavior",
+          "top: 0 means stick at the very top",
+        ],
       },
       {
         id: "css-pos-2",
         title: "Badge on Card",
-        instruction: "Set .card to position relative, then .badge to position absolute at top: -8px, right: -8px.",
+        instruction:
+          "Set .card to position relative, then .badge to position absolute at top: -8px, right: -8px.",
         startingCode: `.card {\n\n}\n\n.badge {\n\n}`,
         expectedOutput: `.card {\n    position: relative;\n}\n\n.badge {\n    position: absolute;\n    top: -8px;\n    right: -8px;\n}`,
-        hints: ["Parent must be position: relative", "Absolute child positions inside that parent"],
+        hints: [
+          "Parent must be position: relative",
+          "Absolute child positions inside that parent",
+        ],
       },
       {
         id: "css-pos-3",
         title: "Fixed Overlay",
-        instruction: "Create a full-screen overlay using position: fixed, inset: 0, and background rgba(0,0,0,0.5).",
+        instruction:
+          "Create a full-screen overlay using position: fixed, inset: 0, and background rgba(0,0,0,0.5).",
         startingCode: `.overlay {\n\n}`,
         expectedOutput: `.overlay {\n    position: fixed;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.5);\n}`,
-        hints: ["position: fixed is relative to the viewport", "inset: 0 is shorthand for top/right/bottom/left: 0"],
+        hints: [
+          "position: fixed is relative to the viewport",
+          "inset: 0 is shorthand for top/right/bottom/left: 0",
+        ],
       },
     ],
   },
@@ -2211,7 +2341,8 @@ Controls which element appears *on top* when elements overlap. Higher value = on
     title: "Transitions & Animations",
     difficulty: "intermediate",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions",
     content: `Motion makes interfaces feel alive and responsive. CSS gives you two tools: **transitions** for smooth state changes (hover, focus), and **keyframe animations** for complex multi-step sequences.
 
 ## CSS Transitions
@@ -2287,7 +2418,8 @@ Always respect users who prefer less motion:
       {
         title: "Transitions & Transforms",
         language: "html",
-        description: "Hover effects, loading spinner, and staggered entrance animation.",
+        description:
+          "Hover effects, loading spinner, and staggered entrance animation.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -2361,26 +2493,38 @@ Always respect users who prefer less motion:
       {
         id: "css-anim-1",
         title: "Button Hover Transition",
-        instruction: "Add transition to .btn for background-color over 0.2s with ease timing.",
+        instruction:
+          "Add transition to .btn for background-color over 0.2s with ease timing.",
         startingCode: `.btn {\n    background: #6366f1;\n    color: white;\n    padding: 0.75rem 1.5rem;\n\n}`,
         expectedOutput: `.btn {\n    background: #6366f1;\n    color: white;\n    padding: 0.75rem 1.5rem;\n    transition: background 0.2s ease;\n}`,
-        hints: ["Add transition to the base element, not :hover", "transition: property duration timing"],
+        hints: [
+          "Add transition to the base element, not :hover",
+          "transition: property duration timing",
+        ],
       },
       {
         id: "css-anim-2",
         title: "Lift on Hover",
-        instruction: "On .card:hover, use transform: translateY(-4px) and add box-shadow.",
+        instruction:
+          "On .card:hover, use transform: translateY(-4px) and add box-shadow.",
         startingCode: `.card {\n    transition: all 0.3s ease;\n}\n\n.card:hover {\n\n}`,
         expectedOutput: `.card {\n    transition: all 0.3s ease;\n}\n\n.card:hover {\n    transform: translateY(-4px);\n    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);\n}`,
-        hints: ["translateY(-4px) moves the element up 4 pixels", "Negative Y = up"],
+        hints: [
+          "translateY(-4px) moves the element up 4 pixels",
+          "Negative Y = up",
+        ],
       },
       {
         id: "css-anim-3",
         title: "Spin Keyframe",
-        instruction: "Create @keyframes 'spin' that rotates to 360deg, then apply it as infinite linear on .spinner.",
+        instruction:
+          "Create @keyframes 'spin' that rotates to 360deg, then apply it as infinite linear on .spinner.",
         startingCode: `@keyframes spin {\n\n}\n\n.spinner {\n    width: 40px; height: 40px;\n    border-radius: 50%;\n    border: 3px solid #e5e7eb;\n    border-top-color: #6366f1;\n\n}`,
         expectedOutput: `@keyframes spin {\n    to { transform: rotate(360deg); }\n}\n\n.spinner {\n    width: 40px; height: 40px;\n    border-radius: 50%;\n    border: 3px solid #e5e7eb;\n    border-top-color: #6366f1;\n    animation: spin 0.8s linear infinite;\n}`,
-        hints: ["Use 'to' for the final state", "animation: name duration timing iteration-count"],
+        hints: [
+          "Use 'to' for the final state",
+          "animation: name duration timing iteration-count",
+        ],
       },
     ],
   },
@@ -2391,7 +2535,8 @@ Always respect users who prefer less motion:
     title: "Responsive Design & Media Queries",
     difficulty: "intermediate",
     estimatedMinutes: 30,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design",
     content: `Your website needs to look great on a phone, tablet, laptop, and 4K monitor. Responsive design is how you achieve that. The good news: modern CSS makes it easier than ever.
 
 ## The Viewport Meta Tag
@@ -2514,26 +2659,38 @@ This ensures images never overflow their container.`,
       {
         id: "css-resp-1",
         title: "Mobile to Desktop Grid",
-        instruction: "Start .grid as 1 column. Add a media query at 1024px to make it 3 columns.",
+        instruction:
+          "Start .grid as 1 column. Add a media query at 1024px to make it 3 columns.",
         startingCode: `.grid {\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 1.5rem;\n}\n\n/* Add media query */`,
         expectedOutput: `.grid {\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 1.5rem;\n}\n\n@media (min-width: 1024px) {\n    .grid {\n        grid-template-columns: repeat(3, 1fr);\n    }\n}`,
-        hints: ["min-width queries are mobile-first", "Write the media query after the base styles"],
+        hints: [
+          "min-width queries are mobile-first",
+          "Write the media query after the base styles",
+        ],
       },
       {
         id: "css-resp-2",
         title: "Fluid Heading",
-        instruction: "Set .hero-title font-size using clamp(): minimum 1.75rem, preferred 5vw, maximum 4rem.",
+        instruction:
+          "Set .hero-title font-size using clamp(): minimum 1.75rem, preferred 5vw, maximum 4rem.",
         startingCode: `.hero-title {\n    font-weight: 800;\n\n}`,
         expectedOutput: `.hero-title {\n    font-weight: 800;\n    font-size: clamp(1.75rem, 5vw, 4rem);\n}`,
-        hints: ["clamp(min, preferred, max)", "vw scales with the viewport width"],
+        hints: [
+          "clamp(min, preferred, max)",
+          "vw scales with the viewport width",
+        ],
       },
       {
         id: "css-resp-3",
         title: "Dark Mode",
-        instruction: "Write a media query for prefers-color-scheme: dark that sets body background to #0f172a and color to #f1f5f9.",
+        instruction:
+          "Write a media query for prefers-color-scheme: dark that sets body background to #0f172a and color to #f1f5f9.",
         startingCode: `/* Dark mode styles */`,
         expectedOutput: `@media (prefers-color-scheme: dark) {\n    body {\n        background: #0f172a;\n        color: #f1f5f9;\n    }\n}`,
-        hints: ["Use @media (prefers-color-scheme: dark)", "This respects the user's OS dark mode preference"],
+        hints: [
+          "Use @media (prefers-color-scheme: dark)",
+          "This respects the user's OS dark mode preference",
+        ],
       },
     ],
   },
@@ -2544,7 +2701,8 @@ This ensures images never overflow their container.`,
     title: "CSS Variables & Custom Properties",
     difficulty: "intermediate",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
     content: `CSS Custom Properties — commonly called CSS Variables — let you store values and reuse them everywhere. They're the foundation of theming, dark mode, and design systems. Once you use them, you can't go back.
 
 ## Why Variables?
@@ -2622,7 +2780,8 @@ Use variables for all design decisions — colors, spacing, radii, shadows, font
       {
         title: "Design Token System",
         language: "html",
-        description: "A complete design system powered by CSS variables with dark mode.",
+        description:
+          "A complete design system powered by CSS variables with dark mode.",
         code: `<!DOCTYPE html>
 <html data-theme="light">
 <head>
@@ -2698,26 +2857,38 @@ Use variables for all design decisions — colors, spacing, radii, shadows, font
       {
         id: "css-var-1",
         title: "Define Theme Variables",
-        instruction: "Define --primary as #6366f1 and --bg as #f9fafb on :root.",
+        instruction:
+          "Define --primary as #6366f1 and --bg as #f9fafb on :root.",
         startingCode: `:root {\n\n}`,
         expectedOutput: `:root {\n    --primary: #6366f1;\n    --bg: #f9fafb;\n}`,
-        hints: ["Variables start with -- (two dashes)", "Defined just like regular properties: --name: value"],
+        hints: [
+          "Variables start with -- (two dashes)",
+          "Defined just like regular properties: --name: value",
+        ],
       },
       {
         id: "css-var-2",
         title: "Use a Variable",
-        instruction: "Set .btn background to var(--primary) and body background to var(--bg).",
+        instruction:
+          "Set .btn background to var(--primary) and body background to var(--bg).",
         startingCode: `.btn {\n\n}\n\nbody {\n\n}`,
         expectedOutput: `.btn {\n    background: var(--primary);\n}\n\nbody {\n    background: var(--bg);\n}`,
-        hints: ["var() references a custom property", "Syntax: var(--variable-name)"],
+        hints: [
+          "var() references a custom property",
+          "Syntax: var(--variable-name)",
+        ],
       },
       {
         id: "css-var-3",
         title: "Dark Mode Override",
-        instruction: "Add a [data-theme='dark'] rule that overrides --bg to #0f172a and --text to #f1f5f9.",
+        instruction:
+          "Add a [data-theme='dark'] rule that overrides --bg to #0f172a and --text to #f1f5f9.",
         startingCode: `:root { --bg: white; --text: #1f2937; }\n\n/* Dark mode */`,
         expectedOutput: `:root { --bg: white; --text: #1f2937; }\n\n[data-theme="dark"] {\n    --bg: #0f172a;\n    --text: #f1f5f9;\n}`,
-        hints: ["Use attribute selector [data-theme='dark']", "Override just the variables — everything else adapts"],
+        hints: [
+          "Use attribute selector [data-theme='dark']",
+          "Override just the variables — everything else adapts",
+        ],
       },
     ],
   },
@@ -2795,7 +2966,8 @@ CSS scroll snap creates carousel-like scrolling:
       {
         title: "Overflow Patterns",
         language: "html",
-        description: "Scrollable containers, text truncation, and custom scrollbars.",
+        description:
+          "Scrollable containers, text truncation, and custom scrollbars.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -2867,18 +3039,26 @@ CSS scroll snap creates carousel-like scrolling:
       {
         id: "css-overflow-1",
         title: "Scrollable Sidebar",
-        instruction: "Make .sidebar scrollable vertically with max-height 400px, showing scrollbar only when needed.",
+        instruction:
+          "Make .sidebar scrollable vertically with max-height 400px, showing scrollbar only when needed.",
         startingCode: `.sidebar {\n    width: 250px;\n\n}`,
         expectedOutput: `.sidebar {\n    width: 250px;\n    max-height: 400px;\n    overflow-y: auto;\n}`,
-        hints: ["overflow-y: auto shows vertical scrollbar only when needed", "max-height limits the height"],
+        hints: [
+          "overflow-y: auto shows vertical scrollbar only when needed",
+          "max-height limits the height",
+        ],
       },
       {
         id: "css-overflow-2",
         title: "Text Ellipsis",
-        instruction: "Create a .label class that truncates long text with an ellipsis using all three required properties.",
+        instruction:
+          "Create a .label class that truncates long text with an ellipsis using all three required properties.",
         startingCode: `.label {\n    max-width: 150px;\n\n}`,
         expectedOutput: `.label {\n    max-width: 150px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}`,
-        hints: ["You need all three properties for truncation", "white-space: nowrap prevents text wrapping"],
+        hints: [
+          "You need all three properties for truncation",
+          "white-space: nowrap prevents text wrapping",
+        ],
       },
     ],
   },
@@ -2955,7 +3135,8 @@ Common blend modes:
       {
         title: "Filters & Glassmorphism",
         language: "html",
-        description: "Image filters, frosted glass card, and blend mode tinting.",
+        description:
+          "Image filters, frosted glass card, and blend mode tinting.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -3019,18 +3200,26 @@ Common blend modes:
       {
         id: "css-filter-1",
         title: "Grayscale Hover",
-        instruction: "Make .photo grayscale by default, and remove the grayscale on hover using filter.",
+        instruction:
+          "Make .photo grayscale by default, and remove the grayscale on hover using filter.",
         startingCode: `.photo {\n    transition: filter 0.3s ease;\n\n}\n\n.photo:hover {\n\n}`,
         expectedOutput: `.photo {\n    transition: filter 0.3s ease;\n    filter: grayscale(100%);\n}\n\n.photo:hover {\n    filter: grayscale(0%);\n}`,
-        hints: ["filter: grayscale(100%) converts to black and white", "grayscale(0%) brings back color"],
+        hints: [
+          "filter: grayscale(100%) converts to black and white",
+          "grayscale(0%) brings back color",
+        ],
       },
       {
         id: "css-filter-2",
         title: "Frosted Glass",
-        instruction: "Create a .glass element with semi-transparent white background rgba(255,255,255,0.2) and backdrop-filter blur of 10px.",
+        instruction:
+          "Create a .glass element with semi-transparent white background rgba(255,255,255,0.2) and backdrop-filter blur of 10px.",
         startingCode: `.glass {\n\n}`,
         expectedOutput: `.glass {\n    background: rgba(255, 255, 255, 0.2);\n    backdrop-filter: blur(10px);\n}`,
-        hints: ["backdrop-filter blurs what's behind the element", "Use rgba for semi-transparent background"],
+        hints: [
+          "backdrop-filter blurs what's behind the element",
+          "Use rgba for semi-transparent background",
+        ],
       },
     ],
   },
@@ -3226,26 +3415,38 @@ Write CSS that works in any text direction (left-to-right, right-to-left):
       {
         id: "css-modern-1",
         title: "Set Up Container Query",
-        instruction: "Make .wrapper a container with container-type: inline-size, then when it's 500px wide give .card display: flex.",
+        instruction:
+          "Make .wrapper a container with container-type: inline-size, then when it's 500px wide give .card display: flex.",
         startingCode: `.wrapper {\n\n}\n\n/* Container query */`,
         expectedOutput: `.wrapper {\n    container-type: inline-size;\n}\n\n@container (min-width: 500px) {\n    .card { display: flex; }\n}`,
-        hints: ["container-type: inline-size on the parent", "@container works like @media"],
+        hints: [
+          "container-type: inline-size on the parent",
+          "@container works like @media",
+        ],
       },
       {
         id: "css-modern-2",
         title: "aspect-ratio",
-        instruction: "Create .video-embed with width: 100% and aspect-ratio: 16 / 9.",
+        instruction:
+          "Create .video-embed with width: 100% and aspect-ratio: 16 / 9.",
         startingCode: `.video-embed {\n\n}`,
         expectedOutput: `.video-embed {\n    width: 100%;\n    aspect-ratio: 16 / 9;\n}`,
-        hints: ["aspect-ratio: width / height", "16/9 is the standard widescreen ratio"],
+        hints: [
+          "aspect-ratio: width / height",
+          "16/9 is the standard widescreen ratio",
+        ],
       },
       {
         id: "css-modern-3",
         title: "Balanced Text",
-        instruction: "Add text-wrap: balance to .headline to even out line lengths.",
+        instruction:
+          "Add text-wrap: balance to .headline to even out line lengths.",
         startingCode: `.headline {\n    font-size: 2rem;\n    font-weight: 700;\n\n}`,
         expectedOutput: `.headline {\n    font-size: 2rem;\n    font-weight: 700;\n    text-wrap: balance;\n}`,
-        hints: ["text-wrap: balance distributes text evenly across lines", "Most useful for multi-line headings"],
+        hints: [
+          "text-wrap: balance distributes text evenly across lines",
+          "Most useful for multi-line headings",
+        ],
       },
     ],
   },
@@ -3401,26 +3602,40 @@ Organize your CSS files into 7 folders + 1 main file:
       {
         id: "css-arch-1",
         title: "BEM Element",
-        instruction: "Write a CSS rule for the title element of a .card block using BEM naming.",
+        instruction:
+          "Write a CSS rule for the title element of a .card block using BEM naming.",
         startingCode: `/* Card title using BEM */`,
         expectedOutput: `.card__title {\n    font-size: 1.25rem;\n    font-weight: 700;\n}`,
-        hints: ["BEM element: .block__element", "Double underscore __ separates block from element"],
+        hints: [
+          "BEM element: .block__element",
+          "Double underscore __ separates block from element",
+        ],
       },
       {
         id: "css-arch-2",
         title: "BEM Modifier",
-        instruction: "Write a CSS rule for the featured variant of .card using BEM modifier syntax.",
+        instruction:
+          "Write a CSS rule for the featured variant of .card using BEM modifier syntax.",
         startingCode: `/* Featured card modifier */`,
         expectedOutput: `.card--featured {\n    border-color: #6366f1;\n    box-shadow: 0 0 0 2px #6366f1;\n}`,
-        hints: ["BEM modifier: .block--modifier", "Double dash -- separates block from modifier"],
+        hints: [
+          "BEM modifier: .block--modifier",
+          "Double dash -- separates block from modifier",
+        ],
       },
       {
         id: "css-arch-3",
         title: "Properties Order",
-        instruction: "Reorder these properties correctly: font-size, position, color, display, z-index, padding. Order: positioning → display → box model → typography → visual.",
+        instruction:
+          "Reorder these properties correctly: font-size, position, color, display, z-index, padding. Order: positioning → display → box model → typography → visual.",
         startingCode: `.element {\n    font-size: 1rem;\n    position: relative;\n    color: #333;\n    display: flex;\n    z-index: 10;\n    padding: 1rem;\n}`,
         expectedOutput: `.element {\n    position: relative;\n    z-index: 10;\n    display: flex;\n    padding: 1rem;\n    font-size: 1rem;\n    color: #333;\n}`,
-        hints: ["Position + z-index go first", "Then display", "Then box model (padding/margin)", "Then typography (font-size, color)"],
+        hints: [
+          "Position + z-index go first",
+          "Then display",
+          "Then box model (padding/margin)",
+          "Then typography (font-size, color)",
+        ],
       },
     ],
   },

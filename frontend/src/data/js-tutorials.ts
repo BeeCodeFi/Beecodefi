@@ -7,7 +7,8 @@ export const jsLessons: TutorialLesson[] = [
     title: "Introduction to JavaScript",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/What_is_JavaScript",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/What_is_JavaScript",
     content: `You know HTML gives pages structure and CSS makes them look good. But nothing moves, clicks, changes, or responds. That's what JavaScript fixes.
 
 JavaScript is the **only programming language that runs natively in the browser**. It's what makes buttons work, menus open, forms validate, and data load without refreshing the page. It also runs on servers (Node.js), mobile apps, and desktop apps. It's everywhere.
@@ -170,7 +171,8 @@ console.log(greeting.includes("World")); // true`,
       {
         id: "js-intro-1",
         title: "Declare Variables",
-        instruction: "Declare a const 'language' with value 'JavaScript', and a let 'version' with value 2026.",
+        instruction:
+          "Declare a const 'language' with value 'JavaScript', and a let 'version' with value 2026.",
         startingCode: `// Declare your variables here`,
         expectedOutput: `const language = "JavaScript";\nlet version = 2026;`,
         hints: [
@@ -181,7 +183,8 @@ console.log(greeting.includes("World")); // true`,
       {
         id: "js-intro-2",
         title: "Strict Equality",
-        instruction: "Write a console.log that checks if 10 strictly equals '10' (should be false).",
+        instruction:
+          "Write a console.log that checks if 10 strictly equals '10' (should be false).",
         startingCode: `// Use === to compare`,
         expectedOutput: `console.log(10 === "10");`,
         hints: [
@@ -192,7 +195,8 @@ console.log(greeting.includes("World")); // true`,
       {
         id: "js-intro-3",
         title: "Template Literal",
-        instruction: "Given const name = 'World', write a template literal that produces 'Hello, World!'",
+        instruction:
+          "Given const name = 'World', write a template literal that produces 'Hello, World!'",
         startingCode: `const name = "World";\nconsole.log(/* your template literal */);`,
         expectedOutput: `const name = "World";\nconsole.log(\`Hello, \${name}!\`);`,
         hints: [
@@ -203,10 +207,13 @@ console.log(greeting.includes("World")); // true`,
       {
         id: "js-intro-4",
         title: "typeof Check",
-        instruction: "Write a console.log that outputs the type of the value true.",
+        instruction:
+          "Write a console.log that outputs the type of the value true.",
         startingCode: `// Check the type of true`,
         expectedOutput: `console.log(typeof true);`,
-        hints: ["typeof is an operator — no parentheses needed (though they work too)"],
+        hints: [
+          "typeof is an operator — no parentheses needed (though they work too)",
+        ],
       },
     ],
   },
@@ -217,7 +224,8 @@ console.log(greeting.includes("World")); // true`,
     title: "Debugging & Developer Tools",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Testing_and_debugging",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Testing_and_debugging",
     content: `Debugging is a core skill for every developer. You will not write perfect code on the first try, so learning to inspect values and find problems quickly is essential.
 
 ## console.log()
@@ -264,7 +272,8 @@ Debugging is not just fixing bugs — it is understanding how your program behav
       {
         title: "Logging and Errors",
         language: "javascript",
-        description: "A simple debugging workflow using console output and try/catch.",
+        description:
+          "A simple debugging workflow using console output and try/catch.",
         code: `const age = 18;
 console.log("Current age:", age);
 
@@ -292,7 +301,8 @@ console.log(calculateTotal(100, 0.2));`,
       {
         id: "js-debug-1",
         title: "Log a Value",
-        instruction: "Add a console.log statement that prints the variable userName.",
+        instruction:
+          "Add a console.log statement that prints the variable userName.",
         startingCode: `const userName = "Ava";\n`,
         expectedOutput: `const userName = "Ava";\nconsole.log(userName);`,
         hints: ["Use console.log() and pass the variable name"],
@@ -300,10 +310,14 @@ console.log(calculateTotal(100, 0.2));`,
       {
         id: "js-debug-2",
         title: "Catch an Error",
-        instruction: "Wrap the parsing code in a try/catch block and log the error.",
+        instruction:
+          "Wrap the parsing code in a try/catch block and log the error.",
         startingCode: `JSON.parse('{bad json}');`,
         expectedOutput: `try {\n  JSON.parse('{bad json}');\n} catch (error) {\n  console.error(error);\n}`,
-        hints: ["try starts the protected block", "catch receives the error object"],
+        hints: [
+          "try starts the protected block",
+          "catch receives the error object",
+        ],
       },
     ],
   },
@@ -397,7 +411,8 @@ console.log(Boolean([]));`,
       {
         title: "Short-Circuit Logic",
         language: "javascript",
-        description: "Logical operators can short-circuit and return a value early.",
+        description:
+          "Logical operators can short-circuit and return a value early.",
         code: `const user = null;
 const fallbackName = user || "Guest";
 console.log(fallbackName);
@@ -411,7 +426,8 @@ console.log(safeCount);`,
       {
         id: "js-bool-1",
         title: "Check a Condition",
-        instruction: "Write an if statement that logs 'Ready' when score is 100 or more.",
+        instruction:
+          "Write an if statement that logs 'Ready' when score is 100 or more.",
         startingCode: `const score = 100;
 
 if (/* condition */) {
@@ -422,14 +438,18 @@ if (/* condition */) {
 if (score >= 100) {
   console.log("Ready");
 }`,
-        hints: ["Use >= for '100 or more'", "The condition goes inside the parentheses"],
+        hints: [
+          "Use >= for '100 or more'",
+          "The condition goes inside the parentheses",
+        ],
       },
       {
         id: "js-bool-2",
         title: "Ternary Expression",
-        instruction: "Write a ternary expression that returns 'open' when isOpen is true, otherwise 'closed'.",
+        instruction:
+          "Write a ternary expression that returns 'open' when isOpen is true, otherwise 'closed'.",
         startingCode: `const isOpen = true;
-const status = /* ternary */;` ,
+const status = /* ternary */;`,
         expectedOutput: `const isOpen = true;
 const status = isOpen ? "open" : "closed";`,
         hints: ["Ternary syntax is condition ? trueValue : falseValue"],
@@ -437,7 +457,8 @@ const status = isOpen ? "open" : "closed";`,
       {
         id: "js-bool-3",
         title: "Truthy/Falsy Check",
-        instruction: "Use Boolean() to check whether the value '' is truthy or falsy.",
+        instruction:
+          "Use Boolean() to check whether the value '' is truthy or falsy.",
         startingCode: `console.log(Boolean(/* value */));`,
         expectedOutput: `console.log(Boolean(""));`,
         hints: ["An empty string is falsy"],
@@ -451,7 +472,8 @@ const status = isOpen ? "open" : "closed";`,
     title: "Strings & String Methods",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
     content: `Strings are everywhere in programming — usernames, messages, URLs, HTML content. JavaScript has a rich set of built-in string methods that let you search, transform, split, and format text without writing much code.
 
 ## Creating Strings
@@ -567,7 +589,8 @@ console.log(num.padStart(3, "0")); // "007"`,
       {
         id: "js-str-1",
         title: "Clean User Input",
-        instruction: "Given const input = '  Hello World  ', write code that trims whitespace and converts to lowercase.",
+        instruction:
+          "Given const input = '  Hello World  ', write code that trims whitespace and converts to lowercase.",
         startingCode: `const input = "  Hello World  ";\nconst cleaned = // your code here\nconsole.log(cleaned);`,
         expectedOutput: `const input = "  Hello World  ";\nconst cleaned = input.trim().toLowerCase();\nconsole.log(cleaned);`,
         hints: [
@@ -578,7 +601,8 @@ console.log(num.padStart(3, "0")); // "007"`,
       {
         id: "js-str-2",
         title: "Extract File Extension",
-        instruction: "Given const file = 'photo.jpg', use .slice() to extract just the extension 'jpg'.",
+        instruction:
+          "Given const file = 'photo.jpg', use .slice() to extract just the extension 'jpg'.",
         startingCode: `const file = "photo.jpg";\nconst ext = // your code\nconsole.log(ext); // "jpg"`,
         expectedOutput: `const file = "photo.jpg";\nconst ext = file.slice(-3);\nconsole.log(ext);`,
         hints: [
@@ -589,7 +613,8 @@ console.log(num.padStart(3, "0")); // "007"`,
       {
         id: "js-str-3",
         title: "Split a CSV String",
-        instruction: "Split the string 'red,green,blue' into an array of colors.",
+        instruction:
+          "Split the string 'red,green,blue' into an array of colors.",
         startingCode: `const colors = "red,green,blue";\nconst arr = // your code\nconsole.log(arr);`,
         expectedOutput: `const colors = "red,green,blue";\nconst arr = colors.split(",");\nconsole.log(arr);`,
         hints: [".split(',') splits on every comma"],
@@ -597,7 +622,8 @@ console.log(num.padStart(3, "0")); // "007"`,
       {
         id: "js-str-4",
         title: "Check Email Domain",
-        instruction: "Check if the email 'user@gmail.com' ends with '@gmail.com' using a string method.",
+        instruction:
+          "Check if the email 'user@gmail.com' ends with '@gmail.com' using a string method.",
         startingCode: `const email = "user@gmail.com";\nconsole.log(/* check if ends with @gmail.com */);`,
         expectedOutput: `const email = "user@gmail.com";\nconsole.log(email.endsWith("@gmail.com"));`,
         hints: [".endsWith() returns true or false"],
@@ -611,7 +637,8 @@ console.log(num.padStart(3, "0")); // "007"`,
     title: "Numbers, Math & Dates",
     difficulty: "beginner",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
     content: `Numbers power every calculation in your apps — scores, prices, ages, positions. JavaScript has a single \`Number\` type for all numbers (integers and decimals), plus the \`Math\` object for calculations and the \`Date\` object for time.
 
 ## JavaScript Numbers
@@ -758,7 +785,8 @@ console.log(formatted); // "$1,234,567.89"`,
       {
         id: "js-num-1",
         title: "Round a Price",
-        instruction: "Given const price = 9.9987, use toFixed() to format it to 2 decimal places.",
+        instruction:
+          "Given const price = 9.9987, use toFixed() to format it to 2 decimal places.",
         startingCode: `const price = 9.9987;\nconsole.log(/* format to 2 decimals */);`,
         expectedOutput: `const price = 9.9987;\nconsole.log(price.toFixed(2));`,
         hints: [".toFixed(n) rounds to n decimal places and returns a string"],
@@ -766,7 +794,8 @@ console.log(formatted); // "$1,234,567.89"`,
       {
         id: "js-num-2",
         title: "Random Dice Roll",
-        instruction: "Write a one-line expression using Math.floor and Math.random to get a random number from 1 to 6.",
+        instruction:
+          "Write a one-line expression using Math.floor and Math.random to get a random number from 1 to 6.",
         startingCode: `const roll = // your expression\nconsole.log(roll);`,
         expectedOutput: `const roll = Math.floor(Math.random() * 6) + 1;\nconsole.log(roll);`,
         hints: [
@@ -778,7 +807,8 @@ console.log(formatted); // "$1,234,567.89"`,
       {
         id: "js-num-3",
         title: "Find the Maximum",
-        instruction: "Use Math.max() to find the largest number among 42, 17, 89, 33.",
+        instruction:
+          "Use Math.max() to find the largest number among 42, 17, 89, 33.",
         startingCode: `const max = // Math.max with all four numbers\nconsole.log(max);`,
         expectedOutput: `const max = Math.max(42, 17, 89, 33);\nconsole.log(max);`,
         hints: ["Math.max() accepts multiple arguments"],
@@ -792,7 +822,8 @@ console.log(formatted); // "$1,234,567.89"`,
     title: "Functions & Scope",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions",
     content: `Functions are the most important concept in programming. A function is a reusable block of code that takes inputs, does something, and optionally returns an output. Instead of writing the same logic 10 times, you write it once in a function.
 
 ## Declaring Functions
@@ -900,7 +931,8 @@ Closures are used constantly — event listeners, callbacks, and private state a
       {
         title: "Function Styles & Patterns",
         language: "javascript",
-        description: "Declaration, expression, arrow, defaults, and rest parameters.",
+        description:
+          "Declaration, expression, arrow, defaults, and rest parameters.",
         code: `// Function declaration
 function add(a, b) {
   return a + b;
@@ -981,7 +1013,8 @@ console.log(c2.value()); // 100 — completely separate`,
       {
         id: "js-fn-1",
         title: "Write an Arrow Function",
-        instruction: "Convert this function to an arrow function: function square(n) { return n * n; }",
+        instruction:
+          "Convert this function to an arrow function: function square(n) { return n * n; }",
         startingCode: `// Write as arrow function\nconst square = `,
         expectedOutput: `const square = (n) => n * n;`,
         hints: [
@@ -992,7 +1025,8 @@ console.log(c2.value()); // 100 — completely separate`,
       {
         id: "js-fn-2",
         title: "Default Parameter",
-        instruction: "Write an arrow function 'power' that raises base to exp, with exp defaulting to 2.",
+        instruction:
+          "Write an arrow function 'power' that raises base to exp, with exp defaulting to 2.",
         startingCode: `const power = `,
         expectedOutput: `const power = (base, exp = 2) => base ** exp;`,
         hints: [
@@ -1003,7 +1037,8 @@ console.log(c2.value()); // 100 — completely separate`,
       {
         id: "js-fn-3",
         title: "Rest Parameters",
-        instruction: "Write function 'largest' that accepts any number of arguments and returns the maximum.",
+        instruction:
+          "Write function 'largest' that accepts any number of arguments and returns the maximum.",
         startingCode: `const largest = `,
         expectedOutput: `const largest = (...nums) => Math.max(...nums);`,
         hints: [
@@ -1014,7 +1049,8 @@ console.log(c2.value()); // 100 — completely separate`,
       {
         id: "js-fn-4",
         title: "Closure Counter",
-        instruction: "Write a function 'makeAdder' that takes a number x and returns a function that adds x to any number.",
+        instruction:
+          "Write a function 'makeAdder' that takes a number x and returns a function that adds x to any number.",
         startingCode: `const makeAdder = (x) => {\n  // return a function\n};`,
         expectedOutput: `const makeAdder = (x) => {\n  return (y) => x + y;\n};`,
         hints: [
@@ -1031,7 +1067,8 @@ console.log(c2.value()); // 100 — completely separate`,
     title: "Arrays",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
     content: `An array is an ordered list of values. You'll use arrays constantly — lists of users, products, messages, search results. JavaScript arrays are powerful and come loaded with built-in methods.
 
 ## Creating Arrays
@@ -1158,7 +1195,8 @@ console.log(\`Others: \${others.join(", ")}\`);`,
       {
         id: "js-arr-1",
         title: "Add & Remove Items",
-        instruction: "Given const arr = [1, 2, 3], add 4 to the end and remove the first item. Log the result.",
+        instruction:
+          "Given const arr = [1, 2, 3], add 4 to the end and remove the first item. Log the result.",
         startingCode: `const arr = [1, 2, 3];\n// add 4 to end\n// remove first item\nconsole.log(arr);`,
         expectedOutput: `const arr = [1, 2, 3];\narr.push(4);\narr.shift();\nconsole.log(arr);`,
         hints: [".push() adds to end", ".shift() removes from beginning"],
@@ -1166,7 +1204,8 @@ console.log(\`Others: \${others.join(", ")}\`);`,
       {
         id: "js-arr-2",
         title: "Find an Element",
-        instruction: "Find the first number greater than 50 in [12, 45, 67, 23, 89].",
+        instruction:
+          "Find the first number greater than 50 in [12, 45, 67, 23, 89].",
         startingCode: `const nums = [12, 45, 67, 23, 89];\nconst found = // use .find()\nconsole.log(found);`,
         expectedOutput: `const nums = [12, 45, 67, 23, 89];\nconst found = nums.find(n => n > 50);\nconsole.log(found);`,
         hints: [".find() returns the first element that matches the condition"],
@@ -1174,15 +1213,20 @@ console.log(\`Others: \${others.join(", ")}\`);`,
       {
         id: "js-arr-3",
         title: "Sort Numbers",
-        instruction: "Sort [30, 1, 400, 20, 200] in ascending order without mutating the original.",
+        instruction:
+          "Sort [30, 1, 400, 20, 200] in ascending order without mutating the original.",
         startingCode: `const nums = [30, 1, 400, 20, 200];\nconst sorted = // spread then sort\nconsole.log(sorted);\nconsole.log(nums); // should still be original`,
         expectedOutput: `const nums = [30, 1, 400, 20, 200];\nconst sorted = [...nums].sort((a, b) => a - b);\nconsole.log(sorted);\nconsole.log(nums);`,
-        hints: ["[...nums] copies the array before sorting", "Comparator: (a, b) => a - b for ascending"],
+        hints: [
+          "[...nums] copies the array before sorting",
+          "Comparator: (a, b) => a - b for ascending",
+        ],
       },
       {
         id: "js-arr-4",
         title: "Array Destructuring",
-        instruction: "Destructure [10, 20, 30, 40, 50] into first, second, and rest.",
+        instruction:
+          "Destructure [10, 20, 30, 40, 50] into first, second, and rest.",
         startingCode: `const arr = [10, 20, 30, 40, 50];\nconst [first, second, ...rest] = // destructure\nconsole.log(first, second, rest);`,
         expectedOutput: `const arr = [10, 20, 30, 40, 50];\nconst [first, second, ...rest] = arr;\nconsole.log(first, second, rest);`,
         hints: ["const [a, b, ...c] = array destructures into named variables"],
@@ -1196,7 +1240,8 @@ console.log(\`Others: \${others.join(", ")}\`);`,
     title: "Control Flow & Loops",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling",
     content: `Control flow is how your program makes decisions and repeats actions. Without it, code runs top-to-bottom one time and stops. With it, you can handle conditions and process entire lists of data.
 
 ## if / else if / else
@@ -1313,7 +1358,8 @@ while (attempts < 3) { attempts++; }
       {
         title: "Conditionals & Operators",
         language: "javascript",
-        description: "if/else, ternary, nullish coalescing, and optional chaining.",
+        description:
+          "if/else, ternary, nullish coalescing, and optional chaining.",
         code: `// Truthy/falsy
 const values = [0, "", null, undefined, NaN, false, "hello", 1, [], {}];
 values.forEach(v => console.log(\`\${JSON.stringify(v)}: \${v ? "truthy" : "falsy"}\`));
@@ -1388,7 +1434,8 @@ for (const key in person) {
       {
         id: "js-cf-1",
         title: "Grade Calculator",
-        instruction: "Write a ternary that sets grade to 'pass' if score >= 60, else 'fail'. score = 75.",
+        instruction:
+          "Write a ternary that sets grade to 'pass' if score >= 60, else 'fail'. score = 75.",
         startingCode: `const score = 75;\nconst grade = // ternary here\nconsole.log(grade);`,
         expectedOutput: `const score = 75;\nconst grade = score >= 60 ? "pass" : "fail";\nconsole.log(grade);`,
         hints: ["Ternary: condition ? valueIfTrue : valueIfFalse"],
@@ -1396,7 +1443,8 @@ for (const key in person) {
       {
         id: "js-cf-2",
         title: "Nullish Default",
-        instruction: "Use ?? to set username to 'Guest' if it's null or undefined.",
+        instruction:
+          "Use ?? to set username to 'Guest' if it's null or undefined.",
         startingCode: `const input = null;\nconst username = // use ??\nconsole.log(username);`,
         expectedOutput: `const input = null;\nconst username = input ?? "Guest";\nconsole.log(username);`,
         hints: ["?? returns the right side only if left is null or undefined"],
@@ -1404,18 +1452,26 @@ for (const key in person) {
       {
         id: "js-cf-3",
         title: "Loop & Sum",
-        instruction: "Use a for...of loop to sum all numbers in [5, 10, 15, 20, 25].",
+        instruction:
+          "Use a for...of loop to sum all numbers in [5, 10, 15, 20, 25].",
         startingCode: `const nums = [5, 10, 15, 20, 25];\nlet total = 0;\n// for...of loop\nconsole.log(total);`,
         expectedOutput: `const nums = [5, 10, 15, 20, 25];\nlet total = 0;\nfor (const n of nums) {\n    total += n;\n}\nconsole.log(total);`,
-        hints: ["for (const n of nums) gives each number in sequence", "total += n adds n to total"],
+        hints: [
+          "for (const n of nums) gives each number in sequence",
+          "total += n adds n to total",
+        ],
       },
       {
         id: "js-cf-4",
         title: "Optional Chaining",
-        instruction: "Safely access user?.address?.city — the user object may not have an address. Log 'Unknown' if missing.",
+        instruction:
+          "Safely access user?.address?.city — the user object may not have an address. Log 'Unknown' if missing.",
         startingCode: `const user = { name: "Alice" };\nconst city = // optional chain + nullish coalescing\nconsole.log(city);`,
         expectedOutput: `const user = { name: "Alice" };\nconst city = user?.address?.city ?? "Unknown";\nconsole.log(city);`,
-        hints: ["?. prevents crashes if address doesn't exist", "?? provides a fallback for null/undefined"],
+        hints: [
+          "?. prevents crashes if address doesn't exist",
+          "?? provides a fallback for null/undefined",
+        ],
       },
     ],
   },
@@ -1426,7 +1482,8 @@ for (const key in person) {
     title: "Higher-Order Functions",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map",
     content: `Higher-order functions are functions that take other functions as arguments or return functions. They sound fancy, but you use them every day with arrays. \`map\`, \`filter\`, and \`reduce\` are the three you'll reach for constantly.
 
 ## Why Higher-Order Functions?
@@ -1524,7 +1581,8 @@ Read it like English: "filter to in-stock products, get their prices, sum them u
       {
         title: "map, filter, reduce in Action",
         language: "javascript",
-        description: "Real-world data transformations with higher-order functions.",
+        description:
+          "Real-world data transformations with higher-order functions.",
         code: `const products = [
   { name: "Laptop",  price: 999,  inStock: true,  category: "tech" },
   { name: "Phone",   price: 599,  inStock: true,  category: "tech" },
@@ -1564,7 +1622,8 @@ console.log(discounted);`,
       {
         id: "js-hof-1",
         title: "Double with map",
-        instruction: "Use .map() to create a new array where every number in [1, 2, 3, 4, 5] is doubled.",
+        instruction:
+          "Use .map() to create a new array where every number in [1, 2, 3, 4, 5] is doubled.",
         startingCode: `const nums = [1, 2, 3, 4, 5];\nconst doubled = // use .map()\nconsole.log(doubled);`,
         expectedOutput: `const nums = [1, 2, 3, 4, 5];\nconst doubled = nums.map(n => n * 2);\nconsole.log(doubled);`,
         hints: [".map(n => n * 2) applies the function to each element"],
@@ -1572,7 +1631,8 @@ console.log(discounted);`,
       {
         id: "js-hof-2",
         title: "Filter Even Numbers",
-        instruction: "Use .filter() to keep only even numbers from [1, 2, 3, 4, 5, 6, 7, 8].",
+        instruction:
+          "Use .filter() to keep only even numbers from [1, 2, 3, 4, 5, 6, 7, 8].",
         startingCode: `const nums = [1, 2, 3, 4, 5, 6, 7, 8];\nconst evens = // use .filter()\nconsole.log(evens);`,
         expectedOutput: `const nums = [1, 2, 3, 4, 5, 6, 7, 8];\nconst evens = nums.filter(n => n % 2 === 0);\nconsole.log(evens);`,
         hints: ["n % 2 === 0 is true for even numbers"],
@@ -1583,12 +1643,16 @@ console.log(discounted);`,
         instruction: "Use .reduce() to sum all values in [10, 20, 30, 40, 50].",
         startingCode: `const nums = [10, 20, 30, 40, 50];\nconst sum = // use .reduce()\nconsole.log(sum);`,
         expectedOutput: `const nums = [10, 20, 30, 40, 50];\nconst sum = nums.reduce((acc, n) => acc + n, 0);\nconsole.log(sum);`,
-        hints: ["reduce(callback, initialValue)", "acc is the running total, 0 is the start"],
+        hints: [
+          "reduce(callback, initialValue)",
+          "acc is the running total, 0 is the start",
+        ],
       },
       {
         id: "js-hof-4",
         title: "Chain filter + map",
-        instruction: "From ['apple', 'avocado', 'banana', 'apricot'], filter words starting with 'a', then map them to uppercase.",
+        instruction:
+          "From ['apple', 'avocado', 'banana', 'apricot'], filter words starting with 'a', then map them to uppercase.",
         startingCode: `const fruits = ["apple", "avocado", "banana", "apricot"];\nconst result = // chain .filter() and .map()\nconsole.log(result);`,
         expectedOutput: `const fruits = ["apple", "avocado", "banana", "apricot"];\nconst result = fruits.filter(f => f.startsWith("a")).map(f => f.toUpperCase());\nconsole.log(result);`,
         hints: [".filter() first, then chain .map() on the result"],
@@ -1602,7 +1666,8 @@ console.log(discounted);`,
     title: "Objects & Destructuring",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects",
     content: `Objects are the most important data structure in JavaScript. Almost everything — DOM elements, API responses, configuration, user data — comes in the form of an object. Mastering objects is mastering JavaScript.
 
 ## What is an Object?
@@ -1757,7 +1822,8 @@ const promo = { [field2]: amount, name: "Sale" }; // { discount: 10, name: "Sale
       {
         id: "js-obj-1",
         title: "Destructure an Object",
-        instruction: "Destructure name and age from { name: 'Alice', age: 28, city: 'Paris' }.",
+        instruction:
+          "Destructure name and age from { name: 'Alice', age: 28, city: 'Paris' }.",
         startingCode: `const person = { name: "Alice", age: 28, city: "Paris" };\nconst { /* destructure here */ } = person;\nconsole.log(name, age);`,
         expectedOutput: `const person = { name: "Alice", age: 28, city: "Paris" };\nconst { name, age } = person;\nconsole.log(name, age);`,
         hints: ["const { key1, key2 } = object extracts the named properties"],
@@ -1765,26 +1831,36 @@ const promo = { [field2]: amount, name: "Sale" }; // { discount: 10, name: "Sale
       {
         id: "js-obj-2",
         title: "Spread to Update",
-        instruction: "Create updatedUser by spreading user and overriding age to 30.",
+        instruction:
+          "Create updatedUser by spreading user and overriding age to 30.",
         startingCode: `const user = { name: "Alice", age: 28, role: "user" };\nconst updatedUser = // spread + override\nconsole.log(updatedUser);`,
         expectedOutput: `const user = { name: "Alice", age: 28, role: "user" };\nconst updatedUser = { ...user, age: 30 };\nconsole.log(updatedUser);`,
-        hints: ["{ ...user, age: 30 } copies all properties, then age overrides"],
+        hints: [
+          "{ ...user, age: 30 } copies all properties, then age overrides",
+        ],
       },
       {
         id: "js-obj-3",
         title: "Object.keys Loop",
-        instruction: "Use Object.keys() to log every key in { a: 1, b: 2, c: 3 }.",
+        instruction:
+          "Use Object.keys() to log every key in { a: 1, b: 2, c: 3 }.",
         startingCode: `const obj = { a: 1, b: 2, c: 3 };\n// loop over keys`,
         expectedOutput: `const obj = { a: 1, b: 2, c: 3 };\nObject.keys(obj).forEach(key => console.log(key));`,
-        hints: ["Object.keys() returns an array of key strings", "Use .forEach() to iterate"],
+        hints: [
+          "Object.keys() returns an array of key strings",
+          "Use .forEach() to iterate",
+        ],
       },
       {
         id: "js-obj-4",
         title: "Shorthand Property",
-        instruction: "Given const title = 'JS' and const level = 3, create an object lesson using shorthand syntax.",
+        instruction:
+          "Given const title = 'JS' and const level = 3, create an object lesson using shorthand syntax.",
         startingCode: `const title = "JS";\nconst level = 3;\nconst lesson = // shorthand\nconsole.log(lesson);`,
         expectedOutput: `const title = "JS";\nconst level = 3;\nconst lesson = { title, level };\nconsole.log(lesson);`,
-        hints: ["When key and variable have the same name, { name } is shorthand for { name: name }"],
+        hints: [
+          "When key and variable have the same name, { name } is shorthand for { name: name }",
+        ],
       },
     ],
   },
@@ -1795,7 +1871,8 @@ const promo = { [field2]: amount, name: "Sale" }; // { discount: 10, name: "Sale
     title: "DOM Manipulation",
     difficulty: "beginner",
     estimatedMinutes: 30,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model",
     content: `The DOM (Document Object Model) is JavaScript's view of your HTML page. When the browser loads HTML, it converts it into a tree of objects — every element, attribute, and text node becomes a JavaScript object you can read and change. DOM manipulation is how JavaScript makes pages interactive.
 
 ## Selecting Elements
@@ -1975,15 +2052,20 @@ el.previousElementSibling // previous sibling
       {
         id: "js-dom-1",
         title: "Select & Change Text",
-        instruction: "Write JavaScript to select the element with id 'title' and change its textContent to 'Hello DOM!'.",
+        instruction:
+          "Write JavaScript to select the element with id 'title' and change its textContent to 'Hello DOM!'.",
         startingCode: `// Select the element and change its text`,
         expectedOutput: `document.querySelector("#title").textContent = "Hello DOM!";`,
-        hints: ["querySelector('#id') selects by id", ".textContent sets the text content"],
+        hints: [
+          "querySelector('#id') selects by id",
+          ".textContent sets the text content",
+        ],
       },
       {
         id: "js-dom-2",
         title: "Toggle a Class",
-        instruction: "Write code to toggle the class 'active' on the first element with class 'btn'.",
+        instruction:
+          "Write code to toggle the class 'active' on the first element with class 'btn'.",
         startingCode: `const btn = document.querySelector(".btn");\n// toggle 'active' class`,
         expectedOutput: `const btn = document.querySelector(".btn");\nbtn.classList.toggle("active");`,
         hints: [".classList.toggle() adds if absent, removes if present"],
@@ -1991,7 +2073,8 @@ el.previousElementSibling // previous sibling
       {
         id: "js-dom-3",
         title: "Create & Append",
-        instruction: "Create a <li> element with text 'New Item' and append it to the element with id 'list'.",
+        instruction:
+          "Create a <li> element with text 'New Item' and append it to the element with id 'list'.",
         startingCode: `const list = document.querySelector("#list");\n// create li and append it`,
         expectedOutput: `const list = document.querySelector("#list");\nconst li = document.createElement("li");\nli.textContent = "New Item";\nlist.appendChild(li);`,
         hints: [
@@ -2003,7 +2086,8 @@ el.previousElementSibling // previous sibling
       {
         id: "js-dom-4",
         title: "QuerySelectorAll",
-        instruction: "Select all elements with class 'card' and add the class 'visible' to each one.",
+        instruction:
+          "Select all elements with class 'card' and add the class 'visible' to each one.",
         startingCode: `// Select all cards and add 'visible' class to each`,
         expectedOutput: `document.querySelectorAll(".card").forEach(card => {\n    card.classList.add("visible");\n});`,
         hints: [
@@ -2020,7 +2104,8 @@ el.previousElementSibling // previous sibling
     title: "Events & Event Handling",
     difficulty: "beginner",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener",
     content: `Events are how the browser tells your JavaScript that something happened — a click, a keypress, a form submission, a page load. Event handling is what makes websites interactive.
 
 ## addEventListener
@@ -2208,15 +2293,20 @@ btn.addEventListener("click", handleClick, { once: true });
       {
         id: "js-ev-1",
         title: "Click Listener",
-        instruction: "Add a click event listener to #myBtn that logs 'Button clicked!' to the console.",
+        instruction:
+          "Add a click event listener to #myBtn that logs 'Button clicked!' to the console.",
         startingCode: `const btn = document.querySelector("#myBtn");\n// add click listener`,
         expectedOutput: `const btn = document.querySelector("#myBtn");\nbtn.addEventListener("click", () => {\n    console.log("Button clicked!");\n});`,
-        hints: [".addEventListener('click', callback)", "Arrow function is fine as the callback"],
+        hints: [
+          ".addEventListener('click', callback)",
+          "Arrow function is fine as the callback",
+        ],
       },
       {
         id: "js-ev-2",
         title: "Prevent Form Submit",
-        instruction: "Add a submit listener to #myForm that prevents the default page reload.",
+        instruction:
+          "Add a submit listener to #myForm that prevents the default page reload.",
         startingCode: `const form = document.querySelector("#myForm");\nform.addEventListener("submit", (e) => {\n    // prevent default\n});`,
         expectedOutput: `const form = document.querySelector("#myForm");\nform.addEventListener("submit", (e) => {\n    e.preventDefault();\n});`,
         hints: ["e.preventDefault() stops the browser's default action"],
@@ -2224,7 +2314,8 @@ btn.addEventListener("click", handleClick, { once: true });
       {
         id: "js-ev-3",
         title: "Keyboard Detection",
-        instruction: "Add a keydown listener to document that logs e.key whenever a key is pressed.",
+        instruction:
+          "Add a keydown listener to document that logs e.key whenever a key is pressed.",
         startingCode: `document.addEventListener("keydown", (e) => {\n    // log the key\n});`,
         expectedOutput: `document.addEventListener("keydown", (e) => {\n    console.log(e.key);\n});`,
         hints: ["e.key gives the key name like 'Enter', 'a', 'ArrowLeft'"],
@@ -2232,10 +2323,14 @@ btn.addEventListener("click", handleClick, { once: true });
       {
         id: "js-ev-4",
         title: "Event Delegation",
-        instruction: "Add one click listener on #list that toggles class 'active' when any <li> inside it is clicked.",
+        instruction:
+          "Add one click listener on #list that toggles class 'active' when any <li> inside it is clicked.",
         startingCode: `document.querySelector("#list").addEventListener("click", (e) => {\n    // only act on li elements\n});`,
         expectedOutput: `document.querySelector("#list").addEventListener("click", (e) => {\n    if (e.target.tagName === "LI") {\n        e.target.classList.toggle("active");\n    }\n});`,
-        hints: ["e.target is the actual clicked element", "Check tagName === 'LI' to be sure it's a list item"],
+        hints: [
+          "e.target is the actual clicked element",
+          "Check tagName === 'LI' to be sure it's a list item",
+        ],
       },
     ],
   },
@@ -2246,7 +2341,8 @@ btn.addEventListener("click", handleClick, { once: true });
     title: "Async JavaScript",
     difficulty: "intermediate",
     estimatedMinutes: 30,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Async_JS/Promises",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Async_JS/Promises",
     content: `JavaScript is single-threaded — it can only do one thing at a time. But web apps constantly need to wait: for API responses, file reads, timers. Async programming lets you wait for these things without blocking everything else.
 
 ## The Problem: Blocking Code
@@ -2341,7 +2437,8 @@ async function example() {
       {
         title: "async/await with fetch",
         language: "javascript",
-        description: "Fetching real API data with async/await and error handling.",
+        description:
+          "Fetching real API data with async/await and error handling.",
         code: `// Basic async function with error handling
 async function getUser(id) {
   try {
@@ -2399,7 +2496,8 @@ runSequence();`,
       {
         id: "js-async-1",
         title: "Async Function",
-        instruction: "Write an async function 'fetchData' that awaits fetch('https://api.example.com/data') and returns the JSON.",
+        instruction:
+          "Write an async function 'fetchData' that awaits fetch('https://api.example.com/data') and returns the JSON.",
         startingCode: `async function fetchData() {\n    // await fetch and return json\n}`,
         expectedOutput: `async function fetchData() {\n    const response = await fetch("https://api.example.com/data");\n    return response.json();\n}`,
         hints: [
@@ -2410,7 +2508,8 @@ runSequence();`,
       {
         id: "js-async-2",
         title: "Try/Catch with Await",
-        instruction: "Wrap an await call in try/catch: try fetching a URL, catch and log any error.",
+        instruction:
+          "Wrap an await call in try/catch: try fetching a URL, catch and log any error.",
         startingCode: `async function safeGet(url) {\n    // try/catch with await\n}`,
         expectedOutput: `async function safeGet(url) {\n    try {\n        const res = await fetch(url);\n        return await res.json();\n    } catch (error) {\n        console.error(error);\n    }\n}`,
         hints: ["try { await ... } catch (error) { handle error }"],
@@ -2418,7 +2517,8 @@ runSequence();`,
       {
         id: "js-async-3",
         title: "Promise.all",
-        instruction: "Use Promise.all to fetch two URLs in parallel and destructure the results.",
+        instruction:
+          "Use Promise.all to fetch two URLs in parallel and destructure the results.",
         startingCode: `async function getAll() {\n    const [users, posts] = // Promise.all\n    console.log(users, posts);\n}`,
         expectedOutput: `async function getAll() {\n    const [users, posts] = await Promise.all([\n        fetch("/api/users").then(r => r.json()),\n        fetch("/api/posts").then(r => r.json()),\n    ]);\n    console.log(users, posts);\n}`,
         hints: [
@@ -2435,7 +2535,8 @@ runSequence();`,
     title: "ES6+ Modern JavaScript Features",
     difficulty: "intermediate",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
     content: `ES6 (2015) transformed JavaScript. The years since have kept bringing improvements. These modern features make code shorter, safer, and more expressive. This lesson covers the most important ones you'll see in every real codebase.
 
 ## Destructuring (Recap + Advanced)
@@ -2563,7 +2664,8 @@ const clone = structuredClone(complexObject);
       {
         title: "Map, Set & Modern Patterns",
         language: "javascript",
-        description: "Map, Set, Object.fromEntries, and other modern essentials.",
+        description:
+          "Map, Set, Object.fromEntries, and other modern essentials.",
         code: `// Map — key can be anything
 const roles = new Map([
   ["alice@example.com", "admin"],
@@ -2614,15 +2716,20 @@ console.log(population.toLocaleString()); // "8,100,000,000"`,
       {
         id: "js-es6-1",
         title: "Deduplicate with Set",
-        instruction: "Remove duplicates from [1, 2, 2, 3, 3, 3, 4] using a Set.",
+        instruction:
+          "Remove duplicates from [1, 2, 2, 3, 3, 3, 4] using a Set.",
         startingCode: `const nums = [1, 2, 2, 3, 3, 3, 4];\nconst unique = // use Set\nconsole.log(unique);`,
         expectedOutput: `const nums = [1, 2, 2, 3, 3, 3, 4];\nconst unique = [...new Set(nums)];\nconsole.log(unique);`,
-        hints: ["new Set(array) removes duplicates", "Spread [...set] converts it back to an array"],
+        hints: [
+          "new Set(array) removes duplicates",
+          "Spread [...set] converts it back to an array",
+        ],
       },
       {
         id: "js-es6-2",
         title: "Map Lookup",
-        instruction: "Create a Map with keys 'cat' → 'meow' and 'dog' → 'woof', then get the value for 'cat'.",
+        instruction:
+          "Create a Map with keys 'cat' → 'meow' and 'dog' → 'woof', then get the value for 'cat'.",
         startingCode: `const sounds = new Map();\n// set cat and dog\nconsole.log(sounds.get("cat"));`,
         expectedOutput: `const sounds = new Map();\nsounds.set("cat", "meow");\nsounds.set("dog", "woof");\nconsole.log(sounds.get("cat"));`,
         hints: [".set(key, value) adds to Map", ".get(key) retrieves a value"],
@@ -2630,7 +2737,8 @@ console.log(population.toLocaleString()); // "8,100,000,000"`,
       {
         id: "js-es6-3",
         title: "Object.fromEntries",
-        instruction: "Double every value in { a: 1, b: 2, c: 3 } using Object.entries, .map(), and Object.fromEntries.",
+        instruction:
+          "Double every value in { a: 1, b: 2, c: 3 } using Object.entries, .map(), and Object.fromEntries.",
         startingCode: `const obj = { a: 1, b: 2, c: 3 };\nconst doubled = // Object.fromEntries + map\nconsole.log(doubled);`,
         expectedOutput: `const obj = { a: 1, b: 2, c: 3 };\nconst doubled = Object.fromEntries(\n    Object.entries(obj).map(([k, v]) => [k, v * 2])\n);\nconsole.log(doubled);`,
         hints: [
@@ -2648,7 +2756,8 @@ console.log(population.toLocaleString()); // "8,100,000,000"`,
     title: "Classes & Object-Oriented Programming",
     difficulty: "intermediate",
     estimatedMinutes: 30,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes",
     content: `Classes are a way to create blueprints for objects. Instead of manually creating every user object, you define a User class once and create as many user instances as you need — each with the same structure but different data.
 
 ## What is a Class?
@@ -2785,7 +2894,8 @@ cat instanceof Animal; // true (inheritance chain)
       {
         title: "Classes in Practice",
         language: "javascript",
-        description: "Building a real User and BankAccount class with inheritance.",
+        description:
+          "Building a real User and BankAccount class with inheritance.",
         code: `// Base class
 class User {
   #password;
@@ -2854,34 +2964,50 @@ console.log(admin instanceof User); // true`,
       {
         id: "js-cls-1",
         title: "Create a Basic Class",
-        instruction: "Create a Car class with a constructor that sets make and model, and a describe() method that returns 'make model'.",
+        instruction:
+          "Create a Car class with a constructor that sets make and model, and a describe() method that returns 'make model'.",
         startingCode: `class Car {\n    constructor(make, model) {\n        // set properties\n    }\n\n    describe() {\n        // return "make model"\n    }\n}`,
         expectedOutput: `class Car {\n    constructor(make, model) {\n        this.make = make;\n        this.model = model;\n    }\n\n    describe() {\n        return \`\${this.make} \${this.model}\`;\n    }\n}`,
-        hints: ["Use this.make = make inside the constructor", "Template literal: \`${this.make} ${this.model}\`"],
+        hints: [
+          "Use this.make = make inside the constructor",
+          "Template literal: \`${this.make} ${this.model}\`",
+        ],
       },
       {
         id: "js-cls-2",
         title: "Getter",
-        instruction: "Add a getter 'fullName' to Person that returns firstName + ' ' + lastName.",
+        instruction:
+          "Add a getter 'fullName' to Person that returns firstName + ' ' + lastName.",
         startingCode: `class Person {\n    constructor(firstName, lastName) {\n        this.firstName = firstName;\n        this.lastName = lastName;\n    }\n\n    // add getter here\n}`,
         expectedOutput: `class Person {\n    constructor(firstName, lastName) {\n        this.firstName = firstName;\n        this.lastName = lastName;\n    }\n\n    get fullName() {\n        return \`\${this.firstName} \${this.lastName}\`;\n    }\n}`,
-        hints: ["Use 'get' keyword before the method name", "Access it like a property: person.fullName (no parentheses)"],
+        hints: [
+          "Use 'get' keyword before the method name",
+          "Access it like a property: person.fullName (no parentheses)",
+        ],
       },
       {
         id: "js-cls-3",
         title: "Extend a Class",
-        instruction: "Create an ElectricCar class that extends Car and adds a batteryRange property.",
+        instruction:
+          "Create an ElectricCar class that extends Car and adds a batteryRange property.",
         startingCode: `class Car {\n    constructor(make, model) {\n        this.make = make;\n        this.model = model;\n    }\n}\n\nclass ElectricCar extends Car {\n    constructor(make, model, batteryRange) {\n        // call super, then set batteryRange\n    }\n}`,
         expectedOutput: `class Car {\n    constructor(make, model) {\n        this.make = make;\n        this.model = model;\n    }\n}\n\nclass ElectricCar extends Car {\n    constructor(make, model, batteryRange) {\n        super(make, model);\n        this.batteryRange = batteryRange;\n    }\n}`,
-        hints: ["super(make, model) calls Car's constructor", "Must call super() before using this"],
+        hints: [
+          "super(make, model) calls Car's constructor",
+          "Must call super() before using this",
+        ],
       },
       {
         id: "js-cls-4",
         title: "Static Method",
-        instruction: "Add a static method 'compare' to Car that takes two cars and returns the one with the earlier make (alphabetically).",
+        instruction:
+          "Add a static method 'compare' to Car that takes two cars and returns the one with the earlier make (alphabetically).",
         startingCode: `class Car {\n    constructor(make, model) {\n        this.make = make;\n        this.model = model;\n    }\n\n    static compare(carA, carB) {\n        // return the one whose make comes first alphabetically\n    }\n}`,
         expectedOutput: `class Car {\n    constructor(make, model) {\n        this.make = make;\n        this.model = model;\n    }\n\n    static compare(carA, carB) {\n        return carA.make < carB.make ? carA : carB;\n    }\n}`,
-        hints: ["Static methods use the 'static' keyword", "String comparison: 'apple' < 'banana' is true"],
+        hints: [
+          "Static methods use the 'static' keyword",
+          "String comparison: 'apple' < 'banana' is true",
+        ],
       },
     ],
   },
@@ -2892,7 +3018,8 @@ console.log(admin instanceof User); // true`,
     title: "Error Handling",
     difficulty: "intermediate",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling#exception_handling_statements",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling#exception_handling_statements",
     content: `Errors happen. A network request fails, a user passes wrong data, a server returns 500. How you handle errors determines whether your app crashes or gracefully recovers. JavaScript has solid tools for this.
 
 ## try / catch / finally
@@ -3100,15 +3227,20 @@ async function tryFetch(url) {
       {
         id: "js-err-1",
         title: "Basic Try/Catch",
-        instruction: "Wrap JSON.parse(input) in a try/catch. If it fails, log 'Invalid JSON' to the console.",
+        instruction:
+          "Wrap JSON.parse(input) in a try/catch. If it fails, log 'Invalid JSON' to the console.",
         startingCode: `const input = "not valid json";\n// try/catch here`,
         expectedOutput: `const input = "not valid json";\ntry {\n    JSON.parse(input);\n} catch (e) {\n    console.log("Invalid JSON");\n}`,
-        hints: ["JSON.parse throws SyntaxError on invalid input", "catch (e) receives the error object"],
+        hints: [
+          "JSON.parse throws SyntaxError on invalid input",
+          "catch (e) receives the error object",
+        ],
       },
       {
         id: "js-err-2",
         title: "Throw a Custom Error",
-        instruction: "Write a function 'requirePositive' that throws an Error with message 'Must be positive' if the number is <= 0.",
+        instruction:
+          "Write a function 'requirePositive' that throws an Error with message 'Must be positive' if the number is <= 0.",
         startingCode: `function requirePositive(n) {\n    // throw if n <= 0\n}`,
         expectedOutput: `function requirePositive(n) {\n    if (n <= 0) throw new Error("Must be positive");\n}`,
         hints: ["throw new Error('message') creates and throws an error"],
@@ -3116,18 +3248,27 @@ async function tryFetch(url) {
       {
         id: "js-err-3",
         title: "Finally for Cleanup",
-        instruction: "Add a finally block that logs 'Cleanup done' regardless of success or failure.",
+        instruction:
+          "Add a finally block that logs 'Cleanup done' regardless of success or failure.",
         startingCode: `try {\n    riskyOperation();\n} catch (e) {\n    console.log("Error:", e.message);\n}\n// add finally`,
         expectedOutput: `try {\n    riskyOperation();\n} catch (e) {\n    console.log("Error:", e.message);\n} finally {\n    console.log("Cleanup done");\n}`,
-        hints: ["finally {} comes after catch {}", "It always runs, success or failure"],
+        hints: [
+          "finally {} comes after catch {}",
+          "It always runs, success or failure",
+        ],
       },
       {
         id: "js-err-4",
         title: "Safe JSON Parse",
-        instruction: "Write a safeJsonParse function that returns parsed data on success, or null on failure.",
+        instruction:
+          "Write a safeJsonParse function that returns parsed data on success, or null on failure.",
         startingCode: `function safeJsonParse(str) {\n    // try to parse, return null on error\n}`,
         expectedOutput: `function safeJsonParse(str) {\n    try {\n        return JSON.parse(str);\n    } catch {\n        return null;\n    }\n}`,
-        hints: ["Return inside try for success", "Return null inside catch for failure", "catch {} without (e) is valid when you don't need the error"],
+        hints: [
+          "Return inside try for success",
+          "Return null inside catch for failure",
+          "catch {} without (e) is valid when you don't need the error",
+        ],
       },
     ],
   },
@@ -3324,7 +3465,8 @@ async function deletePost(id) {
       {
         id: "js-api-1",
         title: "Basic GET Request",
-        instruction: "Write an async function that fetches '/api/data', checks response.ok, and returns the JSON.",
+        instruction:
+          "Write an async function that fetches '/api/data', checks response.ok, and returns the JSON.",
         startingCode: `async function getData() {\n    // fetch, check ok, return json\n}`,
         expectedOutput: `async function getData() {\n    const res = await fetch("/api/data");\n    if (!res.ok) throw new Error(\`HTTP \${res.status}\`);\n    return res.json();\n}`,
         hints: [
@@ -3335,7 +3477,8 @@ async function deletePost(id) {
       {
         id: "js-api-2",
         title: "POST Request",
-        instruction: "Write a fetch POST to '/api/users' sending { name: 'Alice' } as JSON.",
+        instruction:
+          "Write a fetch POST to '/api/users' sending { name: 'Alice' } as JSON.",
         startingCode: `async function createUser(name) {\n    const res = await fetch("/api/users", {\n        // method, headers, body\n    });\n    return res.json();\n}`,
         expectedOutput: `async function createUser(name) {\n    const res = await fetch("/api/users", {\n        method: "POST",\n        headers: { "Content-Type": "application/json" },\n        body: JSON.stringify({ name }),\n    });\n    return res.json();\n}`,
         hints: [
@@ -3347,10 +3490,14 @@ async function deletePost(id) {
       {
         id: "js-api-3",
         title: "Query Parameters",
-        instruction: "Use URLSearchParams to build a query string with page=2 and limit=10, then fetch '/api/posts' with it.",
+        instruction:
+          "Use URLSearchParams to build a query string with page=2 and limit=10, then fetch '/api/posts' with it.",
         startingCode: `async function getPosts() {\n    const params = // URLSearchParams\n    const res = await fetch(\`/api/posts?\${params}\`);\n    return res.json();\n}`,
         expectedOutput: `async function getPosts() {\n    const params = new URLSearchParams({ page: 2, limit: 10 });\n    const res = await fetch(\`/api/posts?\${params}\`);\n    return res.json();\n}`,
-        hints: ["new URLSearchParams({ key: value }) builds query strings", "Embed in template literal: `/api/posts?${params}`"],
+        hints: [
+          "new URLSearchParams({ key: value }) builds query strings",
+          "Embed in template literal: `/api/posts?${params}`",
+        ],
       },
     ],
   },
@@ -3361,7 +3508,8 @@ async function deletePost(id) {
     title: "Modules & Import/Export",
     difficulty: "intermediate",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
     content: `As your codebase grows, keeping all JavaScript in one file becomes a nightmare. Modules let you split code across files, import only what you need, and keep things organized. Every modern framework (React, Vue, Node.js) uses modules.
 
 ## What are Modules?
@@ -3542,10 +3690,14 @@ client.get("/users/1").then(u => console.log(u.name));`,
       {
         id: "js-mod-1",
         title: "Named Export",
-        instruction: "Export a function 'double' that returns n * 2, and a const MAX = 100.",
+        instruction:
+          "Export a function 'double' that returns n * 2, and a const MAX = 100.",
         startingCode: `// Write your exports`,
         expectedOutput: `export function double(n) {\n    return n * 2;\n}\nexport const MAX = 100;`,
-        hints: ["Put 'export' keyword before function or const", "Both can be in the same file"],
+        hints: [
+          "Put 'export' keyword before function or const",
+          "Both can be in the same file",
+        ],
       },
       {
         id: "js-mod-2",
@@ -3553,20 +3705,28 @@ client.get("/users/1").then(u => console.log(u.name));`,
         instruction: "Import 'double' and 'MAX' from './utils.js'.",
         startingCode: `// Import double and MAX from utils.js`,
         expectedOutput: `import { double, MAX } from "./utils.js";`,
-        hints: ["Named imports use curly braces {}", "File path starts with './'"],
+        hints: [
+          "Named imports use curly braces {}",
+          "File path starts with './'",
+        ],
       },
       {
         id: "js-mod-3",
         title: "Default Export",
-        instruction: "Write a default export of a class 'Logger' with a log(msg) method that console.logs the message.",
+        instruction:
+          "Write a default export of a class 'Logger' with a log(msg) method that console.logs the message.",
         startingCode: `// Default export Logger class`,
         expectedOutput: `export default class Logger {\n    log(msg) {\n        console.log(msg);\n    }\n}`,
-        hints: ["'export default' before the class keyword", "Default exports have no curly braces when importing"],
+        hints: [
+          "'export default' before the class keyword",
+          "Default exports have no curly braces when importing",
+        ],
       },
       {
         id: "js-mod-4",
         title: "Dynamic Import",
-        instruction: "Write an async function 'loadChart' that dynamically imports './Chart.js' and calls its default export.",
+        instruction:
+          "Write an async function 'loadChart' that dynamically imports './Chart.js' and calls its default export.",
         startingCode: `async function loadChart(data) {\n    // dynamic import\n}`,
         expectedOutput: `async function loadChart(data) {\n    const { default: Chart } = await import("./Chart.js");\n    new Chart(data);\n}`,
         hints: [
@@ -3583,7 +3743,8 @@ client.get("/users/1").then(u => console.log(u.name));`,
     title: "Regular Expressions",
     difficulty: "advanced",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions",
     content: `Regular expressions (regex) are patterns for matching text. They look intimidating at first, but once they click, they become one of the most powerful tools in your kit. You use them for validation, searching, and text transformation.
 
 ## Creating a Regex
@@ -3715,7 +3876,8 @@ const pwRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$/;
       {
         title: "Regex for Validation & Transformation",
         language: "javascript",
-        description: "Email validation, extracting data, and text transformation.",
+        description:
+          "Email validation, extracting data, and text transformation.",
         code: `// ── Validation ──────────────────────────────────
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -3777,7 +3939,8 @@ console.log(pairs); // { name: "Alice", age: "28", city: "Paris" }`,
       {
         id: "js-re-1",
         title: "Test an Email",
-        instruction: "Write a regex that returns true if a string looks like an email (contains @ and a dot after it).",
+        instruction:
+          "Write a regex that returns true if a string looks like an email (contains @ and a dot after it).",
         startingCode: `function isEmail(str) {\n    return // regex test\n}\nconsole.log(isEmail("user@example.com")); // true\nconsole.log(isEmail("notanemail"));        // false`,
         expectedOutput: `function isEmail(str) {\n    return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(str);\n}\nconsole.log(isEmail("user@example.com"));\nconsole.log(isEmail("notanemail"));`,
         hints: [
@@ -3789,26 +3952,38 @@ console.log(pairs); // { name: "Alice", age: "28", city: "Paris" }`,
       {
         id: "js-re-2",
         title: "Extract All Numbers",
-        instruction: "Use .match() with a global regex to extract all numbers from the string '3 cats and 12 dogs and 1 bird'.",
+        instruction:
+          "Use .match() with a global regex to extract all numbers from the string '3 cats and 12 dogs and 1 bird'.",
         startingCode: `const str = "3 cats and 12 dogs and 1 bird";\nconst nums = // regex match\nconsole.log(nums); // ["3", "12", "1"]`,
         expectedOutput: `const str = "3 cats and 12 dogs and 1 bird";\nconst nums = str.match(/\\d+/g);\nconsole.log(nums);`,
-        hints: ["\\d+ matches one or more digits", "The g flag finds ALL matches"],
+        hints: [
+          "\\d+ matches one or more digits",
+          "The g flag finds ALL matches",
+        ],
       },
       {
         id: "js-re-3",
         title: "Replace Spaces with Hyphens",
-        instruction: "Use .replace() with a global regex to replace all spaces in 'hello world foo' with hyphens.",
+        instruction:
+          "Use .replace() with a global regex to replace all spaces in 'hello world foo' with hyphens.",
         startingCode: `const str = "hello world foo";\nconst result = str.replace(/* regex */, "-");\nconsole.log(result); // "hello-world-foo"`,
         expectedOutput: `const str = "hello world foo";\nconst result = str.replace(/\\s+/g, "-");\nconsole.log(result);`,
-        hints: ["\\s+ matches one or more whitespace characters", "The g flag replaces ALL occurrences"],
+        hints: [
+          "\\s+ matches one or more whitespace characters",
+          "The g flag replaces ALL occurrences",
+        ],
       },
       {
         id: "js-re-4",
         title: "Case-Insensitive Test",
-        instruction: "Test if the string 'I Love JAVASCRIPT' contains 'javascript' using a case-insensitive flag.",
+        instruction:
+          "Test if the string 'I Love JAVASCRIPT' contains 'javascript' using a case-insensitive flag.",
         startingCode: `const str = "I Love JAVASCRIPT";\nconsole.log(/* regex with i flag */);`,
         expectedOutput: `const str = "I Love JAVASCRIPT";\nconsole.log(/javascript/i.test(str));`,
-        hints: ["Add i after the closing slash: /pattern/i", "The i flag makes matching case-insensitive"],
+        hints: [
+          "Add i after the closing slash: /pattern/i",
+          "The i flag makes matching case-insensitive",
+        ],
       },
     ],
   },
@@ -3819,7 +3994,8 @@ console.log(pairs); // { name: "Alice", age: "28", city: "Paris" }`,
     title: "Browser Storage & Web APIs",
     difficulty: "intermediate",
     estimatedMinutes: 25,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API",
     content: `The browser gives JavaScript access to powerful built-in APIs beyond the DOM — persistent storage, clipboard, geolocation, notifications, performance, and more. Knowing these lets you build real features without a backend.
 
 ## localStorage & sessionStorage
@@ -3956,7 +4132,8 @@ console.log(\`Took \${(end - start).toFixed(2)}ms\`);
       {
         title: "localStorage & Web APIs",
         language: "html",
-        description: "Theme persistence, clipboard, and IntersectionObserver animations.",
+        description:
+          "Theme persistence, clipboard, and IntersectionObserver animations.",
         code: `<!DOCTYPE html>
 <html>
 <head>
@@ -4044,7 +4221,8 @@ console.log(\`Took \${(end - start).toFixed(2)}ms\`);
       {
         id: "js-storage-1",
         title: "Save to localStorage",
-        instruction: "Save the object { name: 'Alice', score: 100 } to localStorage under the key 'player'.",
+        instruction:
+          "Save the object { name: 'Alice', score: 100 } to localStorage under the key 'player'.",
         startingCode: `const player = { name: "Alice", score: 100 };\n// save to localStorage`,
         expectedOutput: `const player = { name: "Alice", score: 100 };\nlocalStorage.setItem("player", JSON.stringify(player));`,
         hints: [
@@ -4055,15 +4233,20 @@ console.log(\`Took \${(end - start).toFixed(2)}ms\`);
       {
         id: "js-storage-2",
         title: "Load from localStorage",
-        instruction: "Read the 'player' key from localStorage and parse it back to an object.",
+        instruction:
+          "Read the 'player' key from localStorage and parse it back to an object.",
         startingCode: `const player = // load and parse\nconsole.log(player);`,
         expectedOutput: `const player = JSON.parse(localStorage.getItem("player"));\nconsole.log(player);`,
-        hints: ["localStorage.getItem(key) returns a string", "JSON.parse converts it back to an object"],
+        hints: [
+          "localStorage.getItem(key) returns a string",
+          "JSON.parse converts it back to an object",
+        ],
       },
       {
         id: "js-storage-3",
         title: "setTimeout Promise",
-        instruction: "Write a 'delay' function that returns a Promise resolving after ms milliseconds.",
+        instruction:
+          "Write a 'delay' function that returns a Promise resolving after ms milliseconds.",
         startingCode: `function delay(ms) {\n    // return a Promise\n}`,
         expectedOutput: `function delay(ms) {\n    return new Promise(resolve => setTimeout(resolve, ms));\n}`,
         hints: [
@@ -4074,10 +4257,14 @@ console.log(\`Took \${(end - start).toFixed(2)}ms\`);
       {
         id: "js-storage-4",
         title: "Performance Timing",
-        instruction: "Use performance.now() to measure how long a for loop of 1,000,000 iterations takes.",
+        instruction:
+          "Use performance.now() to measure how long a for loop of 1,000,000 iterations takes.",
         startingCode: `const start = // start timer\nfor (let i = 0; i < 1_000_000; i++) {}\nconst end = // end timer\nconsole.log(\`Took \${(end - start).toFixed(2)}ms\`);`,
         expectedOutput: `const start = performance.now();\nfor (let i = 0; i < 1_000_000; i++) {}\nconst end = performance.now();\nconsole.log(\`Took \${(end - start).toFixed(2)}ms\`);`,
-        hints: ["performance.now() returns high-resolution milliseconds", "Subtract start from end for elapsed time"],
+        hints: [
+          "performance.now() returns high-resolution milliseconds",
+          "Subtract start from end for elapsed time",
+        ],
       },
     ],
   },

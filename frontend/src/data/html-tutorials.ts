@@ -1219,7 +1219,8 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
     title: "Accessibility & SEO Basics",
     difficulty: "intermediate",
     estimatedMinutes: 20,
-    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn/Accessibility",
+    mdnReference:
+      "https://developer.mozilla.org/en-US/docs/Learn/Accessibility",
     content: `Accessibility and SEO are part of building professional web pages. Good accessibility helps people using screen readers, keyboards, and assistive tools. Good SEO helps search engines understand your content.
 
 ## Accessibility Basics
@@ -1253,7 +1254,8 @@ These habits make your pages easier to use, easier to understand, and easier to 
       {
         title: "Accessible Form Example",
         language: "html",
-        description: "A form that is accessible to screen readers and keyboard users.",
+        description:
+          "A form that is accessible to screen readers and keyboard users.",
         code: `<form>
   <label for="name">Name</label>
   <input id="name" name="name" type="text" required>
@@ -1268,7 +1270,8 @@ These habits make your pages easier to use, easier to understand, and easier to 
       {
         title: "Accessible Navigation",
         language: "html",
-        description: "Semantic landmarks and aria-label improve navigation for assistive technology.",
+        description:
+          "Semantic landmarks and aria-label improve navigation for assistive technology.",
         code: `<header>
   <nav aria-label="Main navigation">
     <a href="#home">Home</a>
@@ -1286,12 +1289,16 @@ These habits make your pages easier to use, easier to understand, and easier to 
       {
         id: "a11y-1",
         title: "Add an Accessible Label",
-        instruction: "Add a label for the email input and connect it with for/id.",
+        instruction:
+          "Add a label for the email input and connect it with for/id.",
         startingCode: `<label>Email</label>
 <input type="email">`,
         expectedOutput: `<label for="email">Email</label>
 <input id="email" type="email">`,
-        hints: ["Use for on the label and id on the input", "This helps screen readers associate the text with the field"],
+        hints: [
+          "Use for on the label and id on the input",
+          "This helps screen readers associate the text with the field",
+        ],
       },
       {
         id: "a11y-2",

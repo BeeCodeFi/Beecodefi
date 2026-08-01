@@ -1755,7 +1755,12 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     {
       id: "js-debug-3",
       question: "Which browser tool is best for inspecting HTML and CSS?",
-      options: ["Elements panel", "Console only", "Network only", "History panel"],
+      options: [
+        "Elements panel",
+        "Console only",
+        "Network only",
+        "History panel",
+      ],
       correctIndex: 0,
       explanation:
         "The Elements panel lets you inspect and edit the rendered HTML and CSS of a page.",
@@ -1766,7 +1771,12 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     {
       id: "js-bool-1",
       question: "Which values are falsy in JavaScript?",
-      options: ["false, 0, \"\", null, undefined, NaN", "true, 1, \"0\"", "[], {}", "all numbers"],
+      options: [
+        'false, 0, "", null, undefined, NaN',
+        'true, 1, "0"',
+        "[], {}",
+        "all numbers",
+      ],
       correctIndex: 0,
       explanation:
         "Falsy values include false, 0, empty strings, null, undefined, and NaN. Everything else is truthy.",
@@ -1786,7 +1796,8 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     },
     {
       id: "js-bool-3",
-      question: "Which operator checks if two values are equal and of the same type?",
+      question:
+        "Which operator checks if two values are equal and of the same type?",
       options: ["===", "==", "=", "!=="],
       correctIndex: 0,
       explanation:

@@ -4,17 +4,33 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
-  FileCode2, Palette, Braces, Rocket,
-  BookOpen, Brain, ArrowRight, CheckCircle2, ChevronDown,
+  FileCode2,
+  Palette,
+  Braces,
+  Rocket,
+  BookOpen,
+  Brain,
+  ArrowRight,
+  CheckCircle2,
+  ChevronDown,
+  Layers,
+  Trophy,
+  Sparkles,
+  Compass,
 } from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 import SplitText from "@/components/ui/SplitText";
+import { useAuth } from "@/context/AuthContext";
+import { getUserStorageKey } from "@/lib/userStorage";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const STEPS = [
   {
-    id: 1, number: "01", emoji: "🏗️",
-    title: "HTML", fullTitle: "HTML Fundamentals",
+    id: 1,
+    number: "01",
+    emoji: "🏗️",
+    title: "HTML",
+    fullTitle: "HTML Fundamentals",
     tagline: "The skeleton of the web",
     desc: "Every website on the planet starts here. Learn how browsers read markup, give your content structure and meaning, build accessible forms, and write semantic code that search engines love.",
     accent: "#ea6b1a",
@@ -24,14 +40,25 @@ const STEPS = [
     lightNumColor: "#f4b07a",
     gradient: "from-orange-500 to-red-500",
     shadow: "0 20px 60px rgba(234,107,26,0.18)",
-    tutorialSlug: "html", time: "1–2 wks",
+    tutorialSlug: "html",
+    time: "1–2 wks",
     icon: FileCode2,
-    skills: ["Elements & Tags", "Semantic HTML5", "Forms & Inputs", "Tables", "Accessibility"],
-    stat: "11", statUnit: "lessons",
+    skills: [
+      "Elements & Tags",
+      "Semantic HTML5",
+      "Forms & Inputs",
+      "Tables",
+      "Accessibility",
+    ],
+    stat: "11",
+    statUnit: "lessons",
   },
   {
-    id: 2, number: "02", emoji: "🎨",
-    title: "CSS", fullTitle: "CSS Mastery",
+    id: 2,
+    number: "02",
+    emoji: "🎨",
+    title: "CSS",
+    fullTitle: "CSS Mastery",
     tagline: "Make it beautiful",
     desc: "Turn raw HTML into stunning, responsive interfaces. Flexbox, Grid, animations, custom properties, dark mode — this is where your pages start looking like real products.",
     accent: "#2563eb",
@@ -41,14 +68,25 @@ const STEPS = [
     lightNumColor: "#93c5fd",
     gradient: "from-blue-500 to-indigo-600",
     shadow: "0 20px 60px rgba(37,99,235,0.14)",
-    tutorialSlug: "css", time: "2–4 wks",
+    tutorialSlug: "css",
+    time: "2–4 wks",
     icon: Palette,
-    skills: ["Selectors & Specificity", "Box Model", "Flexbox & Grid", "Responsive Design", "Animations"],
-    stat: "18", statUnit: "lessons",
+    skills: [
+      "Selectors & Specificity",
+      "Box Model",
+      "Flexbox & Grid",
+      "Responsive Design",
+      "Animations",
+    ],
+    stat: "18",
+    statUnit: "lessons",
   },
   {
-    id: 3, number: "03", emoji: "⚡",
-    title: "JavaScript", fullTitle: "JavaScript Essentials",
+    id: 3,
+    number: "03",
+    emoji: "⚡",
+    title: "JavaScript",
+    fullTitle: "JavaScript Essentials",
     tagline: "Bring it to life",
     desc: "Pages become applications. Handle events, fetch real data from APIs, manipulate the DOM dynamically, and master the ES6+ features every modern developer uses every single day.",
     accent: "#b45309",
@@ -58,14 +96,25 @@ const STEPS = [
     lightNumColor: "#fbbf24",
     gradient: "from-yellow-500 to-amber-500",
     shadow: "0 20px 60px rgba(180,83,9,0.14)",
-    tutorialSlug: "javascript", time: "4–6 wks",
+    tutorialSlug: "javascript",
+    time: "4–6 wks",
     icon: Braces,
-    skills: ["Functions & Scope", "DOM Manipulation", "Events", "Async / Await", "ES6+ Features"],
-    stat: "18", statUnit: "lessons",
+    skills: [
+      "Functions & Scope",
+      "DOM Manipulation",
+      "Events",
+      "Async / Await",
+      "ES6+ Features",
+    ],
+    stat: "18",
+    statUnit: "lessons",
   },
   {
-    id: 4, number: "04", emoji: "🚀",
-    title: "React", fullTitle: "React & Next.js",
+    id: 4,
+    number: "04",
+    emoji: "🚀",
+    title: "React",
+    fullTitle: "React & Next.js",
     tagline: "Build production apps",
     desc: "With the fundamentals solid, you are ready for React — the world most in-demand frontend library. Components, hooks, routing, and deploying real apps with Next.js.",
     accent: "#7c3aed",
@@ -75,22 +124,391 @@ const STEPS = [
     lightNumColor: "#a78bfa",
     gradient: "from-violet-500 to-purple-600",
     shadow: "0 20px 60px rgba(124,58,237,0.14)",
-    tutorialSlug: null, time: "6–8 wks",
+    tutorialSlug: null,
+    time: "6–8 wks",
     icon: Rocket,
-    skills: ["Components & Props", "State & Hooks", "React Router", "Next.js", "Deployment"],
-    stat: "Soon", statUnit: "coming",
+    skills: [
+      "Components & Props",
+      "State & Hooks",
+      "React Router",
+      "Next.js",
+      "Deployment",
+    ],
+    stat: "Soon",
+    statUnit: "coming",
     comingSoon: true,
   },
 ] as const;
 
-type Step = typeof STEPS[number];
+type Step = (typeof STEPS)[number];
 
-function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: boolean }) {
+type HybridStage = {
+  phase: string;
+  title: string;
+  duration: string;
+  icon: typeof FileCode2;
+  summary: string;
+  focus: string;
+  learn: string[];
+  build: string[];
+  outcome: string;
+};
+
+const HYBRID_ROADMAP: HybridStage[] = [
+  {
+    phase: "01",
+    title: "Foundations",
+    duration: "1–2 weeks",
+    icon: FileCode2,
+    summary:
+      "Learn how the web is structured, then build your first real page.",
+    focus: "HTML structure, semantic markup, forms, accessibility",
+    learn: [
+      "How browsers read HTML",
+      "How semantic tags improve clarity",
+      "How forms and accessibility make pages usable",
+    ],
+    build: [
+      "A personal landing page",
+      "A contact section with a form",
+      "A polished structure using headings and sections",
+    ],
+    outcome:
+      "You will understand the skeleton of the web and feel confident writing your own pages.",
+  },
+  {
+    phase: "02",
+    title: "Visual Design",
+    duration: "1–2 weeks",
+    icon: Palette,
+    summary: "Turn structure into beautiful layouts and responsive interfaces.",
+    focus: "CSS layout, spacing, responsiveness, design systems",
+    learn: [
+      "The box model and spacing",
+      "Flexbox and Grid for layouts",
+      "Responsive design and modern styling",
+    ],
+    build: [
+      "A portfolio-style layout",
+      "Responsive cards and navigation",
+      "A dark/light theme toggle",
+    ],
+    outcome: "You will know how to give pages a professional look and feel.",
+  },
+  {
+    phase: "03",
+    title: "Interactive Logic",
+    duration: "2–3 weeks",
+    icon: Braces,
+    summary: "Make pages feel alive with JavaScript and user interaction.",
+    focus: "Events, DOM updates, functions, async JavaScript",
+    learn: [
+      "Events and user input",
+      "How the DOM changes in real time",
+      "Fetch, promises, and async workflows",
+    ],
+    build: ["A quiz app", "A to-do list", "A small weather or trivia widget"],
+    outcome:
+      "You will be able to add real behavior to your projects instead of only static content.",
+  },
+  {
+    phase: "04",
+    title: "Modern Frontend",
+    duration: "2–4 weeks",
+    icon: Rocket,
+    summary: "Use React and Next.js to build scalable, component-based apps.",
+    focus: "Components, state, routing, UI architecture",
+    learn: [
+      "Component thinking",
+      "Hooks and state management",
+      "Routing and reusable interfaces",
+    ],
+    build: [
+      "A dashboard",
+      "A blog or notes app",
+      "A project gallery with real navigation",
+    ],
+    outcome:
+      "You will move from simple pages to reusable products that feel like real software.",
+  },
+  {
+    phase: "05",
+    title: "Backend & Data",
+    duration: "2–4 weeks",
+    icon: Layers,
+    summary:
+      "Connect your frontend to real data and learn how apps persist information.",
+    focus: "APIs, authentication, databases, deployment basics",
+    learn: [
+      "How frontend talks to backend",
+      "Authentication and protected routes",
+      "Databases and app persistence",
+    ],
+    build: [
+      "A blog with saved posts",
+      "A login flow",
+      "A database-backed CRUD app",
+    ],
+    outcome:
+      "You will understand how complete applications are built and why backend choices matter.",
+  },
+  {
+    phase: "06",
+    title: "Launch & Growth",
+    duration: "2+ weeks",
+    icon: BookOpen,
+    summary:
+      "Ship your work, get feedback, and level up with production habits.",
+    focus: "Testing, deployment, analytics, AI-enhanced workflows",
+    learn: [
+      "Testing and debugging habits",
+      "Deployment and performance basics",
+      "How AI tools can speed up development",
+    ],
+    build: [
+      "A polished portfolio project",
+      "A deployed full-stack app",
+      "An AI feature such as summaries or chat",
+    ],
+    outcome:
+      "You will be ready to turn your learning into visible projects and a strong portfolio.",
+  },
+] as const;
+
+function HybridRoadmapCard({
+  item,
+  isDark,
+  expanded,
+  onToggle,
+  statusLabel,
+  isActive,
+}: {
+  item: HybridStage;
+  isDark: boolean;
+  expanded: boolean;
+  onToggle: () => void;
+  statusLabel: string;
+  isActive: boolean;
+}) {
+  const Icon = item.icon;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="rounded-3xl border p-6 transition-all"
+      style={{
+        background: isDark ? "#111827" : "#ffffff",
+        borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+        boxShadow: isDark
+          ? "0 20px 45px rgba(0,0,0,0.18)"
+          : "0 20px 45px rgba(15,23,42,0.06)",
+      }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div
+            className="text-[11px] font-black uppercase tracking-[0.3em] mb-2"
+            style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
+          >
+            {item.phase}
+          </div>
+          <h3
+            className="text-xl font-black"
+            style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+          >
+            {item.title}
+          </h3>
+          <p
+            className="mt-2 text-sm leading-relaxed"
+            style={{ color: isDark ? "#cbd5e1" : "#475569" }}
+          >
+            {item.summary}
+          </p>
+        </div>
+        <div
+          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+          style={{
+            background: isDark
+              ? "rgba(59,130,246,0.16)"
+              : "rgba(37,99,235,0.10)",
+            color: isDark ? "#93c5fd" : "#2563eb",
+          }}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+      </div>
+
+      <div
+        className="mt-4 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.24em]"
+        style={{ color: isDark ? "#9ca3af" : "#64748b" }}
+      >
+        <span>{item.duration}</span>
+        <span>{item.focus}</span>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <span
+          className="rounded-full px-3 py-1 text-xs font-semibold"
+          style={{
+            background: isActive
+              ? isDark
+                ? "rgba(96,165,250,0.16)"
+                : "rgba(37,99,235,0.10)"
+              : isDark
+                ? "rgba(255,255,255,0.06)"
+                : "#f8fafc",
+            color: isActive
+              ? isDark
+                ? "#93c5fd"
+                : "#2563eb"
+              : isDark
+                ? "#d1d5db"
+                : "#475569",
+          }}
+        >
+          {statusLabel}
+        </span>
+        {isActive && (
+          <span
+            className="rounded-full px-3 py-1 text-xs font-semibold"
+            style={{
+              background: isDark
+                ? "rgba(250,204,21,0.14)"
+                : "rgba(245,158,11,0.12)",
+              color: isDark ? "#fcd34d" : "#b45309",
+            }}
+          >
+            Next up
+          </span>
+        )}
+      </div>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div
+          className="rounded-2xl p-3"
+          style={{
+            background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
+            border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+          }}
+        >
+          <div
+            className="text-sm font-bold mb-2"
+            style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+          >
+            Learn
+          </div>
+          <ul
+            className="space-y-1.5 text-sm"
+            style={{ color: isDark ? "#9ca3af" : "#475569" }}
+          >
+            {item.learn.map((point) => (
+              <li key={point} className="flex gap-2">
+                <CheckCircle2
+                  className="w-4 h-4 mt-0.5 shrink-0"
+                  style={{ color: isDark ? "#60a5fa" : "#2563eb" }}
+                />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div
+          className="rounded-2xl p-3"
+          style={{
+            background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
+            border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+          }}
+        >
+          <div
+            className="text-sm font-bold mb-2"
+            style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+          >
+            Build
+          </div>
+          <ul
+            className="space-y-1.5 text-sm"
+            style={{ color: isDark ? "#9ca3af" : "#475569" }}
+          >
+            {item.build.map((point) => (
+              <li key={point} className="flex gap-2">
+                <CheckCircle2
+                  className="w-4 h-4 mt-0.5 shrink-0"
+                  style={{ color: isDark ? "#a78bfa" : "#7c3aed" }}
+                />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <button
+        onClick={onToggle}
+        className="mt-5 flex items-center gap-2 text-sm font-semibold transition-colors"
+        style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
+      >
+        {expanded ? "Hide details" : "Explore this step"}
+        <motion.span
+          animate={{ rotate: expanded ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-4 h-4" />
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <div
+              className="mt-4 rounded-2xl p-4"
+              style={{
+                background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              }}
+            >
+              <div
+                className="text-sm font-bold mb-2"
+                style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+              >
+                Why this step matters
+              </div>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: isDark ? "#9ca3af" : "#475569" }}
+              >
+                {item.outcome}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function StepCard({
+  step,
+  index,
+  isDark,
+}: {
+  step: Step;
+  index: number;
+  isDark: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [expanded, setExpanded] = useState(false);
   const [notifyEmail, setNotifyEmail] = useState("");
-  const [notifyState, setNotifyState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [notifyState, setNotifyState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const isLeft = index % 2 === 0;
 
   const handleNotifySubmit = (e: React.FormEvent) => {
@@ -104,88 +522,174 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
     }, 800);
   };
 
-  const cardBg  = isDark ? "rgb(17 24 39)"  : step.lightCardBg;
+  const cardBg = isDark ? "rgb(17 24 39)" : step.lightCardBg;
   const cardBdr = isDark ? `${step.accent}28` : step.lightBorder;
   const textPri = isDark ? "#f9fafb" : "#111827";
   const textSec = isDark ? "#9ca3af" : "#4b5563";
   const divider = isDark ? "#374151" : "#e5e7eb";
 
   return (
-    <div ref={ref} className={`relative flex items-center gap-0 mb-24 ${isLeft ? "flex-row" : "flex-row-reverse"}`}>
+    <div
+      ref={ref}
+      className={`relative flex items-center gap-0 mb-24 ${isLeft ? "flex-row" : "flex-row-reverse"}`}
+    >
       <div className={`w-[calc(50%-3rem)] ${isLeft ? "pr-8" : "pl-8"}`}>
         <motion.div
           initial={{ opacity: 0, x: isLeft ? -60 : 60 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.21, 1.02, 0.73, 1], delay: 0.1 }}
+          transition={{
+            duration: 0.6,
+            ease: [0.21, 1.02, 0.73, 1],
+            delay: 0.1,
+          }}
         >
           <motion.div
             whileHover={{ y: -6, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
             onClick={() => setExpanded(!expanded)}
             className="cursor-pointer rounded-3xl overflow-hidden"
-            style={{ background: cardBg, border: `1.5px solid ${cardBdr}`, boxShadow: inView ? step.shadow : "none", transition: "box-shadow 0.4s ease" }}
+            style={{
+              background: cardBg,
+              border: `1.5px solid ${cardBdr}`,
+              boxShadow: inView ? step.shadow : "none",
+              transition: "box-shadow 0.4s ease",
+            }}
           >
             <div className={`h-1.5 bg-gradient-to-r ${step.gradient}`} />
             <div className="p-7 relative overflow-hidden">
-              <div className="absolute right-4 bottom-3 text-[9rem] font-black leading-none pointer-events-none select-none"
-                style={{ color: isDark ? `${step.accent}10` : step.lightNumColor, opacity: isDark ? 1 : 0.25 }}>
+              <div
+                className="absolute right-4 bottom-3 text-[9rem] font-black leading-none pointer-events-none select-none"
+                style={{
+                  color: isDark ? `${step.accent}10` : step.lightNumColor,
+                  opacity: isDark ? 1 : 0.25,
+                }}
+              >
                 {step.number}
               </div>
               <div className="flex items-center gap-4 mb-5 relative">
-                <motion.div whileHover={{ rotate: 10, scale: 1.1 }}
+                <motion.div
+                  whileHover={{ rotate: 10, scale: 1.1 }}
                   className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shrink-0`}
-                  style={{ boxShadow: `0 8px 24px ${step.accent}35` }}>
+                  style={{ boxShadow: `0 8px 24px ${step.accent}35` }}
+                >
                   <step.icon className="w-7 h-7 text-white" />
                 </motion.div>
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[11px] font-black uppercase tracking-[0.25em]" style={{ color: step.accent }}>
+                    <span
+                      className="text-[11px] font-black uppercase tracking-[0.25em]"
+                      style={{ color: step.accent }}
+                    >
                       Stage {step.number}
                     </span>
                     {"comingSoon" in step && step.comingSoon && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                        style={{ background: isDark ? "rgba(139,92,246,0.2)" : "#ede9fe", color: isDark ? "#c4b5fd" : "#7c3aed" }}>
+                      <span
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        style={{
+                          background: isDark
+                            ? "rgba(139,92,246,0.2)"
+                            : "#ede9fe",
+                          color: isDark ? "#c4b5fd" : "#7c3aed",
+                        }}
+                      >
                         Coming Soon
                       </span>
                     )}
                   </div>
-                  <h3 className="text-2xl font-extrabold leading-tight" style={{ color: textPri }}>{step.fullTitle}</h3>
-                  <p className="text-sm font-semibold mt-0.5" style={{ color: step.accent }}>{step.tagline}</p>
+                  <h3
+                    className="text-2xl font-extrabold leading-tight"
+                    style={{ color: textPri }}
+                  >
+                    {step.fullTitle}
+                  </h3>
+                  <p
+                    className="text-sm font-semibold mt-0.5"
+                    style={{ color: step.accent }}
+                  >
+                    {step.tagline}
+                  </p>
                 </div>
               </div>
-              <p className="text-sm leading-relaxed mb-5 relative" style={{ color: textSec }}>{step.desc}</p>
+              <p
+                className="text-sm leading-relaxed mb-5 relative"
+                style={{ color: textSec }}
+              >
+                {step.desc}
+              </p>
               <div className="flex items-center justify-between mb-4 relative">
                 <div className="flex items-center gap-5">
                   <div>
-                    <div className="text-2xl font-black leading-none" style={{ color: textPri }}>{step.stat}</div>
-                    <div className="text-[11px] uppercase tracking-widest font-semibold mt-0.5" style={{ color: step.accent }}>{step.statUnit}</div>
+                    <div
+                      className="text-2xl font-black leading-none"
+                      style={{ color: textPri }}
+                    >
+                      {step.stat}
+                    </div>
+                    <div
+                      className="text-[11px] uppercase tracking-widest font-semibold mt-0.5"
+                      style={{ color: step.accent }}
+                    >
+                      {step.statUnit}
+                    </div>
                   </div>
                   <div className="w-px h-8" style={{ background: divider }} />
                   <div>
-                    <div className="text-2xl font-black leading-none" style={{ color: textPri }}>{step.time}</div>
-                    <div className="text-[11px] uppercase tracking-widest font-semibold mt-0.5" style={{ color: step.accent }}>timeline</div>
+                    <div
+                      className="text-2xl font-black leading-none"
+                      style={{ color: textPri }}
+                    >
+                      {step.time}
+                    </div>
+                    <div
+                      className="text-[11px] uppercase tracking-widest font-semibold mt-0.5"
+                      style={{ color: step.accent }}
+                    >
+                      timeline
+                    </div>
                   </div>
                 </div>
-                <button className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors"
-                  style={{ background: `${step.accent}15`, color: step.accent }}>
+                <button
+                  className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors"
+                  style={{ background: `${step.accent}15`, color: step.accent }}
+                >
                   Skills
-                  <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                  <motion.span
+                    animate={{ rotate: expanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     <ChevronDown className="w-3.5 h-3.5" />
                   </motion.span>
                 </button>
               </div>
               <AnimatePresence>
                 {expanded && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
-                    className="overflow-hidden mb-4 relative">
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden mb-4 relative"
+                  >
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {step.skills.map((s, i) => (
-                        <motion.span key={s} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+                        <motion.span
+                          key={s}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: i * 0.04 }}
                           className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg"
-                          style={{ background: isDark ? "rgba(255,255,255,0.06)" : `${step.accent}0d`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : step.lightBorder}`, color: isDark ? "#d1d5db" : "#374151" }}>
-                          <CheckCircle2 className="w-3 h-3 shrink-0" style={{ color: step.accent }} />
+                          style={{
+                            background: isDark
+                              ? "rgba(255,255,255,0.06)"
+                              : `${step.accent}0d`,
+                            border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : step.lightBorder}`,
+                            color: isDark ? "#d1d5db" : "#374151",
+                          }}
+                        >
+                          <CheckCircle2
+                            className="w-3 h-3 shrink-0"
+                            style={{ color: step.accent }}
+                          />
                           {s}
                         </motion.span>
                       ))}
@@ -195,13 +699,20 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
               </AnimatePresence>
               <div className="flex gap-2.5 relative">
                 {step.tutorialSlug ? (
-                  <Link href={`/tutorials/${step.tutorialSlug}`} onClick={(e) => e.stopPropagation()}
+                  <Link
+                    href={`/tutorials/${step.tutorialSlug}`}
+                    onClick={(e) => e.stopPropagation()}
                     className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r ${step.gradient} text-white text-sm font-bold hover:-translate-y-0.5 active:translate-y-0 transition-transform`}
-                    style={{ boxShadow: `0 6px 20px ${step.accent}40` }}>
-                    <BookOpen className="w-4 h-4" /> Start Learning <ArrowRight className="w-3.5 h-3.5" />
+                    style={{ boxShadow: `0 6px 20px ${step.accent}40` }}
+                  >
+                    <BookOpen className="w-4 h-4" /> Start Learning{" "}
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 ) : (
-                  <form onSubmit={handleNotifySubmit} className="flex-1 flex items-center gap-2">
+                  <form
+                    onSubmit={handleNotifySubmit}
+                    className="flex-1 flex items-center gap-2"
+                  >
                     <input
                       type="email"
                       required
@@ -210,24 +721,51 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
                       onChange={(e) => setNotifyEmail(e.target.value)}
                       onClick={(e) => e.stopPropagation()}
                       className="flex-1 min-w-0 h-12 px-4 rounded-2xl text-sm outline-none transition-all"
-                      style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"}`, color: textPri }}
+                      style={{
+                        background: isDark
+                          ? "rgba(255,255,255,0.06)"
+                          : "#f3f4f6",
+                        border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"}`,
+                        color: textPri,
+                      }}
                     />
                     <button
                       type="submit"
-                      disabled={notifyState === "loading" || notifyState === "success"}
+                      disabled={
+                        notifyState === "loading" || notifyState === "success"
+                      }
                       onClick={(e) => e.stopPropagation()}
                       className="h-12 px-6 rounded-2xl text-sm font-bold text-white transition-all disabled:opacity-50"
-                      style={{ background: notifyState === "success" ? "#10b981" : step.accent, boxShadow: notifyState === "success" ? "none" : `0 4px 14px ${step.accent}40` }}
+                      style={{
+                        background:
+                          notifyState === "success" ? "#10b981" : step.accent,
+                        boxShadow:
+                          notifyState === "success"
+                            ? "none"
+                            : `0 4px 14px ${step.accent}40`,
+                      }}
                     >
-                      {notifyState === "loading" ? "..." : notifyState === "success" ? "Subscribed! ✓" : "Notify Me"}
+                      {notifyState === "loading"
+                        ? "..."
+                        : notifyState === "success"
+                          ? "Subscribed! ✓"
+                          : "Notify Me"}
                     </button>
                   </form>
                 )}
                 {step.tutorialSlug && (
-                  <Link href={`/quiz?category=${step.tutorialSlug}`} onClick={(e) => e.stopPropagation()}
+                  <Link
+                    href={`/quiz?category=${step.tutorialSlug}`}
+                    onClick={(e) => e.stopPropagation()}
                     title="Take Quiz"
                     className="px-4 py-3 rounded-2xl flex items-center justify-center transition-colors"
-                    style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${step.accent}12`, color: isDark ? "#9ca3af" : step.accent }}>
+                    style={{
+                      background: isDark
+                        ? "rgba(255,255,255,0.08)"
+                        : `${step.accent}12`,
+                      color: isDark ? "#9ca3af" : step.accent,
+                    }}
+                  >
                     <Brain className="w-4 h-4" />
                   </Link>
                 )}
@@ -237,20 +775,41 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
         </motion.div>
       </div>
       <div className="w-24 flex flex-col items-center shrink-0">
-        <motion.div initial={{ scale: 0 }} animate={inView ? { scale: 1 } : {}}
-          transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.25 }}>
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={inView ? { scale: 1 } : {}}
+          transition={{
+            type: "spring",
+            stiffness: 400,
+            damping: 18,
+            delay: 0.25,
+          }}
+        >
           <motion.div
-            animate={{ boxShadow: [`0 0 0 0px ${step.accent}00`, `0 0 0 12px ${step.accent}00`] }}
+            animate={{
+              boxShadow: [
+                `0 0 0 0px ${step.accent}00`,
+                `0 0 0 12px ${step.accent}00`,
+              ],
+            }}
             transition={{ duration: 2.5, repeat: Infinity }}
             className="w-14 h-14 rounded-full border-4 flex items-center justify-center text-2xl"
-            style={{ borderColor: step.accent, background: isDark ? "#111827" : step.lightCardBg, boxShadow: `0 4px 20px ${step.accent}30` }}>
+            style={{
+              borderColor: step.accent,
+              background: isDark ? "#111827" : step.lightCardBg,
+              boxShadow: `0 4px 20px ${step.accent}30`,
+            }}
+          >
             {step.emoji}
           </motion.div>
         </motion.div>
-        <motion.span initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.4 }}
           className="mt-2 text-[11px] font-black uppercase tracking-wider text-center"
-          style={{ color: step.accent }}>
+          style={{ color: step.accent }}
+        >
           {step.title}
         </motion.span>
       </div>
@@ -259,51 +818,110 @@ function StepCard({ step, index, isDark }: { step: Step; index: number; isDark: 
   );
 }
 
-function MobileStepCard({ step, index, isDark }: { step: Step; index: number; isDark: boolean }) {
+function MobileStepCard({
+  step,
+  index,
+  isDark,
+}: {
+  step: Step;
+  index: number;
+  isDark: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [expanded, setExpanded] = useState(false);
   const [notifyEmail, setNotifyEmail] = useState("");
-  const [notifyState, setNotifyState] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const cardBg  = isDark ? "#111827" : step.lightCardBg;
+  const [notifyState, setNotifyState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const cardBg = isDark ? "#111827" : step.lightCardBg;
   const textPri = isDark ? "#f9fafb" : "#111827";
   const textSec = isDark ? "#9ca3af" : "#4b5563";
 
   return (
-    <motion.div ref={ref}
-      initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: index * 0.08, duration: 0.55, ease: [0.21, 1.02, 0.73, 1] }}
-      className="relative pl-10 mb-8">
-      <motion.div initial={{ scale: 0 }} animate={inView ? { scale: 1 } : {}}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        delay: index * 0.08,
+        duration: 0.55,
+        ease: [0.21, 1.02, 0.73, 1],
+      }}
+      className="relative pl-10 mb-8"
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={inView ? { scale: 1 } : {}}
         transition={{ type: "spring", stiffness: 400, delay: 0.1 }}
         className="absolute left-0 top-4 w-8 h-8 rounded-full border-4 flex items-center justify-center text-sm z-10"
-        style={{ borderColor: step.accent, background: isDark ? "#111827" : step.lightCardBg, boxShadow: `0 2px 12px ${step.accent}30` }}>
+        style={{
+          borderColor: step.accent,
+          background: isDark ? "#111827" : step.lightCardBg,
+          boxShadow: `0 2px 12px ${step.accent}30`,
+        }}
+      >
         {step.emoji}
       </motion.div>
-      <div onClick={() => setExpanded(!expanded)} className="cursor-pointer rounded-2xl p-5 overflow-hidden"
-        style={{ background: cardBg, border: `1.5px solid ${isDark ? `${step.accent}22` : step.lightBorder}`, boxShadow: `0 4px 20px ${step.accent}12` }}>
-        <div className={`h-1 bg-gradient-to-r ${step.gradient} rounded-full mb-4`} />
+      <div
+        onClick={() => setExpanded(!expanded)}
+        className="cursor-pointer rounded-2xl p-5 overflow-hidden"
+        style={{
+          background: cardBg,
+          border: `1.5px solid ${isDark ? `${step.accent}22` : step.lightBorder}`,
+          boxShadow: `0 4px 20px ${step.accent}12`,
+        }}
+      >
+        <div
+          className={`h-1 bg-gradient-to-r ${step.gradient} rounded-full mb-4`}
+        />
         <div className="flex items-center gap-3 mb-3">
-          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shrink-0`}>
+          <div
+            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shrink-0`}
+          >
             <step.icon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest block" style={{ color: step.accent }}>
+            <span
+              className="text-[10px] font-black uppercase tracking-widest block"
+              style={{ color: step.accent }}
+            >
               Stage {step.number} · {step.time}
             </span>
-            <h3 className="text-base font-extrabold" style={{ color: textPri }}>{step.fullTitle}</h3>
+            <h3 className="text-base font-extrabold" style={{ color: textPri }}>
+              {step.fullTitle}
+            </h3>
           </div>
         </div>
-        <p className="text-sm leading-relaxed mb-4" style={{ color: textSec }}>{step.desc}</p>
+        <p className="text-sm leading-relaxed mb-4" style={{ color: textSec }}>
+          {step.desc}
+        </p>
         <AnimatePresence>
           {expanded && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-4">
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden mb-4"
+            >
               <div className="flex flex-wrap gap-1.5">
                 {step.skills.map((s) => (
-                  <span key={s} className="text-xs px-2.5 py-1 rounded-lg flex items-center gap-1"
-                    style={{ background: isDark ? "rgba(255,255,255,0.06)" : `${step.accent}0d`, border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : step.lightBorder}`, color: textSec }}>
-                    <CheckCircle2 className="w-3 h-3" style={{ color: step.accent }} />{s}
+                  <span
+                    key={s}
+                    className="text-xs px-2.5 py-1 rounded-lg flex items-center gap-1"
+                    style={{
+                      background: isDark
+                        ? "rgba(255,255,255,0.06)"
+                        : `${step.accent}0d`,
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : step.lightBorder}`,
+                      color: textSec,
+                    }}
+                  >
+                    <CheckCircle2
+                      className="w-3 h-3"
+                      style={{ color: step.accent }}
+                    />
+                    {s}
                   </span>
                 ))}
               </div>
@@ -313,31 +931,67 @@ function MobileStepCard({ step, index, isDark }: { step: Step; index: number; is
         <div className="flex flex-col gap-2">
           <div className="flex gap-2 w-full">
             {step.tutorialSlug ? (
-              <Link href={`/tutorials/${step.tutorialSlug}`} onClick={(e) => e.stopPropagation()}
+              <Link
+                href={`/tutorials/${step.tutorialSlug}`}
+                onClick={(e) => e.stopPropagation()}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r ${step.gradient} text-white text-xs font-bold`}
-                style={{ boxShadow: `0 4px 12px ${step.accent}35` }}>
-                <BookOpen className="w-3.5 h-3.5" /> Start <ArrowRight className="w-3 h-3" />
+                style={{ boxShadow: `0 4px 12px ${step.accent}35` }}
+              >
+                <BookOpen className="w-3.5 h-3.5" /> Start{" "}
+                <ArrowRight className="w-3 h-3" />
               </Link>
             ) : (
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (!notifyEmail) return;
-                setNotifyState("loading");
-                setTimeout(() => setNotifyState("success"), 800);
-              }} className="flex-1 flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
-                <input type="email" required placeholder="Get notified..." value={notifyEmail} onChange={e => setNotifyEmail(e.target.value)}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!notifyEmail) return;
+                  setNotifyState("loading");
+                  setTimeout(() => setNotifyState("success"), 800);
+                }}
+                className="flex-1 flex items-center gap-1.5"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="Get notified..."
+                  value={notifyEmail}
+                  onChange={(e) => setNotifyEmail(e.target.value)}
                   className="w-full min-w-0 h-9 px-3 rounded-xl text-xs outline-none"
-                  style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6", border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"}`, color: textPri }} />
-                <button type="submit" disabled={notifyState === "loading" || notifyState === "success"}
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.06)" : "#f3f4f6",
+                    border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"}`,
+                    color: textPri,
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={
+                    notifyState === "loading" || notifyState === "success"
+                  }
                   className="h-9 px-3 rounded-xl text-xs font-bold text-white whitespace-nowrap disabled:opacity-50"
-                  style={{ background: notifyState === "success" ? "#10b981" : step.accent }}>
+                  style={{
+                    background:
+                      notifyState === "success" ? "#10b981" : step.accent,
+                  }}
+                >
                   {notifyState === "success" ? "✓" : "Notify"}
                 </button>
               </form>
             )}
-            <button onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(!expanded);
+              }}
               className="px-3 py-2.5 rounded-xl text-xs font-medium transition-colors shrink-0"
-              style={{ background: isDark ? "rgba(255,255,255,0.08)" : `${step.accent}12`, color: isDark ? "#9ca3af" : step.accent }}>
+              style={{
+                background: isDark
+                  ? "rgba(255,255,255,0.08)"
+                  : `${step.accent}12`,
+                color: isDark ? "#9ca3af" : step.accent,
+              }}
+            >
               {expanded ? "Less" : "Skills"}
             </button>
           </div>
@@ -350,105 +1004,547 @@ function MobileStepCard({ step, index, isDark }: { step: Step; index: number; is
 export default function RoadmapPage() {
   const totalLessons = tutorials.reduce((s, t) => s + t.lessons.length, 0);
   const heroRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   const [isDark, setIsDark] = useState(false);
+  const [expandedStage, setExpandedStage] = useState<string | null>("01");
 
   useEffect(() => {
-    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    const check = () =>
+      setIsDark(document.documentElement.classList.contains("dark"));
     check();
     const obs = new MutationObserver(check);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
     return () => obs.disconnect();
   }, []);
 
-  const heroBg    = isDark ? "#030712" : "#f9fafb";
-  const dotColor  = isDark ? "rgba(255,255,255,0.055)" : "rgba(99,102,241,0.10)";
-  const badgeBg   = isDark ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.07)";
-  const badgeBdr  = isDark ? "rgba(255,255,255,0.10)" : "rgba(99,102,241,0.18)";
+  const heroBg = isDark ? "#030712" : "#f9fafb";
+  const dotColor = isDark ? "rgba(255,255,255,0.055)" : "rgba(99,102,241,0.10)";
+  const tutorialProgress =
+    typeof window !== "undefined"
+      ? tutorials.map((tutorial) => {
+          const stored = localStorage.getItem(
+            getUserStorageKey(user?.id, `tutorial-progress-${tutorial.slug}`),
+          );
+          const completed: number[] = stored ? JSON.parse(stored) : [];
+          return {
+            slug: tutorial.slug,
+            completed: completed.length,
+            total: tutorial.lessons.length,
+          };
+        })
+      : [];
+  const completedLessons = tutorialProgress.reduce(
+    (sum, item) => sum + item.completed,
+    0,
+  );
+  const totalCompletedLessons = tutorialProgress.reduce(
+    (sum, item) => sum + item.total,
+    0,
+  );
+  const overallProgressPercent =
+    totalCompletedLessons > 0
+      ? Math.round((completedLessons / totalCompletedLessons) * 100)
+      : 0;
+  const stageCompletion = HYBRID_ROADMAP.map((stage, index) => {
+    const isComplete =
+      index === 0
+        ? (tutorialProgress.find((item) => item.slug === "html")?.completed ??
+            0) >=
+          (tutorials.find((item) => item.slug === "html")?.lessons.length ?? 0)
+        : index === 1
+          ? (tutorialProgress.find((item) => item.slug === "css")?.completed ??
+              0) >=
+            (tutorials.find((item) => item.slug === "css")?.lessons.length ?? 0)
+          : index === 2
+            ? (tutorialProgress.find((item) => item.slug === "javascript")
+                ?.completed ?? 0) >=
+              (tutorials.find((item) => item.slug === "javascript")?.lessons
+                .length ?? 0)
+            : index === 3
+              ? overallProgressPercent >= 40
+              : index === 4
+                ? overallProgressPercent >= 70
+                : overallProgressPercent >= 90;
+    return { ...stage, complete: isComplete };
+  });
+  const currentStageIndex = stageCompletion.findIndex(
+    (stage) => !stage.complete,
+  );
+  const activeStageIndex =
+    currentStageIndex === -1 ? stageCompletion.length - 1 : currentStageIndex;
+  const activeStage = stageCompletion[activeStageIndex] ?? stageCompletion[0];
+  const nextStage =
+    stageCompletion[
+      Math.min(activeStageIndex + 1, stageCompletion.length - 1)
+    ] ?? stageCompletion[0];
+  const progressBadge =
+    overallProgressPercent === 0
+      ? "Just getting started"
+      : overallProgressPercent < 25
+        ? "First steps"
+        : overallProgressPercent < 50
+          ? "Momentum building"
+          : overallProgressPercent < 75
+            ? "Steady progress"
+            : overallProgressPercent < 100
+              ? "Almost there"
+              : "Roadmap champion";
+  const roadmapContinueHref =
+    activeStageIndex === 0
+      ? "/tutorials/html"
+      : activeStageIndex === 1
+        ? "/tutorials/css"
+        : activeStageIndex === 2
+          ? "/tutorials/javascript"
+          : "/tutorials";
+  const badgeBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.07)";
+  const badgeBdr = isDark ? "rgba(255,255,255,0.10)" : "rgba(99,102,241,0.18)";
   const badgeText = isDark ? "rgba(255,255,255,0.50)" : "#3730a3";
-  const headText  = isDark ? "text-white" : "text-gray-900";
+  const headText = isDark ? "text-white" : "text-gray-900";
   const scrollCue = isDark ? "rgba(255,255,255,0.25)" : "rgba(99,102,241,0.40)";
   const scrollTxt = isDark ? "rgba(255,255,255,0.28)" : "#6366f1";
-  const tipsBg    = isDark ? "#0d1117" : "#f1f5f9";
-  const tipsCard  = isDark ? "#111827" : "#ffffff";
+  const tipsBg = isDark ? "#0d1117" : "#f1f5f9";
+  const tipsCard = isDark ? "#111827" : "#ffffff";
   const tipsCardB = isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0";
-  const tipsNum   = isDark ? "rgba(255,255,255,0.05)" : "#e2e8f0";
-  const tipsText  = isDark ? "#d1d5db" : "#374151";
-  const tipsHead  = isDark ? "#ffffff" : "#0f172a";
+  const tipsNum = isDark ? "rgba(255,255,255,0.05)" : "#e2e8f0";
+  const tipsText = isDark ? "#d1d5db" : "#374151";
+  const tipsHead = isDark ? "#ffffff" : "#0f172a";
 
   return (
-    <div style={{ background: isDark ? "#030712" : "#ffffff" }} className="min-h-screen">
-
-      <section ref={heroRef}
+    <div
+      style={{ background: isDark ? "#030712" : "#ffffff" }}
+      className="min-h-screen"
+    >
+      <section
+        ref={heroRef}
         className="relative h-screen flex items-center justify-center overflow-hidden"
-        style={{ background: heroBg }}>
-
+        style={{ background: heroBg }}
+      >
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {[
-            { color: isDark ? "rgba(249,115,22,0.12)" : "rgba(234,107,26,0.12)", left: "8%",  top: "18%", size: 520 },
-            { color: isDark ? "rgba(59,130,246,0.09)"  : "rgba(37,99,235,0.09)",  left: "72%", top: "8%",  size: 460 },
-            { color: isDark ? "rgba(139,92,246,0.08)"  : "rgba(124,58,237,0.08)", left: "42%", top: "62%", size: 400 },
+            {
+              color: isDark ? "rgba(249,115,22,0.12)" : "rgba(234,107,26,0.12)",
+              left: "8%",
+              top: "18%",
+              size: 520,
+            },
+            {
+              color: isDark ? "rgba(59,130,246,0.09)" : "rgba(37,99,235,0.09)",
+              left: "72%",
+              top: "8%",
+              size: 460,
+            },
+            {
+              color: isDark ? "rgba(139,92,246,0.08)" : "rgba(124,58,237,0.08)",
+              left: "42%",
+              top: "62%",
+              size: 400,
+            },
           ].map((o, i) => (
-            <motion.div key={i} className="absolute rounded-full blur-3xl"
-              style={{ width: o.size, height: o.size, left: o.left, top: o.top, background: o.color }}
+            <motion.div
+              key={i}
+              className="absolute rounded-full blur-3xl"
+              style={{
+                width: o.size,
+                height: o.size,
+                left: o.left,
+                top: o.top,
+                background: o.color,
+              }}
               animate={{ x: [0, 25, -15, 0], y: [0, -18, 12, 0] }}
-              transition={{ duration: 12 + i * 3, repeat: Infinity, ease: "easeInOut" }} />
+              transition={{
+                duration: 12 + i * 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
           ))}
         </div>
 
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: `radial-gradient(${dotColor} 1.2px, transparent 1.2px)`, backgroundSize: "40px 40px" }} />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(${dotColor} 1.2px, transparent 1.2px)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-          style={{ background: `linear-gradient(to bottom, transparent, ${isDark ? "#030712" : "#ffffff"})` }} />
+        <div
+          className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+          style={{
+            background: `linear-gradient(to bottom, transparent, ${isDark ? "#030712" : "#ffffff"})`,
+          }}
+        />
 
         <div className="relative text-center px-4 max-w-5xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold mb-10 backdrop-blur-sm"
-            style={{ background: badgeBg, border: `1px solid ${badgeBdr}`, color: badgeText }}>
+            style={{
+              background: badgeBg,
+              border: `1px solid ${badgeBdr}`,
+              color: badgeText,
+            }}
+          >
             🗺️ Interactive Roadmap · {totalLessons}+ free lessons
           </motion.div>
 
           <div className="mb-3">
-            <SplitText text="Dev" delay={0.15} stagger={0.06}
-              className={`text-[18vw] sm:text-[14vw] md:text-[11vw] font-black tracking-tight leading-none ${headText}`} />
+            <SplitText
+              text="Dev"
+              delay={0.15}
+              stagger={0.06}
+              className={`text-[18vw] sm:text-[14vw] md:text-[11vw] font-black tracking-tight leading-none ${headText}`}
+            />
           </div>
           <div className="mb-10">
-            <SplitText text="Roadmap" delay={0.3} stagger={0.04}
-              className="text-[18vw] sm:text-[14vw] md:text-[11vw] font-black tracking-tight leading-none bg-gradient-to-r from-orange-500 via-blue-500 to-violet-500 bg-clip-text text-transparent" />
+            <SplitText
+              text="Roadmap"
+              delay={0.3}
+              stagger={0.04}
+              className="text-[18vw] sm:text-[14vw] md:text-[11vw] font-black tracking-tight leading-none bg-gradient-to-r from-orange-500 via-blue-500 to-violet-500 bg-clip-text text-transparent"
+            />
           </div>
 
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}
-            className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65 }}
+            className="flex flex-wrap items-center justify-center gap-3 mb-10"
+          >
             {STEPS.map((s, i) => (
-              <motion.div key={s.id}
-                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+              <motion.div
+                key={s.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7 + i * 0.08 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold"
-                style={{ border: `1px solid ${s.accent}30`, color: s.accent, background: `${s.accent}10` }}>
+                style={{
+                  border: `1px solid ${s.accent}30`,
+                  color: s.accent,
+                  background: `${s.accent}10`,
+                }}
+              >
                 {s.emoji} {s.title}
               </motion.div>
             ))}
           </motion.div>
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}
-            className="flex flex-col items-center gap-3">
-            <span className="text-[11px] uppercase tracking-[0.3em] font-medium" style={{ color: scrollTxt }}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1 }}
+            className="flex flex-col items-center gap-3"
+          >
+            <span
+              className="text-[11px] uppercase tracking-[0.3em] font-medium"
+              style={{ color: scrollTxt }}
+            >
               Scroll to explore
             </span>
-            <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
               className="w-6 h-10 rounded-full flex items-start justify-center pt-2"
-              style={{ border: `2px solid ${scrollCue}` }}>
-              <motion.div className="w-1.5 h-2 rounded-full" style={{ background: scrollCue }}
-                animate={{ y: [0, 14, 0] }} transition={{ duration: 2, repeat: Infinity }} />
+              style={{ border: `2px solid ${scrollCue}` }}
+            >
+              <motion.div
+                className="w-1.5 h-2 rounded-full"
+                style={{ background: scrollCue }}
+                animate={{ y: [0, 14, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      <section className="relative hidden md:block py-24 overflow-hidden"
-        style={{ background: isDark ? "#030712" : "#ffffff" }}>
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0.5"
-          style={{ background: "linear-gradient(to bottom, transparent, #ea6b1a 10%, #2563eb 35%, #b45309 65%, #7c3aed 90%, transparent)" }} />
+      <section
+        className="relative py-20 overflow-hidden"
+        style={{ background: isDark ? "#030712" : "#f8fafc" }}
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <p
+              className="text-sm font-semibold uppercase tracking-[0.3em] mb-3"
+              style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
+            >
+              Hybrid roadmap
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl font-black tracking-tight"
+              style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+            >
+              Learn and build in the right order
+            </h2>
+            <p
+              className="mt-3 text-base mx-auto max-w-3xl"
+              style={{ color: isDark ? "#9ca3af" : "#475569" }}
+            >
+              Every stage combines the core concepts you need with a practical
+              project idea so your learning always has a real-world purpose.
+            </p>
+          </motion.div>
+
+          {user ? (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-6 rounded-3xl border p-6"
+              style={{
+                background: isDark ? "#0f172a" : "#ffffff",
+                borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+              }}
+            >
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Trophy
+                      className="w-5 h-5"
+                      style={{ color: isDark ? "#fcd34d" : "#f59e0b" }}
+                    />
+                    <span
+                      className="text-sm font-semibold uppercase tracking-[0.24em]"
+                      style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
+                    >
+                      Your learning pulse
+                    </span>
+                  </div>
+                  <h3
+                    className="text-2xl font-black"
+                    style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                  >
+                    {user.name}, you are {overallProgressPercent}% through the
+                    roadmap
+                  </h3>
+                  <p
+                    className="mt-2 text-sm leading-relaxed"
+                    style={{ color: isDark ? "#9ca3af" : "#475569" }}
+                  >
+                    Current focus:{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                    >
+                      {activeStage.title}
+                    </span>
+                    . Next step:{" "}
+                    <span
+                      className="font-semibold"
+                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                    >
+                      {nextStage.title}
+                    </span>
+                    .
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <div
+                    className="rounded-2xl px-4 py-3"
+                    style={{
+                      background: isDark ? "rgba(255,255,255,0.05)" : "#f8fafc",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                    }}
+                  >
+                    <div
+                      className="flex items-center gap-2 text-sm font-semibold"
+                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                    >
+                      <Sparkles
+                        className="w-4 h-4"
+                        style={{ color: isDark ? "#a78bfa" : "#7c3aed" }}
+                      />
+                      {progressBadge}
+                    </div>
+                  </div>
+                  <div
+                    className="rounded-2xl px-4 py-3"
+                    style={{
+                      background: isDark ? "rgba(255,255,255,0.05)" : "#f8fafc",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                    }}
+                  >
+                    <div
+                      className="flex items-center gap-2 text-sm font-semibold"
+                      style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                    >
+                      <Compass
+                        className="w-4 h-4"
+                        style={{ color: isDark ? "#60a5fa" : "#2563eb" }}
+                      />
+                      {completedLessons}/{totalCompletedLessons} lessons
+                      completed
+                    </div>
+                  </div>
+                  <Link
+                    href={roadmapContinueHref}
+                    className="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+                    style={{
+                      background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                    }}
+                  >
+                    Continue learning
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+              <div className="mt-5">
+                <div
+                  className="flex items-center justify-between text-sm font-semibold mb-2"
+                  style={{ color: isDark ? "#d1d5db" : "#475569" }}
+                >
+                  <span>Roadmap progress</span>
+                  <span>{overallProgressPercent}%</span>
+                </div>
+                <div
+                  className="h-2.5 rounded-full overflow-hidden"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+                  }}
+                >
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${overallProgressPercent}%`,
+                      background: "linear-gradient(90deg, #2563eb, #7c3aed)",
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-6 rounded-3xl border p-6"
+              style={{
+                background: isDark ? "#0f172a" : "#ffffff",
+                borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Compass
+                  className="w-5 h-5"
+                  style={{ color: isDark ? "#60a5fa" : "#2563eb" }}
+                />
+                <span
+                  className="text-sm font-semibold uppercase tracking-[0.24em]"
+                  style={{ color: isDark ? "#93c5fd" : "#2563eb" }}
+                >
+                  Sign in to personalize
+                </span>
+              </div>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: isDark ? "#9ca3af" : "#475569" }}
+              >
+                Create an account to sync your tutorial progress and see your
+                exact place in the roadmap with helpful milestone badges.
+              </p>
+            </motion.div>
+          )}
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            {stageCompletion.map((item, index) => (
+              <HybridRoadmapCard
+                key={item.phase}
+                item={item}
+                isDark={isDark}
+                expanded={expandedStage === item.phase}
+                onToggle={() =>
+                  setExpandedStage(
+                    expandedStage === item.phase ? null : item.phase,
+                  )
+                }
+                statusLabel={
+                  item.complete
+                    ? "Completed"
+                    : index === activeStageIndex
+                      ? "Current focus"
+                      : index < activeStageIndex
+                        ? "Completed"
+                        : "Upcoming"
+                }
+                isActive={index === activeStageIndex}
+              />
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-8 rounded-3xl border p-6"
+            style={{
+              background: isDark ? "#0f172a" : "#ffffff",
+              borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+            }}
+          >
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                {
+                  title: "Small steps",
+                  text: "Do one stage at a time and finish a tiny project before moving on.",
+                },
+                {
+                  title: "Build as you learn",
+                  text: "Each phase gives you a practical goal so theory turns into momentum.",
+                },
+                {
+                  title: "Keep the loop going",
+                  text: "When a stage feels easy, add polish, tests, or a better version of the project.",
+                },
+              ].map((tip) => (
+                <div
+                  key={tip.title}
+                  className="rounded-2xl p-4"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
+                    border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                  }}
+                >
+                  <div
+                    className="text-sm font-black mb-2"
+                    style={{ color: isDark ? "#f9fafb" : "#0f172a" }}
+                  >
+                    {tip.title}
+                  </div>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: isDark ? "#9ca3af" : "#475569" }}
+                  >
+                    {tip.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section
+        className="relative hidden md:block py-24 overflow-hidden"
+        style={{ background: isDark ? "#030712" : "#ffffff" }}
+      >
+        <div
+          className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0.5"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, #ea6b1a 10%, #2563eb 35%, #b45309 65%, #7c3aed 90%, transparent)",
+          }}
+        />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {STEPS.map((step, i) => (
             <StepCard key={step.id} step={step} index={i} isDark={isDark} />
@@ -456,10 +1552,17 @@ export default function RoadmapPage() {
         </div>
       </section>
 
-      <section className="md:hidden py-12 px-5 relative"
-        style={{ background: isDark ? "#030712" : "#ffffff" }}>
-        <div className="absolute left-4 top-0 bottom-0 w-0.5"
-          style={{ background: "linear-gradient(to bottom, transparent, #ea6b1a 10%, #2563eb 35%, #b45309 65%, #7c3aed 90%, transparent)" }} />
+      <section
+        className="md:hidden py-12 px-5 relative"
+        style={{ background: isDark ? "#030712" : "#ffffff" }}
+      >
+        <div
+          className="absolute left-4 top-0 bottom-0 w-0.5"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, #ea6b1a 10%, #2563eb 35%, #b45309 65%, #7c3aed 90%, transparent)",
+          }}
+        />
         {STEPS.map((step, i) => (
           <MobileStepCard key={step.id} step={step} index={i} isDark={isDark} />
         ))}
@@ -467,70 +1570,152 @@ export default function RoadmapPage() {
 
       <section className="py-24" style={{ background: tipsBg }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} className="mb-14 text-center">
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight" style={{ color: tipsHead }}>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-14 text-center"
+          >
+            <h2
+              className="text-4xl sm:text-5xl font-black tracking-tight"
+              style={{ color: tipsHead }}
+            >
               Tips for the journey
             </h2>
-            <p className="mt-3 text-base" style={{ color: isDark ? "#6b7280" : "#64748b" }}>
+            <p
+              className="mt-3 text-base"
+              style={{ color: isDark ? "#6b7280" : "#64748b" }}
+            >
               Straight talk from everyone who has walked this path before you.
             </p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { n: "01", accent: "#ea6b1a", text: "Do not skip steps. HTML, CSS, JS is the order for a reason. Each one builds on the last." },
-              { n: "02", accent: "#2563eb", text: "Build something after each topic. A real mini-project beats watching 10 more tutorials." },
-              { n: "03", accent: "#b45309", text: "Take the quiz after each track. It surfaces the gaps you did not know you had." },
-              { n: "04", accent: "#7c3aed", text: "30 minutes every day beats 4-hour sessions on weekends. Consistency compounds." },
-              { n: "05", accent: "#ea6b1a", text: "When stuck, MDN is your bible. Every lesson has a direct MDN reference link." },
-              { n: "06", accent: "#2563eb", text: "Everything here is completely free. No paywalls. No upsells. Just start." },
+              {
+                n: "01",
+                accent: "#ea6b1a",
+                text: "Do not skip steps. HTML, CSS, JS is the order for a reason. Each one builds on the last.",
+              },
+              {
+                n: "02",
+                accent: "#2563eb",
+                text: "Build something after each topic. A real mini-project beats watching 10 more tutorials.",
+              },
+              {
+                n: "03",
+                accent: "#b45309",
+                text: "Take the quiz after each track. It surfaces the gaps you did not know you had.",
+              },
+              {
+                n: "04",
+                accent: "#7c3aed",
+                text: "30 minutes every day beats 4-hour sessions on weekends. Consistency compounds.",
+              },
+              {
+                n: "05",
+                accent: "#ea6b1a",
+                text: "When stuck, MDN is your bible. Every lesson has a direct MDN reference link.",
+              },
+              {
+                n: "06",
+                accent: "#2563eb",
+                text: "Everything here is completely free. No paywalls. No upsells. Just start.",
+              },
             ].map((tip, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.07 }}
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
                 whileHover={{ y: -5 }}
                 className="rounded-2xl p-6 relative overflow-hidden cursor-default transition-shadow hover:shadow-xl"
-                style={{ background: tipsCard, border: `1.5px solid ${tipsCardB}`, boxShadow: `0 2px 12px ${tip.accent}08` }}>
-                <div className="absolute top-0 right-0 w-16 h-16 rounded-bl-3xl"
-                  style={{ background: `${tip.accent}0e` }} />
-                <div className="text-5xl font-black mb-4 leading-none" style={{ color: tipsNum }}>{tip.n}</div>
-                <p className="text-sm leading-relaxed" style={{ color: tipsText }}>{tip.text}</p>
-                <div className="mt-4 h-0.5 w-8 rounded-full" style={{ background: tip.accent }} />
+                style={{
+                  background: tipsCard,
+                  border: `1.5px solid ${tipsCardB}`,
+                  boxShadow: `0 2px 12px ${tip.accent}08`,
+                }}
+              >
+                <div
+                  className="absolute top-0 right-0 w-16 h-16 rounded-bl-3xl"
+                  style={{ background: `${tip.accent}0e` }}
+                />
+                <div
+                  className="text-5xl font-black mb-4 leading-none"
+                  style={{ color: tipsNum }}
+                >
+                  {tip.n}
+                </div>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: tipsText }}
+                >
+                  {tip.text}
+                </p>
+                <div
+                  className="mt-4 h-0.5 w-8 rounded-full"
+                  style={{ background: tip.accent }}
+                />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative py-28 overflow-hidden"
-        style={{ background: isDark ? "#030712" : "#0f172a" }}>
-        <motion.div className="absolute inset-0 pointer-events-none"
-          animate={{ background: [
-            "radial-gradient(ellipse at 50% 50%, rgba(234,107,26,0.12) 0%, transparent 65%)",
-            "radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.12) 0%, transparent 65%)",
-            "radial-gradient(ellipse at 50% 50%, rgba(234,107,26,0.12) 0%, transparent 65%)",
-          ]}}
+      <section
+        className="relative py-28 overflow-hidden"
+        style={{ background: isDark ? "#030712" : "#0f172a" }}
+      >
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{
+            background: [
+              "radial-gradient(ellipse at 50% 50%, rgba(234,107,26,0.12) 0%, transparent 65%)",
+              "radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.12) 0%, transparent 65%)",
+              "radial-gradient(ellipse at 50% 50%, rgba(234,107,26,0.12) 0%, transparent 65%)",
+            ],
+          }}
           transition={{ duration: 6, repeat: Infinity }}
         />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "36px 36px" }} />
-        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} className="relative text-center max-w-2xl mx-auto px-6">
-          <motion.div className="text-6xl mb-6 block"
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "36px 36px",
+          }}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative text-center max-w-2xl mx-auto px-6"
+        >
+          <motion.div
+            className="text-6xl mb-6 block"
             animate={{ y: [-8, 8, -8], rotate: [-4, 4, -4] }}
-            transition={{ duration: 3, repeat: Infinity }}>🐝</motion.div>
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            🐝
+          </motion.div>
           <h2 className="text-5xl sm:text-6xl font-black text-white tracking-tight mb-5">
-            Stage 01<br />
+            Stage 01
+            <br />
             <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
               starts now
             </span>
           </h2>
           <p className="text-slate-400 text-lg mb-10 max-w-md mx-auto leading-relaxed">
-            HTML is free and waiting. No account needed to begin your first lesson.
+            HTML is free and waiting. No account needed to begin your first
+            lesson.
           </p>
-          <Link href="/tutorials/html"
+          <Link
+            href="/tutorials/html"
             className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black rounded-2xl text-base hover:-translate-y-1 transition-all"
-            style={{ boxShadow: "0 16px 40px rgba(234,107,26,0.40)" }}>
-            <FileCode2 className="w-5 h-5" /> Begin Stage 01 <ArrowRight className="w-5 h-5" />
+            style={{ boxShadow: "0 16px 40px rgba(234,107,26,0.40)" }}
+          >
+            <FileCode2 className="w-5 h-5" /> Begin Stage 01{" "}
+            <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
       </section>
