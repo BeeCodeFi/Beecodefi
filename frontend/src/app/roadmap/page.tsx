@@ -1490,6 +1490,50 @@ export default function RoadmapPage() {
     totalCompletedLessons > 0
       ? Math.round((completedLessons / totalCompletedLessons) * 100)
       : 0;
+
+  // Determine current stage based on progress
+  const getCurrentStage = () => {
+    // Check each tutorial's progress to determine the current stage
+    const htmlProgress = tutorialProgress.find((t) => t.slug === "html");
+    const cssProgress = tutorialProgress.find((t) => t.slug === "css");
+    const jsProgress = tutorialProgress.find((t) => t.slug === "javascript");
+
+    // If HTML is not started or not completed, user is on Stage 01
+    if (!htmlProgress || htmlProgress.completed === 0) {
+      return STEPS[0]; // HTML stage
+    }
+
+    // If HTML is in progress or completed and CSS not started, user should continue HTML or start CSS
+    if (htmlProgress.completed < htmlProgress.total) {
+      return STEPS[0]; // Still on HTML stage
+    }
+
+    // If HTML is completed and CSS is not completed, user is on Stage 02
+    if (!cssProgress || cssProgress.completed < cssProgress.total) {
+      return STEPS[1]; // CSS stage
+    }
+
+    // If both HTML and CSS are completed and JS is not completed, user is on Stage 03
+    if (!jsProgress || jsProgress.completed < jsProgress.total) {
+      return STEPS[2]; // JavaScript stage
+    }
+
+    // Default to the next uncompleted stage
+    for (let i = 0; i < STEPS.length; i++) {
+      const progress = tutorialProgress.find(
+        (t) => t.slug === STEPS[i].tutorialSlug
+      );
+      if (!progress || progress.completed < progress.total) {
+        return STEPS[i];
+      }
+    }
+
+    // If all completed, return the first stage
+    return STEPS[0];
+  };
+
+  const currentStage = getCurrentStage();
+  const hasStarted = completedLessons > 0;
   const badgeBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.07)";
   const badgeBdr = isDark ? "rgba(255,255,255,0.10)" : "rgba(99,102,241,0.18)";
   const badgeText = isDark ? "rgba(255,255,255,0.50)" : "#3730a3";
@@ -1944,25 +1988,27 @@ export default function RoadmapPage() {
             animate={{ y: [-8, 8, -8], rotate: [-4, 4, -4] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            🐝
+            {currentStage.emoji}
           </motion.div>
           <h2 className="text-5xl sm:text-6xl font-black text-white tracking-tight mb-5">
-            Stage 01
+            Stage {currentStage.number}
             <br />
-            <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-              starts now
+            <span className={`bg-gradient-to-r ${currentStage.gradient} bg-clip-text text-transparent`}>
+              {hasStarted ? "continue learning" : "starts now"}
             </span>
           </h2>
           <p className="text-slate-400 text-lg mb-10 max-w-md mx-auto leading-relaxed">
-            HTML is free and waiting. No account needed to begin your first
-            lesson.
+            {hasStarted
+              ? `Continue your ${currentStage.title} journey. ${currentStage.tagline}`
+              : `${currentStage.title} is free and waiting. No account needed to begin your first lesson.`}
           </p>
           <Link
-            href="/tutorials/html"
-            className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-black rounded-2xl text-base hover:-translate-y-1 transition-all"
-            style={{ boxShadow: "0 16px 40px rgba(234,107,26,0.40)" }}
+            href={currentStage.tutorialSlug ? `/tutorials/${currentStage.tutorialSlug}` : "/tutorials"}
+            className={`inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r ${currentStage.gradient} text-white font-black rounded-2xl text-base hover:-translate-y-1 transition-all`}
+            style={{ boxShadow: currentStage.shadow }}
           >
-            <FileCode2 className="w-5 h-5" /> Begin Stage 01{" "}
+            {currentStage.icon && <currentStage.icon className="w-5 h-5" />}{" "}
+            {hasStarted ? `Continue Stage ${currentStage.number}` : `Begin Stage ${currentStage.number}`}{" "}
             <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
