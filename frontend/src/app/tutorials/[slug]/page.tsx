@@ -192,6 +192,7 @@ function TutorialPageContent({
   const lessonParam = searchParams.get("lesson");
   const router = useRouter();
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(
     new Set(),
   );
@@ -205,6 +206,10 @@ function TutorialPageContent({
   useStreak(); // ping streak only for the current account
 
   const tutorial = tutorials.find((t) => t.slug === slug);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   // Track scroll progress for the reading bar in LessonNavHeader
   useEffect(() => {
@@ -229,7 +234,7 @@ function TutorialPageContent({
 
   // ── Load + sync progress ─────────────────────────────────────────────────
   useEffect(() => {
-    if (!tutorial) return;
+    if (!tutorial || !hydrated) return;
 
     const stored = localStorage.getItem(
       getUserStorageKey(user?.id, `tutorial-progress-${slug}`),

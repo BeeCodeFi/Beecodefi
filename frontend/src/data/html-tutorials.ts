@@ -164,6 +164,102 @@ You can't paint walls before you build them.`,
     ],
   },
   {
+    slug: "elements-and-nesting",
+    title: "Elements, Nesting & Structure",
+    difficulty: "beginner",
+    estimatedMinutes: 20,
+    mdnReference: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/HTML_basics",
+    content: `HTML pages are built from elements that nest inside one another to form a clear structure. Understanding how elements relate to each other is one of the most important skills in HTML.
+
+## Elements and Tags
+
+An HTML element usually has:
+- An **opening tag** — tells the browser where the element begins
+- **Content** — the text or other elements inside it
+- A **closing tag** — tells the browser where the element ends
+
+Some elements are **void elements** and do not need a closing tag, such as \`<img>\`, \`<br>\`, and \`<input>\`.
+
+## Nesting Elements
+
+Elements can be placed inside other elements. This is called **nesting**. For example:
+
+\`\`\`html
+<p>My favorite language is <strong>HTML</strong>.</p>
+\`\`\`
+
+Here, the \`<strong>\` element is nested inside the paragraph.
+
+## Block vs Inline Elements
+
+HTML elements are often grouped as:
+- **Block-level elements** — start on a new line and take up the full width available
+- **Inline elements** — stay within the flow of text and do not start on a new line
+
+Examples:
+- Block: \`<p>\`, \`<div>\`, \`<h1>\`
+- Inline: \`<span>\`, \`<a>\`, \`<strong>\`
+
+## HTML Comments
+
+Comments are notes for developers and are not shown in the browser:
+
+\`\`\`html
+<!-- This is a hidden comment -->
+\`\`\`
+
+## Character Entities
+
+Some characters are reserved in HTML, such as \`<\`, \`>\`, and \`&\`. To display them literally, use character entities:
+
+- \`&lt;\` → <
+- \`&gt;\` → >
+- \`&amp;\` → &
+
+Using these correctly helps prevent HTML from being misinterpreted.`,
+    keyTakeaways: [
+      "Elements can be nested inside one another to form a document tree",
+      "Block-level elements start on new lines; inline elements flow with text",
+      "Void elements like <img> and <br> do not need closing tags",
+      "HTML comments help document your code without appearing in the browser",
+      "Use character entities like &lt; and &amp; for reserved symbols",
+    ],
+    codeExamples: [
+      {
+        title: "Nesting Elements Properly",
+        language: "html",
+        description: "A simple example showing nested elements and correct structure.",
+        code: `<p>This is a <strong>very important</strong> message.</p>
+<div>
+    <h2>Welcome</h2>
+    <p>HTML is fun to learn.</p>
+</div>`,
+        livePreview: true,
+      },
+      {
+        title: "Comments and Character Entities",
+        language: "html",
+        description: "Using comments and entities in HTML safely.",
+        code: `<!-- This paragraph explains a small HTML rule -->
+<p>Use &lt;strong&gt; for emphasis and &amp; for the ampersand symbol.</p>`,
+        livePreview: true,
+      },
+    ],
+    interactiveExercises: [
+      {
+        id: "elements-1",
+        title: "Create a Nested Structure",
+        instruction: "Wrap the text 'HTML is amazing' in a paragraph and make the word 'amazing' bold using a nested strong element.",
+        startingCode: "HTML is amazing",
+        expectedOutput: "<p>HTML is <strong>amazing</strong></p>",
+        hints: [
+          "Use a paragraph element for the whole sentence",
+          "Place <strong> around the word 'amazing' inside the paragraph",
+        ],
+      },
+    ],
+  },
+  {
     slug: "document-structure",
     title: "HTML Document Structure",
     difficulty: "beginner",

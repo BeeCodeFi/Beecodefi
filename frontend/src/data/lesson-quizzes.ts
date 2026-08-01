@@ -46,6 +46,48 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     },
   ],
 
+  "html/elements-and-nesting": [
+    {
+      id: "html-elements-1",
+      question: "Which statement about block-level elements is true?",
+      options: [
+        "They start on a new line and take up the full width available",
+        "They always stay inside a paragraph",
+        "They are only used for images",
+        "They cannot contain other elements",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Block-level elements begin on a new line and typically take up the full width of their container.",
+    },
+    {
+      id: "html-elements-2",
+      question: "What is nesting in HTML?",
+      options: [
+        "Placing one element inside another",
+        "Writing tags in lowercase",
+        "Adding attributes to an element",
+        "Using comments in the code",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Nesting means placing one HTML element inside another to build a structured document tree.",
+    },
+    {
+      id: "html-elements-3",
+      question: "Which syntax creates an HTML comment?",
+      options: [
+        "<!-- comment -->",
+        "// comment",
+        "/* comment */",
+        "<comment>comment</comment>",
+      ],
+      correctIndex: 0,
+      explanation:
+        "HTML comments use the <!-- ... --> syntax and are ignored by the browser.",
+    },
+  ],
+
   "html/document-structure": [
     {
       id: "html-doc-1",
