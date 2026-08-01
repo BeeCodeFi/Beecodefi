@@ -17,6 +17,7 @@ import {
   Search,
   Flame,
   Target,
+  Award,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/context/AuthContext";
@@ -296,6 +297,13 @@ export default function Navbar() {
                         >
                           <Target className="w-4 h-4" /> My Learning
                         </Link>
+                        <Link
+                          href="/badges"
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <Award className="w-4 h-4" /> Badges
+                        </Link>
                         <div className="border-t border-gray-200/60 dark:border-white/8 my-1.5 mx-3" />
                         <motion.button
                           whileTap={{ scale: 0.97 }}
@@ -452,6 +460,13 @@ export default function Navbar() {
                         className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 rounded-xl"
                       >
                         <Target className="w-4 h-4" /> My Learning
+                      </Link>
+                      <Link
+                        href="/badges"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 rounded-xl"
+                      >
+                        <Award className="w-4 h-4" /> Badges
                       </Link>
                       <button
                         onClick={() => {
