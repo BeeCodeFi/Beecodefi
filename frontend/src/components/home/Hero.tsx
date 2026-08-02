@@ -12,33 +12,13 @@ import { ArrowRight, BookOpen, Brain, Sparkles, Play, Zap } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { courses } from "@/data/courses";
 import { tutorials } from "@/data/tutorials";
-import { quizCategories } from "@/data/quiz-categories";
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
-import api from "@/lib/api";
 
 const totalVideos = courses.reduce((s, c) => s + c.videos.length, 0);
 
-// ── Hook to get total quiz count from backend ──────────────────────────────
-function useTotalQuizCount() {
-  const [count, setCount] = useState(79); // Default to known total (27 main + 52 quick quizzes)
-
-  useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        const { data } = await api.get<Array<{ id: number }>>("/quiz/topics");
-        setCount(data.length);
-      } catch (error) {
-        console.error("Failed to fetch quiz count:", error);
-        // Keep default value on error
-      }
-    };
-
-    fetchCount();
-  }, []);
-
-  return count;
-}
+// ── Total quiz count: 27 main quizzes + 52 quick quizzes in tutorials = 79 ──
+const totalQuizCount = 79;
 
 // ── Hook to check for in-progress tutorials ──────────────────────────────
 function useContinueLearning() {

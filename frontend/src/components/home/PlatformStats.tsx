@@ -2,25 +2,11 @@
 
 import { motion } from "framer-motion";
 import { Award, BookOpen, Users, Zap, Target, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
-import api from "@/lib/api";
+
+// ── Total quiz count: 27 main quizzes + 52 quick quizzes in tutorials = 79 ──
+const totalQuizCount = 79;
 
 export default function PlatformStats() {
-  const [quizCount, setQuizCount] = useState(79); // Default to known total (27 main + 52 quick quizzes)
-
-  useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        const { data } = await api.get<Array<{ id: number }>>("/quiz/topics");
-        setQuizCount(data.length);
-      } catch (error) {
-        console.error("Failed to fetch quiz count:", error);
-      }
-    };
-
-    fetchCount();
-  }, []);
-
   const stats = [
     {
       icon: BookOpen,
@@ -33,7 +19,7 @@ export default function PlatformStats() {
     },
     {
       icon: Target,
-      value: quizCount.toString(),
+      value: totalQuizCount.toString(),
       label: "Quiz Topics",
       description: "Test your knowledge with detailed feedback",
       gradient: "from-purple-500 to-pink-500",
