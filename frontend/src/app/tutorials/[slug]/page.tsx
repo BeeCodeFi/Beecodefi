@@ -49,18 +49,18 @@ function renderInlineMarkdown(text: string): string {
     .replace(
       /`([^`]+)`/g,
       (_, code) =>
-        `<code class="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/50 !text-indigo-700 dark:!text-indigo-300 rounded text-[0.82em] font-mono border border-indigo-100 dark:border-indigo-800">${code
+        `<code class="inline-code-element px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/50 rounded text-[0.82em] font-mono border border-indigo-100 dark:border-indigo-800">${code
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")}</code>`,
     )
     .replace(
       /\*\*([^*]+)\*\*/g,
-      '<strong class="font-semibold !text-gray-900 dark:!text-white">$1</strong>',
+      '<strong class="inline-strong-element font-semibold">$1</strong>',
     )
     .replace(
       /\*([^*]+)\*/g,
-      '<em class="italic !text-gray-700 dark:!text-gray-300">$1</em>',
+      '<em class="inline-em-element italic">$1</em>',
     );
 }
 
@@ -69,7 +69,7 @@ function LessonContent({ content }: { content: string }) {
   const blocks = content.split("\n\n");
 
   return (
-    <div className="space-y-0 text-gray-700 dark:text-gray-300">
+    <div className="lesson-content-wrapper space-y-0 text-gray-700 dark:text-gray-300">
       {blocks.map((block, i) => {
         // ── H2 heading with scroll anchor ──
         if (block.startsWith("## ")) {

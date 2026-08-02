@@ -67,6 +67,56 @@
 
 /* ── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
+  /* Force lesson content text colors with maximum specificity */
+  .lesson-content-wrapper p,
+  .lesson-content-wrapper li span {
+    color: rgb(75 85 99) !important;
+  }
+  
+  :is(.dark) .lesson-content-wrapper p,
+  :is(.dark) .lesson-content-wrapper li span {
+    color: rgb(209 213 219) !important;
+  }
+  
+  .lesson-content-wrapper h2 {
+    color: rgb(17 24 39) !important;
+  }
+  
+  :is(.dark) .lesson-content-wrapper h2 {
+    color: rgb(255 255 255) !important;
+  }
+
+  /* Force inline markdown element colors with maximum specificity */
+  .inline-code-element,
+  code.inline-code-element {
+    color: rgb(67 56 202) !important;
+  }
+  
+  :is(.dark) .inline-code-element,
+  :is(.dark) code.inline-code-element {
+    color: rgb(165 180 252) !important;
+  }
+  
+  .inline-strong-element,
+  strong.inline-strong-element {
+    color: rgb(17 24 39) !important;
+  }
+  
+  :is(.dark) .inline-strong-element,
+  :is(.dark) strong.inline-strong-element {
+    color: rgb(255 255 255) !important;
+  }
+  
+  .inline-em-element,
+  em.inline-em-element {
+    color: rgb(55 65 81) !important;
+  }
+  
+  :is(.dark) .inline-em-element,
+  :is(.dark) em.inline-em-element {
+    color: rgb(209 213 219) !important;
+  }
+
   .text-gradient {
     @apply bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent;
   }
