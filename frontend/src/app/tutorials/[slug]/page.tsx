@@ -266,7 +266,16 @@ function TutorialPageContent({
     if (savedIndex !== null) {
       const idx = parseInt(savedIndex, 10);
       if (!isNaN(idx) && idx >= 0 && idx < tutorial.lessons.length) {
-        queueMicrotask(() => setCurrentLessonIndex(idx));
+        queueMicrotask(() => {
+          setCurrentLessonIndex(idx);
+          // Update URL to match the saved lesson
+          const lessonSlug = tutorial.lessons[idx]?.slug;
+          if (lessonSlug) {
+            router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
+              scroll: false,
+            });
+          }
+        });
       }
     }
 
