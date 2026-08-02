@@ -242,7 +242,7 @@ export default function LessonQuiz({
           className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 sm:p-6"
         >
           {/* Question */}
-          <p className="text-base font-semibold text-gray-900 dark:text-white mb-4 leading-relaxed">
+          <p className="text-base font-semibold !text-gray-900 dark:!text-white mb-4 leading-relaxed">
             {q.question}
           </p>
 

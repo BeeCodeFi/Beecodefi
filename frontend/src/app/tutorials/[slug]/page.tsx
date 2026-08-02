@@ -741,8 +741,8 @@ function TutorialPageContent({
               />
             )}
 
-            {/* ── Inline lesson quiz ── */}
-            {quizQuestions && quizQuestions.length > 0 && lesson && (
+            {/* ── Inline lesson quiz (only if no quickQuiz property exists) ── */}
+            {!lesson?.quickQuiz && quizQuestions && quizQuestions.length > 0 && lesson && (
               <LessonQuiz
                 key={quizKey}
                 questions={quizQuestions}
