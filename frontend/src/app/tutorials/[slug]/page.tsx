@@ -776,12 +776,12 @@ function TutorialPageContent({
                     <ChevronLeft className="w-5 h-5 text-gray-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors truncate">
+                    <p className="text-sm font-semibold !text-gray-900 dark:!text-white group-hover:!text-gray-700 dark:group-hover:!text-gray-300 transition-colors truncate">
                       {tutorial.lessons[currentLessonIndex - 1].title}
                     </p>
                     {tutorial.lessons[currentLessonIndex - 1]
                       .estimatedMinutes && (
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs !text-gray-400 mt-0.5">
                         ⏱{" "}
                         {
                           tutorial.lessons[currentLessonIndex - 1]
@@ -814,12 +814,12 @@ function TutorialPageContent({
                     <ChevronRight className="w-5 h-5 text-indigo-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+                    <p className="text-sm font-semibold !text-gray-900 dark:!text-white group-hover:!text-indigo-600 dark:group-hover:!text-indigo-400 transition-colors truncate">
                       {tutorial.lessons[currentLessonIndex + 1].title}
                     </p>
                     {tutorial.lessons[currentLessonIndex + 1]
                       .estimatedMinutes && (
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs !text-gray-400 mt-0.5">
                         ⏱{" "}
                         {
                           tutorial.lessons[currentLessonIndex + 1]
