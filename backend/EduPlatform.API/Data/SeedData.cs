@@ -26,7 +26,7 @@ public static class SeedData
         }
         
         // Re-seed if no quizzes, incomplete catalog, or needs reordering
-        if (quizCount < 27 || needsReorder)
+        if (quizCount < 33 || needsReorder)
         {
             // Clear old quiz data to reseed
             if (quizCount > 0)
@@ -614,6 +614,7 @@ public static class SeedData
         db.Quizzes.AddRange(
             // HTML - Progressive difficulty order
             htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAttributes, htmlMediaEmbeds, htmlAccessibility, htmlAdvanced,
+            htmlCanvas, htmlSvg, htmlWebComponents, htmlDragDrop, htmlWebStorage, htmlGeolocation,
             // CSS - Progressive difficulty order
             cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
             // JavaScript - Progressive difficulty order
