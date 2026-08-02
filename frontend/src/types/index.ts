@@ -96,12 +96,12 @@ export interface TutorialLesson {
   keyTakeaways?: string[];
   interactiveExercises?: InteractiveExercise[];
   mdnReference?: string;
-  quickQuiz?: {
+  quickQuiz?: Array<{
     question: string;
     options: string[];
     correctAnswer: number;
     explanation: string;
-  };
+  }>;
 }
 
 export interface CodeExample {

@@ -723,18 +723,16 @@ function TutorialPageContent({
               )}
 
             {/* ── Quick Quiz (for advanced lessons with quickQuiz property) ── */}
-            {lesson?.quickQuiz && (
+            {lesson?.quickQuiz && lesson.quickQuiz.length > 0 && (
               <LessonQuiz
                 key={`quick-quiz-${lesson.slug}`}
-                questions={[
-                  {
-                    id: `${lesson.slug}-quick`,
-                    question: lesson.quickQuiz.question,
-                    options: lesson.quickQuiz.options,
-                    correctIndex: lesson.quickQuiz.correctAnswer,
-                    explanation: lesson.quickQuiz.explanation,
-                  },
-                ]}
+                questions={lesson.quickQuiz.map((q, idx) => ({
+                  id: `${lesson.slug}-quick-${idx}`,
+                  question: q.question,
+                  options: q.options,
+                  correctIndex: q.correctAnswer,
+                  explanation: q.explanation,
+                }))}
                 lessonTitle={lesson.title}
                 storageKey={`quick-quiz-${slug}-${lesson.slug}`}
                 quizTopic={`${slug}/${lesson.slug}`}

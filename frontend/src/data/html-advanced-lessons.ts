@@ -185,17 +185,41 @@ ctx.fillRect(100, 100, 200, 150);`,
         ],
       },
     ],
-    quickQuiz: {
-      question: "What method do you use to get the 2D drawing context of a canvas?",
-      options: [
-        "canvas.getContext('2d')",
-        "canvas.get2DContext()",
-        "canvas.createContext()",
-        "canvas.drawContext()"
-      ],
-      correctAnswer: 0,
-      explanation: "Use canvas.getContext('2d') to get the CanvasRenderingContext2D object that provides all drawing methods."
-    },
+    quickQuiz: [
+      {
+        question: "What method do you use to get the 2D drawing context of a canvas?",
+        options: [
+          "canvas.getContext('2d')",
+          "canvas.get2DContext()",
+          "canvas.createContext()",
+          "canvas.drawContext()"
+        ],
+        correctAnswer: 0,
+        explanation: "Use canvas.getContext('2d') to get the CanvasRenderingContext2D object that provides all drawing methods."
+      },
+      {
+        question: "Which method is used to draw a filled rectangle on canvas?",
+        options: [
+          "fillRect(x, y, width, height)",
+          "drawRect(x, y, width, height)",
+          "rectangle(x, y, width, height)",
+          "rect(x, y, width, height)"
+        ],
+        correctAnswer: 0,
+        explanation: "The fillRect() method draws a filled rectangle. Use strokeRect() for just the outline, and clearRect() to clear an area."
+      },
+      {
+        question: "What must you call before drawing paths on canvas?",
+        options: [
+          "beginPath()",
+          "startPath()",
+          "newPath()",
+          "createPath()"
+        ],
+        correctAnswer: 0,
+        explanation: "Always call beginPath() to start a new path. Then use moveTo(), lineTo(), arc() etc. to define the path, and finally stroke() or fill() to draw it."
+      }
+    ],
   },
   {
     slug: "svg-graphics",
@@ -362,17 +386,41 @@ SVG icons are now preferred over icon fonts because:
         ],
       },
     ],
-    quickQuiz: {
-      question: "What does SVG stand for?",
-      options: [
-        "Scalable Vector Graphics",
-        "Simple Vector Graphics",
-        "Standard Visual Graphics",
-        "Structured Vector Geometry"
-      ],
-      correctAnswer: 0,
-      explanation: "SVG stands for Scalable Vector Graphics - it's an XML-based format for vector graphics that scale perfectly at any resolution."
-    },
+    quickQuiz: [
+      {
+        question: "What does SVG stand for?",
+        options: [
+          "Scalable Vector Graphics",
+          "Simple Vector Graphics",
+          "Standard Visual Graphics",
+          "Structured Vector Geometry"
+        ],
+        correctAnswer: 0,
+        explanation: "SVG stands for Scalable Vector Graphics - it's an XML-based format for vector graphics that scale perfectly at any resolution."
+      },
+      {
+        question: "What is the main advantage of SVG over raster images (PNG, JPG)?",
+        options: [
+          "SVGs scale perfectly without losing quality",
+          "SVGs are always smaller in file size",
+          "SVGs load faster",
+          "SVGs work in older browsers"
+        ],
+        correctAnswer: 0,
+        explanation: "SVGs are resolution-independent and scale perfectly at any size without pixelation. Raster images lose quality when scaled up."
+      },
+      {
+        question: "Which SVG element is used to draw a circle?",
+        options: [
+          "<circle cx='50' cy='50' r='40' />",
+          "<svg-circle x='50' y='50' radius='40' />",
+          "<round x='50' y='50' size='40' />",
+          "<ellipse x='50' y='50' r='40' />"
+        ],
+        correctAnswer: 0,
+        explanation: "Use the <circle> element with cx (center x), cy (center y), and r (radius) attributes to draw circles in SVG."
+      }
+    ],
   },
   {
     slug: "web-components",
@@ -639,17 +687,41 @@ customElements.define('hello-world', HelloWorld);`,
         ],
       },
     ],
-    quickQuiz: {
-      question: "What must all custom element names contain?",
-      options: [
-        "A hyphen (-)",
-        "An underscore (_)",
-        "Capital letters",
-        "Numbers"
-      ],
-      correctAnswer: 0,
-      explanation: "Custom element names must contain a hyphen to distinguish them from standard HTML elements. Examples: my-button, user-card."
-    },
+    quickQuiz: [
+      {
+        question: "What must all custom element names contain?",
+        options: [
+          "A hyphen (-)",
+          "An underscore (_)",
+          "Capital letters",
+          "Numbers"
+        ],
+        correctAnswer: 0,
+        explanation: "Custom element names must contain a hyphen to distinguish them from standard HTML elements. Examples: my-button, user-card."
+      },
+      {
+        question: "Which lifecycle callback is called when a custom element is added to the DOM?",
+        options: [
+          "connectedCallback()",
+          "mountedCallback()",
+          "addedCallback()",
+          "attachedCallback()"
+        ],
+        correctAnswer: 0,
+        explanation: "The connectedCallback() method is invoked each time a custom element is inserted into the DOM. Use it to initialize your element."
+      },
+      {
+        question: "What does Shadow DOM provide for web components?",
+        options: [
+          "Style and markup encapsulation",
+          "Better performance",
+          "Automatic accessibility",
+          "Built-in animations"
+        ],
+        correctAnswer: 0,
+        explanation: "Shadow DOM provides encapsulation - styles and scripts inside don't leak out, and outside styles don't leak in. This prevents style conflicts."
+      }
+    ],
   },
   {
     slug: "drag-and-drop-api",
@@ -926,17 +998,41 @@ function handleFiles(files) {
         ],
       },
     ],
-    quickQuiz: {
-      question: "What must you call on the dragover event to allow dropping?",
-      options: [
-        "preventDefault()",
-        "allowDrop()",
-        "enableDrop()",
-        "acceptDrop()"
-      ],
-      correctAnswer: 0,
-      explanation: "You must call preventDefault() on dragover events to allow an element to receive drop events. Without this, the drop event won't fire."
-    },
+    quickQuiz: [
+      {
+        question: "What must you call on the dragover event to allow dropping?",
+        options: [
+          "preventDefault()",
+          "allowDrop()",
+          "enableDrop()",
+          "acceptDrop()"
+        ],
+        correctAnswer: 0,
+        explanation: "You must call preventDefault() on dragover events to allow an element to receive drop events. Without this, the drop event won't fire."
+      },
+      {
+        question: "What attribute makes an HTML element draggable?",
+        options: [
+          "draggable='true'",
+          "isDraggable='true'",
+          "allowDrag='true'",
+          "canDrag='true'"
+        ],
+        correctAnswer: 0,
+        explanation: "Add the draggable='true' attribute to any HTML element to make it draggable. Images and links are draggable by default."
+      },
+      {
+        question: "Which object is used to transfer data during drag and drop operations?",
+        options: [
+          "dataTransfer",
+          "dragData",
+          "transferData",
+          "dropData"
+        ],
+        correctAnswer: 0,
+        explanation: "The dataTransfer object carries data during the drag operation. Use setData() on dragstart and getData() on drop to transfer information."
+      }
+    ],
   },
   {
     slug: "web-storage-api",
@@ -1308,17 +1404,41 @@ console.log(username);`,
         ],
       },
     ],
-    quickQuiz: {
-      question: "What's the main difference between localStorage and sessionStorage?",
-      options: [
-        "localStorage persists after browser close; sessionStorage doesn't",
-        "localStorage is faster",
-        "sessionStorage has more storage space",
-        "localStorage is sent to the server"
-      ],
-      correctAnswer: 0,
-      explanation: "localStorage data persists even after the browser is closed, while sessionStorage data is cleared when the tab/window is closed."
-    },
+    quickQuiz: [
+      {
+        question: "What's the main difference between localStorage and sessionStorage?",
+        options: [
+          "localStorage persists after browser close; sessionStorage doesn't",
+          "localStorage is faster",
+          "sessionStorage has more storage space",
+          "localStorage is sent to the server"
+        ],
+        correctAnswer: 0,
+        explanation: "localStorage data persists even after the browser is closed, while sessionStorage data is cleared when the tab/window is closed."
+      },
+      {
+        question: "How much data can typically be stored in localStorage?",
+        options: [
+          "5-10 MB",
+          "4 KB",
+          "50 MB",
+          "Unlimited"
+        ],
+        correctAnswer: 0,
+        explanation: "Web Storage (localStorage and sessionStorage) typically allows 5-10 MB of data, much more than cookies which are limited to 4 KB."
+      },
+      {
+        question: "What format must data be in to store objects in localStorage?",
+        options: [
+          "JSON string (use JSON.stringify)",
+          "Binary",
+          "Base64",
+          "Objects can be stored directly"
+        ],
+        correctAnswer: 0,
+        explanation: "localStorage only stores strings. To store objects, convert them to JSON with JSON.stringify() and parse them back with JSON.parse() when retrieving."
+      }
+    ],
   },
   {
     slug: "geolocation-api",
@@ -1687,16 +1807,40 @@ stopBtn.addEventListener('click', () => {
         ],
       },
     ],
-    quickQuiz: {
-      question: "What protocol is required for the Geolocation API to work?",
-      options: [
-        "HTTPS (or localhost)",
-        "HTTP is fine",
-        "FTP",
-        "Any protocol works"
-      ],
-      correctAnswer: 0,
-      explanation: "The Geolocation API requires HTTPS (or localhost for development). Browsers block geolocation requests on insecure HTTP connections for security."
-    },
+    quickQuiz: [
+      {
+        question: "What protocol is required for the Geolocation API to work?",
+        options: [
+          "HTTPS (or localhost)",
+          "HTTP is fine",
+          "FTP",
+          "Any protocol works"
+        ],
+        correctAnswer: 0,
+        explanation: "The Geolocation API requires HTTPS (or localhost for development). Browsers block geolocation requests on insecure HTTP connections for security."
+      },
+      {
+        question: "Which method gets the user's current location once?",
+        options: [
+          "getCurrentPosition()",
+          "getLocation()",
+          "requestPosition()",
+          "fetchLocation()"
+        ],
+        correctAnswer: 0,
+        explanation: "Use navigator.geolocation.getCurrentPosition() to get the user's location once. Use watchPosition() to track location continuously."
+      },
+      {
+        question: "What coordinates does the Geolocation API provide?",
+        options: [
+          "Latitude and longitude in decimal degrees",
+          "Address string",
+          "City and country",
+          "X and Y pixels"
+        ],
+        correctAnswer: 0,
+        explanation: "The Geolocation API returns latitude and longitude in decimal degrees format, along with accuracy in meters and optional altitude, speed, and heading."
+      }
+    ],
   },
 ];
