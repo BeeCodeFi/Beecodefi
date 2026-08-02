@@ -232,6 +232,15 @@ function TutorialPageContent({
     });
   }, [currentLessonIndex]);
 
+  // Save current lesson to localStorage whenever it changes
+  useEffect(() => {
+    if (!hydrated || !tutorial) return;
+    localStorage.setItem(
+      getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
+      String(currentLessonIndex),
+    );
+  }, [currentLessonIndex, hydrated, tutorial, slug, user?.id]);
+
   // ── Load + sync progress ─────────────────────────────────────────────────
   useEffect(() => {
     if (!tutorial || !hydrated) return;
@@ -255,7 +264,14 @@ function TutorialPageContent({
         (l) => l.slug === lessonParam,
       );
       if (paramIdx !== -1) {
-        queueMicrotask(() => setCurrentLessonIndex(paramIdx));
+        queueMicrotask(() => {
+          setCurrentLessonIndex(paramIdx);
+          // Save this lesson to localStorage so refresh keeps you here
+          localStorage.setItem(
+            getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
+            String(paramIdx),
+          );
+        });
         return;
       }
     }
