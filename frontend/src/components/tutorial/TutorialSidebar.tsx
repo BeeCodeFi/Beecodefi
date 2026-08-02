@@ -56,7 +56,7 @@ export default function TutorialSidebar({
           <h2 className="text-base font-bold text-gray-900 dark:text-white leading-snug mb-1">
             {tutorial.title}
           </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs !text-gray-500 dark:!text-gray-400">
             {tutorial.lessons.length} lessons ·{" "}
             {tutorial.lessons.reduce((s, l) => s + (l.estimatedMinutes || 0), 0)} min total
           </p>
