@@ -185,6 +185,17 @@ ctx.fillRect(100, 100, 200, 150);`,
         ],
       },
     ],
+    quickQuiz: {
+      question: "What method do you use to get the 2D drawing context of a canvas?",
+      options: [
+        "canvas.getContext('2d')",
+        "canvas.get2DContext()",
+        "canvas.createContext()",
+        "canvas.drawContext()"
+      ],
+      correctAnswer: 0,
+      explanation: "Use canvas.getContext('2d') to get the CanvasRenderingContext2D object that provides all drawing methods."
+    },
   },
   {
     slug: "svg-graphics",
@@ -351,6 +362,17 @@ SVG icons are now preferred over icon fonts because:
         ],
       },
     ],
+    quickQuiz: {
+      question: "What does SVG stand for?",
+      options: [
+        "Scalable Vector Graphics",
+        "Simple Vector Graphics",
+        "Standard Visual Graphics",
+        "Structured Vector Geometry"
+      ],
+      correctAnswer: 0,
+      explanation: "SVG stands for Scalable Vector Graphics - it's an XML-based format for vector graphics that scale perfectly at any resolution."
+    },
   },
   {
     slug: "web-components",
@@ -617,6 +639,17 @@ customElements.define('hello-world', HelloWorld);`,
         ],
       },
     ],
+    quickQuiz: {
+      question: "What must all custom element names contain?",
+      options: [
+        "A hyphen (-)",
+        "An underscore (_)",
+        "Capital letters",
+        "Numbers"
+      ],
+      correctAnswer: 0,
+      explanation: "Custom element names must contain a hyphen to distinguish them from standard HTML elements. Examples: my-button, user-card."
+    },
   },
   {
     slug: "drag-and-drop-api",
@@ -893,6 +926,17 @@ function handleFiles(files) {
         ],
       },
     ],
+    quickQuiz: {
+      question: "What must you call on the dragover event to allow dropping?",
+      options: [
+        "preventDefault()",
+        "allowDrop()",
+        "enableDrop()",
+        "acceptDrop()"
+      ],
+      correctAnswer: 0,
+      explanation: "You must call preventDefault() on dragover events to allow an element to receive drop events. Without this, the drop event won't fire."
+    },
   },
   {
     slug: "web-storage-api",
@@ -1264,6 +1308,17 @@ console.log(username);`,
         ],
       },
     ],
+    quickQuiz: {
+      question: "What's the main difference between localStorage and sessionStorage?",
+      options: [
+        "localStorage persists after browser close; sessionStorage doesn't",
+        "localStorage is faster",
+        "sessionStorage has more storage space",
+        "localStorage is sent to the server"
+      ],
+      correctAnswer: 0,
+      explanation: "localStorage data persists even after the browser is closed, while sessionStorage data is cleared when the tab/window is closed."
+    },
   },
   {
     slug: "geolocation-api",
@@ -1632,5 +1687,16 @@ stopBtn.addEventListener('click', () => {
         ],
       },
     ],
+    quickQuiz: {
+      question: "What protocol is required for the Geolocation API to work?",
+      options: [
+        "HTTPS (or localhost)",
+        "HTTP is fine",
+        "FTP",
+        "Any protocol works"
+      ],
+      correctAnswer: 0,
+      explanation: "The Geolocation API requires HTTPS (or localhost for development). Browsers block geolocation requests on insecure HTTP connections for security."
+    },
   },
 ];

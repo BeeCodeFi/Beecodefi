@@ -180,6 +180,108 @@ public static class SeedData
             }
         };
 
+        var htmlCanvas = new Quiz
+        {
+            Title = "Canvas API & Graphics",
+            Topic = "html-canvas",
+            Category = "HTML",
+            Description = "Drawing graphics with Canvas API, shapes, paths, and animations.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does getContext('2d') return?", Difficulty = "Advanced", Explanation = "The getContext('2d') method returns a CanvasRenderingContext2D object, which provides methods and properties for drawing 2D graphics on the canvas element.", Answers = new List<Answer> { new() { Text = "A 2D rendering context for drawing", IsCorrect = true }, new() { Text = "A 3D rendering context", IsCorrect = false }, new() { Text = "The canvas element itself", IsCorrect = false }, new() { Text = "An image object", IsCorrect = false } } },
+                new() { Text = "Which method draws a filled rectangle on canvas?", CodeSnippet = "ctx.???(x, y, width, height);", Difficulty = "Advanced", Explanation = "The fillRect() method draws a filled rectangle at position (x, y) with the specified width and height. Use strokeRect() for an outlined rectangle.", Answers = new List<Answer> { new() { Text = "fillRect", IsCorrect = true }, new() { Text = "drawRect", IsCorrect = false }, new() { Text = "createRect", IsCorrect = false }, new() { Text = "makeRect", IsCorrect = false } } },
+                new() { Text = "How do you start a new path in canvas?", Difficulty = "Advanced", Explanation = "The beginPath() method starts a new path by emptying the list of sub-paths. Call this whenever you want to create a new shape.", Answers = new List<Answer> { new() { Text = "beginPath()", IsCorrect = true }, new() { Text = "startPath()", IsCorrect = false }, new() { Text = "newPath()", IsCorrect = false }, new() { Text = "createPath()", IsCorrect = false } } },
+                new() { Text = "What is requestAnimationFrame() used for?", Difficulty = "Advanced", Explanation = "requestAnimationFrame() tells the browser to perform an animation and requests that it call a specified function before the next repaint, typically 60 times per second.", Answers = new List<Answer> { new() { Text = "Creating smooth animations by calling a function before each repaint", IsCorrect = true }, new() { Text = "Setting a timer for animations", IsCorrect = false }, new() { Text = "Drawing static images", IsCorrect = false }, new() { Text = "Loading image files", IsCorrect = false } } },
+                new() { Text = "How do you clear a canvas area?", CodeSnippet = "ctx.???(0, 0, canvas.width, canvas.height);", Difficulty = "Advanced", Explanation = "The clearRect() method clears the specified rectangular area, making it fully transparent. Often used to clear the entire canvas between animation frames.", Answers = new List<Answer> { new() { Text = "clearRect", IsCorrect = true }, new() { Text = "deleteRect", IsCorrect = false }, new() { Text = "removeRect", IsCorrect = false }, new() { Text = "eraseRect", IsCorrect = false } } },
+            }
+        };
+
+        var htmlSvg = new Quiz
+        {
+            Title = "SVG Graphics",
+            Topic = "html-svg",
+            Category = "HTML",
+            Description = "Scalable Vector Graphics, shapes, styling, and responsive images.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does SVG stand for?", Difficulty = "Advanced", Explanation = "SVG stands for Scalable Vector Graphics. It's an XML-based format for vector graphics that scale perfectly at any size without losing quality.", Answers = new List<Answer> { new() { Text = "Scalable Vector Graphics", IsCorrect = true }, new() { Text = "Simple Vector Graphics", IsCorrect = false }, new() { Text = "Standard Visual Graphics", IsCorrect = false }, new() { Text = "Structured Vector Geometry", IsCorrect = false } } },
+                new() { Text = "Which SVG element creates a circle?", Difficulty = "Advanced", Explanation = "The <circle> element draws a circle using cx and cy for center coordinates and r for radius. Example: <circle cx='50' cy='50' r='40' />", Answers = new List<Answer> { new() { Text = "<circle>", IsCorrect = true }, new() { Text = "<round>", IsCorrect = false }, new() { Text = "<circ>", IsCorrect = false }, new() { Text = "<ellipse>", IsCorrect = false } } },
+                new() { Text = "What is the advantage of inline SVG over external SVG files?", Difficulty = "Advanced", Explanation = "Inline SVG can be styled with CSS and manipulated with JavaScript directly, allows for dynamic changes, and avoids extra HTTP requests.", Answers = new List<Answer> { new() { Text = "Can be styled with CSS and manipulated with JavaScript", IsCorrect = true }, new() { Text = "Smaller file size", IsCorrect = false }, new() { Text = "Better browser support", IsCorrect = false }, new() { Text = "Loads faster", IsCorrect = false } } },
+                new() { Text = "What does the viewBox attribute do?", CodeSnippet = "<svg viewBox='0 0 100 100'>", Difficulty = "Advanced", Explanation = "The viewBox attribute defines the coordinate system and aspect ratio for the SVG. It specifies min-x, min-y, width, and height, allowing the SVG to scale responsively.", Answers = new List<Answer> { new() { Text = "Defines the coordinate system and viewport for the SVG", IsCorrect = true }, new() { Text = "Sets the background color", IsCorrect = false }, new() { Text = "Creates a border around the SVG", IsCorrect = false }, new() { Text = "Sets the SVG's z-index", IsCorrect = false } } },
+                new() { Text = "Which SVG element is used for complex paths?", Difficulty = "Advanced", Explanation = "The <path> element is the most powerful SVG element. It can create lines, curves, arcs, and complex shapes using the 'd' attribute with path commands.", Answers = new List<Answer> { new() { Text = "<path>", IsCorrect = true }, new() { Text = "<line>", IsCorrect = false }, new() { Text = "<shape>", IsCorrect = false }, new() { Text = "<draw>", IsCorrect = false } } },
+            }
+        };
+
+        var htmlWebComponents = new Quiz
+        {
+            Title = "Web Components",
+            Topic = "html-web-components",
+            Category = "HTML",
+            Description = "Custom elements, Shadow DOM, templates, and reusable components.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What must custom element names contain?", Difficulty = "Advanced", Explanation = "Custom element names must contain a hyphen (-) to distinguish them from standard HTML elements. Valid examples: my-button, user-card. Invalid: mybutton.", Answers = new List<Answer> { new() { Text = "A hyphen (-)", IsCorrect = true }, new() { Text = "An underscore (_)", IsCorrect = false }, new() { Text = "Capital letters", IsCorrect = false }, new() { Text = "Numbers only", IsCorrect = false } } },
+                new() { Text = "What does Shadow DOM provide?", Difficulty = "Advanced", Explanation = "Shadow DOM provides encapsulation for web components. Styles and scripts inside the shadow DOM don't leak out, and outside styles don't affect the shadow DOM content.", Answers = new List<Answer> { new() { Text = "Style and markup encapsulation", IsCorrect = true }, new() { Text = "Faster rendering", IsCorrect = false }, new() { Text = "Better SEO", IsCorrect = false }, new() { Text = "Automatic styling", IsCorrect = false } } },
+                new() { Text = "Which lifecycle callback runs when a custom element is added to the DOM?", Difficulty = "Advanced", Explanation = "The connectedCallback() lifecycle method is invoked each time the custom element is appended to a document-connected element. This is where you typically set up event listeners and render content.", Answers = new List<Answer> { new() { Text = "connectedCallback()", IsCorrect = true }, new() { Text = "constructor()", IsCorrect = false }, new() { Text = "mountedCallback()", IsCorrect = false }, new() { Text = "addedCallback()", IsCorrect = false } } },
+                new() { Text = "How do you define a custom element?", CodeSnippet = "customElements.??('my-el', MyElement);", Difficulty = "Advanced", Explanation = "Use customElements.define() to register a custom element. First parameter is the tag name (must have a hyphen), second is the class that extends HTMLElement.", Answers = new List<Answer> { new() { Text = "define", IsCorrect = true }, new() { Text = "create", IsCorrect = false }, new() { Text = "register", IsCorrect = false }, new() { Text = "declare", IsCorrect = false } } },
+                new() { Text = "What is the purpose of <slot> in web components?", Difficulty = "Advanced", Explanation = "The <slot> element is a placeholder inside a web component that users can fill with their own markup. Named slots allow for multiple insertion points.", Answers = new List<Answer> { new() { Text = "A placeholder for user-provided content", IsCorrect = true }, new() { Text = "A storage location for data", IsCorrect = false }, new() { Text = "A styling container", IsCorrect = false }, new() { Text = "An event handler", IsCorrect = false } } },
+            }
+        };
+
+        var htmlDragDrop = new Quiz
+        {
+            Title = "Drag and Drop API",
+            Topic = "html-drag-drop",
+            Category = "HTML",
+            Description = "Drag and drop interfaces, dataTransfer, and file uploads.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What attribute makes an element draggable?", Difficulty = "Advanced", Explanation = "The draggable='true' attribute makes any HTML element draggable. By default, only images and links are draggable without this attribute.", Answers = new List<Answer> { new() { Text = "draggable='true'", IsCorrect = true }, new() { Text = "drag='enabled'", IsCorrect = false }, new() { Text = "dragable='yes'", IsCorrect = false }, new() { Text = "can-drag='true'", IsCorrect = false } } },
+                new() { Text = "Which event fires when a dragged element enters a drop target?", Difficulty = "Advanced", Explanation = "The dragenter event fires when a dragged element enters a valid drop target. This is commonly used to provide visual feedback to the user.", Answers = new List<Answer> { new() { Text = "dragenter", IsCorrect = true }, new() { Text = "dragin", IsCorrect = false }, new() { Text = "dragstart", IsCorrect = false }, new() { Text = "draginside", IsCorrect = false } } },
+                new() { Text = "What must you call on dragover event to allow dropping?", CodeSnippet = "element.addEventListener('dragover', (e) => e.???());", Difficulty = "Advanced", Explanation = "You must call preventDefault() on the dragover event to allow an element to receive drop events. Without this, the drop event won't fire.", Answers = new List<Answer> { new() { Text = "preventDefault", IsCorrect = true }, new() { Text = "allowDrop", IsCorrect = false }, new() { Text = "enableDrop", IsCorrect = false }, new() { Text = "acceptDrop", IsCorrect = false } } },
+                new() { Text = "What object carries data during drag operations?", Difficulty = "Advanced", Explanation = "The dataTransfer object holds the data being dragged. Use setData() during dragstart and getData() during drop to pass information between drag and drop events.", Answers = new List<Answer> { new() { Text = "dataTransfer", IsCorrect = true }, new() { Text = "dragData", IsCorrect = false }, new() { Text = "dropData", IsCorrect = false }, new() { Text = "transferData", IsCorrect = false } } },
+                new() { Text = "How do you access dropped files?", CodeSnippet = "e.dataTransfer.???", Difficulty = "Advanced", Explanation = "The dataTransfer.files property contains a FileList of files that were dropped. This allows users to drag files from their file system into the browser.", Answers = new List<Answer> { new() { Text = "files", IsCorrect = true }, new() { Text = "fileList", IsCorrect = false }, new() { Text = "droppedFiles", IsCorrect = false }, new() { Text = "uploadedFiles", IsCorrect = false } } },
+            }
+        };
+
+        var htmlWebStorage = new Quiz
+        {
+            Title = "Web Storage API",
+            Topic = "html-web-storage",
+            Category = "HTML",
+            Description = "localStorage, sessionStorage, and client-side data persistence.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What's the difference between localStorage and sessionStorage?", Difficulty = "Advanced", Explanation = "localStorage persists data even after the browser is closed, while sessionStorage data is cleared when the tab/browser is closed. Both are limited to the same origin.", Answers = new List<Answer> { new() { Text = "localStorage persists; sessionStorage clears on tab close", IsCorrect = true }, new() { Text = "localStorage is faster than sessionStorage", IsCorrect = false }, new() { Text = "sessionStorage has more storage capacity", IsCorrect = false }, new() { Text = "localStorage is sent to the server", IsCorrect = false } } },
+                new() { Text = "What data types can Web Storage directly store?", Difficulty = "Advanced", Explanation = "Web Storage can only store strings. To store objects or arrays, you must convert them to JSON strings using JSON.stringify() and parse them back with JSON.parse().", Answers = new List<Answer> { new() { Text = "Strings only", IsCorrect = true }, new() { Text = "Any JavaScript data type", IsCorrect = false }, new() { Text = "Strings and numbers", IsCorrect = false }, new() { Text = "Objects and arrays", IsCorrect = false } } },
+                new() { Text = "How do you store an object in localStorage?", CodeSnippet = "localStorage.setItem('user', ???);", Difficulty = "Advanced", Explanation = "Use JSON.stringify() to convert the object to a JSON string before storing. When retrieving, use JSON.parse() to convert it back to an object.", Answers = new List<Answer> { new() { Text = "JSON.stringify(user)", IsCorrect = true }, new() { Text = "user.toString()", IsCorrect = false }, new() { Text = "String(user)", IsCorrect = false }, new() { Text = "user", IsCorrect = false } } },
+                new() { Text = "What is the typical storage limit for Web Storage?", Difficulty = "Advanced", Explanation = "Most modern browsers allow 5-10 MB of storage per origin for Web Storage. This is much larger than cookies (4 KB) but much smaller than IndexedDB (hundreds of MB).", Answers = new List<Answer> { new() { Text = "5-10 MB", IsCorrect = true }, new() { Text = "4 KB", IsCorrect = false }, new() { Text = "100 MB", IsCorrect = false }, new() { Text = "Unlimited", IsCorrect = false } } },
+                new() { Text = "Should you store sensitive data like passwords in Web Storage?", Difficulty = "Advanced", Explanation = "No! Web Storage is not encrypted and is vulnerable to XSS attacks. Never store sensitive data like passwords, tokens, or credit card information in Web Storage.", Answers = new List<Answer> { new() { Text = "No, it's not encrypted and vulnerable to XSS", IsCorrect = true }, new() { Text = "Yes, it's completely secure", IsCorrect = false }, new() { Text = "Only in sessionStorage", IsCorrect = false }, new() { Text = "Yes, if you encrypt it first", IsCorrect = false } } },
+            }
+        };
+
+        var htmlGeolocation = new Quiz
+        {
+            Title = "Geolocation API",
+            Topic = "html-geolocation",
+            Category = "HTML",
+            Description = "User location, permissions, getCurrentPosition, and watchPosition.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What protocol is required for Geolocation API?", Difficulty = "Advanced", Explanation = "The Geolocation API requires HTTPS (or localhost for development). Browsers block geolocation requests on insecure HTTP connections for security reasons.", Answers = new List<Answer> { new() { Text = "HTTPS (or localhost)", IsCorrect = true }, new() { Text = "HTTP is fine", IsCorrect = false }, new() { Text = "FTP", IsCorrect = false }, new() { Text = "Any protocol", IsCorrect = false } } },
+                new() { Text = "Which method gets the user's current location once?", Difficulty = "Advanced", Explanation = "getCurrentPosition() retrieves the device's current position once. For continuous tracking, use watchPosition() instead.", Answers = new List<Answer> { new() { Text = "getCurrentPosition()", IsCorrect = true }, new() { Text = "getLocation()", IsCorrect = false }, new() { Text = "fetchPosition()", IsCorrect = false }, new() { Text = "requestLocation()", IsCorrect = false } } },
+                new() { Text = "What coordinates does the Geolocation API provide?", Difficulty = "Advanced", Explanation = "The API returns latitude and longitude in decimal degrees, plus additional data like accuracy (in meters), altitude, speed, and heading when available.", Answers = new List<Answer> { new() { Text = "latitude and longitude (plus accuracy, altitude, speed, heading)", IsCorrect = true }, new() { Text = "Only latitude and longitude", IsCorrect = false }, new() { Text = "Address and city name", IsCorrect = false }, new() { Text = "ZIP code and country", IsCorrect = false } } },
+                new() { Text = "What happens if the user denies location permission?", Difficulty = "Advanced", Explanation = "If the user denies permission, the error callback is called with error.code === 1 (PERMISSION_DENIED). Always handle this gracefully with a user-friendly message.", Answers = new List<Answer> { new() { Text = "The error callback is called with PERMISSION_DENIED", IsCorrect = true }, new() { Text = "The function returns null", IsCorrect = false }, new() { Text = "The browser reloads the page", IsCorrect = false }, new() { Text = "Nothing happens", IsCorrect = false } } },
+                new() { Text = "What does enableHighAccuracy option do?", CodeSnippet = "{ enableHighAccuracy: true }", Difficulty = "Advanced", Explanation = "enableHighAccuracy: true requests the most accurate position possible, typically using GPS. This is slower and uses more battery, so only use it when necessary.", Answers = new List<Answer> { new() { Text = "Requests GPS for more accurate position (slower, more battery)", IsCorrect = true }, new() { Text = "Makes the request faster", IsCorrect = false }, new() { Text = "Improves security", IsCorrect = false }, new() { Text = "Returns multiple positions", IsCorrect = false } } },
+            }
+        };
+
         // ═══════════════════════════════════════════════════
         //  CSS Quizzes (9 subcategories × 5 questions)
         // ═══════════════════════════════════════════════════
@@ -496,6 +598,7 @@ public static class SeedData
 
         db.Quizzes.AddRange(
             htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAdvanced, htmlAttributes, htmlMediaEmbeds, htmlAccessibility,
+            htmlCanvas, htmlSvg, htmlWebComponents, htmlDragDrop, htmlWebStorage, htmlGeolocation,
             cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
             jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced, jsObjectsClasses, jsAsyncProgramming, jsModulesApis
         );
@@ -510,7 +613,7 @@ public static class SeedData
             var badges = new List<Badge>
             {
                 // Tutorial Completion Badges
-                new() { Name = "HTML Master", Description = "Complete all HTML lessons", Icon = "🏗️", Category = "tutorial", Requirement = "complete_html", RequiredCount = 11, Color = "from-orange-400 to-red-600" },
+                new() { Name = "HTML Master", Description = "Complete all HTML lessons", Icon = "🏗️", Category = "tutorial", Requirement = "complete_html", RequiredCount = 17, Color = "from-orange-400 to-red-600" },
                 new() { Name = "CSS Wizard", Description = "Complete all CSS lessons", Icon = "🎨", Category = "tutorial", Requirement = "complete_css", RequiredCount = 18, Color = "from-blue-400 to-indigo-600" },
                 new() { Name = "JavaScript Pro", Description = "Complete all JavaScript lessons", Icon = "⚡", Category = "tutorial", Requirement = "complete_javascript", RequiredCount = 24, Color = "from-yellow-400 to-amber-600" },
                 new() { Name = "Frontend Foundations", Description = "Complete HTML, CSS, and JavaScript", Icon = "🚀", Category = "tutorial", Requirement = "complete_foundations", RequiredCount = 3, Color = "from-purple-400 to-pink-600" },
