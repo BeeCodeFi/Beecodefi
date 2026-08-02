@@ -2,11 +2,28 @@
 
 import { motion } from "framer-motion";
 import { Award, BookOpen, Users, Zap, Target, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
 
 // ── Total quiz count: 27 main quizzes + 52 quick quizzes in tutorials = 79 ──
 const totalQuizCount = 79;
 
 export default function PlatformStats() {
+  const [userCount, setUserCount] = useState(1000); // Default fallback
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const { data } = await api.get<{ totalUsers: number }>("/stats/platform");
+        setUserCount(data.totalUsers);
+      } catch (error) {
+        console.error("Failed to fetch user count:", error);
+      }
+    };
+
+    fetchUserCount();
+  }, []);
+
   const stats = [
     {
       icon: BookOpen,
@@ -46,7 +63,7 @@ export default function PlatformStats() {
     },
     {
       icon: Users,
-      value: "1000+",
+      value: userCount.toLocaleString(),
       label: "Active Learners",
       description: "Join a growing community of developers",
       gradient: "from-indigo-500 to-purple-500",
