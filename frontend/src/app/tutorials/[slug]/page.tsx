@@ -722,6 +722,25 @@ function TutorialPageContent({
                 </div>
               )}
 
+            {/* ── Quick Quiz (for advanced lessons with quickQuiz property) ── */}
+            {lesson?.quickQuiz && (
+              <LessonQuiz
+                key={`quick-quiz-${lesson.slug}`}
+                questions={[
+                  {
+                    id: `${lesson.slug}-quick`,
+                    question: lesson.quickQuiz.question,
+                    options: lesson.quickQuiz.options,
+                    correctIndex: lesson.quickQuiz.correctAnswer,
+                    explanation: lesson.quickQuiz.explanation,
+                  },
+                ]}
+                lessonTitle={lesson.title}
+                storageKey={`quick-quiz-${slug}-${lesson.slug}`}
+                quizTopic={`${slug}/${lesson.slug}`}
+              />
+            )}
+
             {/* ── Inline lesson quiz ── */}
             {quizQuestions && quizQuestions.length > 0 && lesson && (
               <LessonQuiz
