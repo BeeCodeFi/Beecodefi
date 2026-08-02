@@ -476,6 +476,238 @@ export const lessonQuizzes: Record<string, LessonQuizQuestion[]> = {
     },
   ],
 
+  "html/canvas-api": [
+    {
+      id: "html-canvas-1",
+      question: "What method do you use to get the 2D drawing context of a canvas?",
+      options: [
+        "canvas.getContext('2d')",
+        "canvas.get2D()",
+        "canvas.context2d()",
+        "canvas.drawingContext()",
+      ],
+      correctIndex: 0,
+      explanation:
+        "canvas.getContext('2d') returns the 2D rendering context used for drawing shapes, text, and images.",
+    },
+    {
+      id: "html-canvas-2",
+      question: "Which method draws a rectangle filled with the current fillStyle?",
+      options: ["fillRect()", "drawRect()", "rect()", "rectangle()"],
+      correctIndex: 0,
+      explanation:
+        "fillRect(x, y, width, height) draws a filled rectangle at the specified position and dimensions.",
+    },
+    {
+      id: "html-canvas-3",
+      question: "What does beginPath() do in Canvas API?",
+      options: [
+        "Starts a new path by clearing the list of sub-paths",
+        "Begins drawing immediately",
+        "Fills the current path",
+        "Closes the current path",
+      ],
+      correctIndex: 0,
+      explanation:
+        "beginPath() resets the path so you can draw a new shape without connecting to previous paths.",
+    },
+  ],
+
+  "html/svg": [
+    {
+      id: "html-svg-1",
+      question: "What does SVG stand for?",
+      options: [
+        "Scalable Vector Graphics",
+        "Simple Vector Graphics",
+        "Static Visual Graphics",
+        "Structured Vector Graphics",
+      ],
+      correctIndex: 0,
+      explanation:
+        "SVG (Scalable Vector Graphics) is an XML-based format for defining vector graphics that scale without loss of quality.",
+    },
+    {
+      id: "html-svg-2",
+      question: "Which SVG element draws a circle?",
+      options: ["<circle>", "<oval>", "<round>", "<ellipse>"],
+      correctIndex: 0,
+      explanation:
+        "<circle cx='50' cy='50' r='40'> creates a circle with center coordinates and radius.",
+    },
+    {
+      id: "html-svg-3",
+      question: "What is the main advantage of SVG over raster images?",
+      options: [
+        "Infinite scalability without quality loss",
+        "Smaller file sizes always",
+        "Faster rendering",
+        "Better browser support",
+      ],
+      correctIndex: 0,
+      explanation:
+        "SVG graphics are resolution-independent and scale perfectly at any size, unlike pixel-based raster images.",
+    },
+  ],
+
+  "html/web-components": [
+    {
+      id: "html-wc-1",
+      question: "What are the three main technologies that make up Web Components?",
+      options: [
+        "Custom Elements, Shadow DOM, HTML Templates",
+        "React, Vue, Angular",
+        "HTML, CSS, JavaScript",
+        "Components, Modules, Classes",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Web Components consist of Custom Elements for custom tags, Shadow DOM for encapsulation, and HTML Templates for reusable markup.",
+    },
+    {
+      id: "html-wc-2",
+      question: "What does Shadow DOM provide?",
+      options: [
+        "Encapsulation of component styles and markup",
+        "Dark theme support",
+        "Faster rendering",
+        "Automatic accessibility",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Shadow DOM creates a separate DOM tree with scoped styles, preventing style conflicts with the rest of the page.",
+    },
+    {
+      id: "html-wc-3",
+      question: "Which method defines a new custom element?",
+      options: [
+        "customElements.define()",
+        "document.registerElement()",
+        "HTMLElement.create()",
+        "Element.define()",
+      ],
+      correctIndex: 0,
+      explanation:
+        "customElements.define('my-element', MyElementClass) registers a custom element with a tag name and class.",
+    },
+  ],
+
+  "html/drag-and-drop": [
+    {
+      id: "html-dnd-1",
+      question: "Which attribute makes an element draggable?",
+      options: ["draggable='true'", "movable='true'", "dragEnabled='true'", "canDrag='true'"],
+      correctIndex: 0,
+      explanation:
+        "Setting draggable='true' on an element enables it to be dragged using the HTML5 Drag and Drop API.",
+    },
+    {
+      id: "html-dnd-2",
+      question: "Which event fires when a draggable element is dropped?",
+      options: ["drop", "dragend", "release", "dragdrop"],
+      correctIndex: 0,
+      explanation:
+        "The 'drop' event fires on the drop target when the user releases the mouse button to complete the drag operation.",
+    },
+    {
+      id: "html-dnd-3",
+      question: "What must you do in dragover event to allow dropping?",
+      options: [
+        "Call event.preventDefault()",
+        "Set allow-drop='true'",
+        "Return true",
+        "Call event.stopPropagation()",
+      ],
+      correctIndex: 0,
+      explanation:
+        "You must call preventDefault() in the dragover handler to signal that the drop target accepts drops.",
+    },
+  ],
+
+  "html/web-storage": [
+    {
+      id: "html-storage-1",
+      question: "What's the difference between localStorage and sessionStorage?",
+      options: [
+        "localStorage persists after closing the browser; sessionStorage doesn't",
+        "They are identical",
+        "sessionStorage has more capacity",
+        "localStorage is faster",
+      ],
+      correctIndex: 0,
+      explanation:
+        "localStorage data persists even after closing the browser, while sessionStorage is cleared when the tab/window is closed.",
+    },
+    {
+      id: "html-storage-2",
+      question: "Which method stores a value in localStorage?",
+      options: [
+        "localStorage.setItem(key, value)",
+        "localStorage.save(key, value)",
+        "localStorage.store(key, value)",
+        "localStorage.put(key, value)",
+      ],
+      correctIndex: 0,
+      explanation:
+        "localStorage.setItem('key', 'value') stores data, and localStorage.getItem('key') retrieves it.",
+    },
+    {
+      id: "html-storage-3",
+      question: "What type of data can be stored directly in Web Storage?",
+      options: [
+        "Strings only",
+        "Any JavaScript object",
+        "Numbers only",
+        "Binary data only",
+      ],
+      correctIndex: 0,
+      explanation:
+        "Web Storage APIs only store strings. Use JSON.stringify() to store objects and JSON.parse() to retrieve them.",
+    },
+  ],
+
+  "html/geolocation": [
+    {
+      id: "html-geo-1",
+      question: "Which API provides access to the user's location?",
+      options: [
+        "navigator.geolocation",
+        "window.location",
+        "document.coordinates",
+        "browser.position",
+      ],
+      correctIndex: 0,
+      explanation:
+        "The Geolocation API is accessed through navigator.geolocation and requires user permission to access location data.",
+    },
+    {
+      id: "html-geo-2",
+      question: "Which method gets the user's current position once?",
+      options: [
+        "getCurrentPosition()",
+        "getPosition()",
+        "fetchLocation()",
+        "requestLocation()",
+      ],
+      correctIndex: 0,
+      explanation:
+        "navigator.geolocation.getCurrentPosition() retrieves the current location once, unlike watchPosition() which monitors continuously.",
+    },
+    {
+      id: "html-geo-3",
+      question: "What information is provided by the Position object?",
+      options: [
+        "Latitude, longitude, accuracy, and optional altitude/speed",
+        "IP address and country",
+        "Street address only",
+        "Browser type and version",
+      ],
+      correctIndex: 0,
+      explanation:
+        "The Position object provides coordinates (latitude/longitude), accuracy in meters, and optional data like altitude, speed, and heading.",
+    },
+  ],
+
   // ═══════════════════════════════════════
   //  CSS Tutorials
   // ═══════════════════════════════════════
