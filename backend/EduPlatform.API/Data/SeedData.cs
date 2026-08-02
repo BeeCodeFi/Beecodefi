@@ -16,17 +16,17 @@ public static class SeedData
         if (quizCount > 0)
         {
             var htmlAdvancedQuiz = await db.Quizzes.FirstOrDefaultAsync(q => q.Topic == "html-advanced");
-            var htmlCanvasQuiz = await db.Quizzes.FirstOrDefaultAsync(q => q.Topic == "html-canvas");
+            var htmlAccessibilityQuiz = await db.Quizzes.FirstOrDefaultAsync(q => q.Topic == "html-accessibility");
             
-            // If both exist and htmlAdvanced has a higher ID than htmlCanvas, we need to reorder
-            if (htmlAdvancedQuiz != null && htmlCanvasQuiz != null && htmlAdvancedQuiz.Id > htmlCanvasQuiz.Id)
+            // If both exist and htmlAdvanced has a lower ID than htmlAccessibility, we need to reorder
+            if (htmlAdvancedQuiz != null && htmlAccessibilityQuiz != null && htmlAdvancedQuiz.Id < htmlAccessibilityQuiz.Id)
             {
                 needsReorder = true;
             }
         }
         
         // Re-seed if no quizzes, incomplete catalog, or needs reordering
-        if (quizCount < 33 || needsReorder)
+        if (quizCount < 27 || needsReorder)
         {
             // Clear old quiz data to reseed
             if (quizCount > 0)
@@ -614,7 +614,6 @@ public static class SeedData
         db.Quizzes.AddRange(
             // HTML - Progressive difficulty order
             htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAttributes, htmlMediaEmbeds, htmlAccessibility, htmlAdvanced,
-            htmlCanvas, htmlSvg, htmlWebComponents, htmlDragDrop, htmlWebStorage, htmlGeolocation,
             // CSS - Progressive difficulty order
             cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
             // JavaScript - Progressive difficulty order
