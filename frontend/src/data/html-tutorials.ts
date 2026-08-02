@@ -1,4 +1,5 @@
 import { TutorialLesson } from "@/types";
+import { htmlAdvancedLessons } from "./html-advanced-lessons";
 
 export const htmlLessons: TutorialLesson[] = [
   {
@@ -1758,3 +1759,7 @@ Special characters in HTML:
     ],
   },
 ];
+
+// Merge with advanced lessons
+export const allHtmlLessons = [...htmlLessons, ...htmlAdvancedLessons];
+

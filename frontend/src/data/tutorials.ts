@@ -1,5 +1,5 @@
 import { TutorialCategory } from "@/types";
-import { htmlLessons } from "./html-tutorials";
+import { allHtmlLessons } from "./html-tutorials";
 import { cssLessons } from "./css-tutorials";
 import { jsLessons } from "./js-tutorials";
 
@@ -10,9 +10,9 @@ export const tutorials: TutorialCategory[] = [
     description: "Learn the building blocks of every website. Master HTML elements, forms, tables, and semantic markup with interactive examples referenced from MDN Web Docs.",
     icon: "FileCode2",
     color: "from-orange-500 to-red-500",
-    totalLessons: htmlLessons.length,
-    estimatedHours: Math.ceil(htmlLessons.reduce((acc, l) => acc + (l.estimatedMinutes || 15), 0) / 60),
-    lessons: htmlLessons,
+    totalLessons: allHtmlLessons.length,
+    estimatedHours: Math.ceil(allHtmlLessons.reduce((acc, l) => acc + (l.estimatedMinutes || 15), 0) / 60),
+    lessons: allHtmlLessons,
   },
   {
     slug: "css",
