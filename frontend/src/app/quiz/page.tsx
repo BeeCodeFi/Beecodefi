@@ -128,7 +128,12 @@ function QuizPageContent() {
         tutorials.forEach((tutorial) => {
           tutorial.lessons.forEach((lesson) => {
             const quizKey = `${tutorial.slug}/${lesson.slug}`;
-            const questions = lessonQuizzes[quizKey];
+            
+            // Prefer quickQuiz over lessonQuizzes if it exists
+            const questions = lesson.quickQuiz && lesson.quickQuiz.length > 0 
+              ? lesson.quickQuiz 
+              : lessonQuizzes[quizKey];
+            
             if (!questions || questions.length === 0) return;
 
             const categoryMeta = quizCategories.find(
@@ -205,7 +210,12 @@ function QuizPageContent() {
           tutorials.forEach((tutorial) => {
             tutorial.lessons.forEach((lesson) => {
               const quizKey = `${tutorial.slug}/${lesson.slug}`;
-              const questions = lessonQuizzes[quizKey];
+              
+              // Prefer quickQuiz over lessonQuizzes if it exists
+              const questions = lesson.quickQuiz && lesson.quickQuiz.length > 0 
+                ? lesson.quickQuiz 
+                : lessonQuizzes[quizKey];
+              
               if (!questions || questions.length === 0) return;
 
               const categoryMeta = quizCategories.find(
