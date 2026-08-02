@@ -54,32 +54,15 @@ function getQuizSortRank(quiz: QuizTopic, categoryName: string) {
       const lessonIndex = tutorials[tutorialIndex].lessons.findIndex(
         (lesson) => lesson.slug === lessonSlug,
       );
-      return tutorialIndex * 1000 + (lessonIndex >= 0 ? lessonIndex : 0);
+      // Return a proper rank if lesson found, otherwise fallback to high number
+      if (lessonIndex >= 0) {
+        return tutorialIndex * 1000 + lessonIndex;
+      }
     }
   }
 
-  const title = quiz.title.toLowerCase();
-  const fallbackTokens = [
-    "introduction",
-    "document",
-    "elements",
-    "nesting",
-    "structure",
-    "text",
-    "links",
-    "images",
-    "lists",
-    "tables",
-    "forms",
-    "semantic",
-    "attributes",
-    "api",
-    "best",
-    "practice",
-  ];
-
-  const tokenIndex = fallbackTokens.findIndex((token) => title.includes(token));
-  return tokenIndex >= 0 ? tokenIndex : 10000;
+  // Fallback: use alphabetical order with title
+  return 10000 + quiz.title.charCodeAt(0);
 }
 
 export default function QuizPage() {
