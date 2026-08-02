@@ -681,7 +681,7 @@ export default function Hero() {
               color: "text-red-500   dark:text-red-400",
             },
             {
-              value: quizCategories.length,
+              value: 27,
               suffix: "",
               label: "Quiz Topics",
               icon: Brain,
