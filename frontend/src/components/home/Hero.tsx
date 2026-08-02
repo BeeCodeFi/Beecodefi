@@ -321,7 +321,6 @@ export default function Hero() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const resumeLesson = useContinueLearning();
-  const totalQuizCount = useTotalQuizCount();
   const [activeSnippet, setActiveSnippet] = useState(0);
   const [beeTarget, setBeeTarget] = useState(0);
   const [beeOrigin, setBeeOrigin] = useState(0);
