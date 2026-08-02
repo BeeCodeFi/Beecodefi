@@ -11,7 +11,7 @@ public static class SeedData
 
         // Re-seed if no quizzes or the quiz catalog is still below the expanded topic set
         var quizCount = await db.Quizzes.CountAsync();
-        if (quizCount >= 27) return;
+        if (quizCount >= 33) return;  // Force reseed to fix quiz order (was 27)
 
         // Clear old quiz data to reseed
         if (quizCount > 0)
@@ -597,9 +597,12 @@ public static class SeedData
         };
 
         db.Quizzes.AddRange(
-            htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAdvanced, htmlAttributes, htmlMediaEmbeds, htmlAccessibility,
+            // HTML - Progressive difficulty order
+            htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAttributes, htmlMediaEmbeds, htmlAccessibility, htmlAdvanced,
             htmlCanvas, htmlSvg, htmlWebComponents, htmlDragDrop, htmlWebStorage, htmlGeolocation,
+            // CSS - Progressive difficulty order
             cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
+            // JavaScript - Progressive difficulty order
             jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced, jsObjectsClasses, jsAsyncProgramming, jsModulesApis
         );
         await db.SaveChangesAsync();
