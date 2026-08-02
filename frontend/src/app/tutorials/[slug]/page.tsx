@@ -272,20 +272,23 @@ function TutorialPageContent({
             String(paramIdx),
           );
         });
+        // Don't load from localStorage or sync with backend yet
+        // The saved lesson state will handle that
         return;
       }
     }
 
+    // If no URL param, load from localStorage
     const savedIndex = localStorage.getItem(
       getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
     );
     if (savedIndex !== null) {
       const idx = parseInt(savedIndex, 10);
       if (!isNaN(idx) && idx >= 0 && idx < tutorial.lessons.length) {
+        const lessonSlug = tutorial.lessons[idx]?.slug;
         queueMicrotask(() => {
           setCurrentLessonIndex(idx);
           // Update URL to match the saved lesson
-          const lessonSlug = tutorial.lessons[idx]?.slug;
           if (lessonSlug) {
             router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
               scroll: false,
@@ -329,7 +332,7 @@ function TutorialPageContent({
         }
       })
       .catch(() => {});
-  }, [lessonParam, slug, tutorial, user?.id]);
+  }, [slug, tutorial, hydrated, user?.id, lessonParam, router]);
 
   // ── Keyboard shortcuts ─── moved below lesson/hasNext/hasPrev declarations
 
