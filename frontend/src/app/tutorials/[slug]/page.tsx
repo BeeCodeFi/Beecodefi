@@ -156,7 +156,7 @@ function LessonContent({ content }: { content: string }) {
           return (
             <p
               key={i}
-              className="text-base sm:text-[1.05rem] text-gray-600 dark:text-gray-300 leading-[1.85] mb-4"
+              className="text-base sm:text-[1.05rem] leading-[1.85] mb-4 !text-gray-600 dark:!text-gray-300"
               dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(block) }}
             />
           );
