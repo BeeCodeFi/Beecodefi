@@ -22,63 +22,62 @@ export default function PlatformStats() {
   }, []);
 
   const stats = [
-  {
-    icon: BookOpen,
-    value: "50+",
-    label: "Interactive Lessons",
-    description: "Hands-on coding in HTML, CSS & JavaScript",
-    gradient: "from-blue-500 to-cyan-500",
-    iconBg: "bg-blue-100 dark:bg-blue-900/40",
-    iconColor: "text-blue-600 dark:text-blue-400",
-  },
-  {
-    icon: Target,
-    value: quizCount.toString(),
-    label: "Quiz Topics",
-    description: "Test your knowledge with detailed feedback",
-    gradient: "from-purple-500 to-pink-500",
-    iconBg: "bg-purple-100 dark:bg-purple-900/40",
-    iconColor: "text-purple-600 dark:text-purple-400",
-  },
-  {
-    icon: Award,
-    value: "15+",
-    label: "Achievement Badges",
-    description: "Unlock rewards as you learn and progress",
-    gradient: "from-amber-500 to-orange-500",
-    iconBg: "bg-amber-100 dark:bg-amber-900/40",
-    iconColor: "text-amber-600 dark:text-amber-400",
-  },
-  {
-    icon: Zap,
-    value: "100%",
-    label: "Free Forever",
-    description: "No paywalls, no limits, no credit card",
-    gradient: "from-green-500 to-emerald-500",
-    iconBg: "bg-green-100 dark:bg-green-900/40",
-    iconColor: "text-green-600 dark:text-green-400",
-  },
-  {
-    icon: Users,
-    value: "1000+",
-    label: "Active Learners",
-    description: "Join a growing community of developers",
-    gradient: "from-indigo-500 to-purple-500",
-    iconBg: "bg-indigo-100 dark:bg-indigo-900/40",
-    iconColor: "text-indigo-600 dark:text-indigo-400",
-  },
-  {
-    icon: TrendingUp,
-    value: "Real-time",
-    label: "Progress Tracking",
-    description: "See your journey visualized on the roadmap",
-    gradient: "from-rose-500 to-red-500",
-    iconBg: "bg-rose-100 dark:bg-rose-900/40",
-    iconColor: "text-rose-600 dark:text-rose-400",
-  },
-];
+    {
+      icon: BookOpen,
+      value: "50+",
+      label: "Interactive Lessons",
+      description: "Hands-on coding in HTML, CSS & JavaScript",
+      gradient: "from-blue-500 to-cyan-500",
+      iconBg: "bg-blue-100 dark:bg-blue-900/40",
+      iconColor: "text-blue-600 dark:text-blue-400",
+    },
+    {
+      icon: Target,
+      value: quizCount.toString(),
+      label: "Quiz Topics",
+      description: "Test your knowledge with detailed feedback",
+      gradient: "from-purple-500 to-pink-500",
+      iconBg: "bg-purple-100 dark:bg-purple-900/40",
+      iconColor: "text-purple-600 dark:text-purple-400",
+    },
+    {
+      icon: Award,
+      value: "15+",
+      label: "Achievement Badges",
+      description: "Unlock rewards as you learn and progress",
+      gradient: "from-amber-500 to-orange-500",
+      iconBg: "bg-amber-100 dark:bg-amber-900/40",
+      iconColor: "text-amber-600 dark:text-amber-400",
+    },
+    {
+      icon: Zap,
+      value: "100%",
+      label: "Free Forever",
+      description: "No paywalls, no limits, no credit card",
+      gradient: "from-green-500 to-emerald-500",
+      iconBg: "bg-green-100 dark:bg-green-900/40",
+      iconColor: "text-green-600 dark:text-green-400",
+    },
+    {
+      icon: Users,
+      value: "1000+",
+      label: "Active Learners",
+      description: "Join a growing community of developers",
+      gradient: "from-indigo-500 to-purple-500",
+      iconBg: "bg-indigo-100 dark:bg-indigo-900/40",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+    },
+    {
+      icon: TrendingUp,
+      value: "Real-time",
+      label: "Progress Tracking",
+      description: "See your journey visualized on the roadmap",
+      gradient: "from-rose-500 to-red-500",
+      iconBg: "bg-rose-100 dark:bg-rose-900/40",
+      iconColor: "text-rose-600 dark:text-rose-400",
+    },
+  ];
 
-export default function PlatformStats() {
   return (
     <section className="py-20 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-950 dark:via-indigo-950/20 dark:to-purple-950/20 relative overflow-hidden">
       {/* Background pattern */}
