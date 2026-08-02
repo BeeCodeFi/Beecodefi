@@ -85,6 +85,15 @@
   :is(.dark) .lesson-content-wrapper h2 {
     color: rgb(255 255 255) !important;
   }
+  
+  /* Force exercise instruction text color */
+  .exercise-instruction-text {
+    color: rgb(75 85 99) !important;
+  }
+  
+  :is(.dark) .exercise-instruction-text {
+    color: rgb(156 163 175) !important;
+  }
 
   /* Force inline markdown element colors with maximum specificity */
   .inline-code-element,

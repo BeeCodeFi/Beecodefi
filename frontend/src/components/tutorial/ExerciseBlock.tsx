@@ -43,7 +43,7 @@ export default function ExerciseBlock({ exercise, exerciseNumber }: ExerciseBloc
           <h4 className="font-bold text-gray-900 dark:text-white text-base">
             {exercise.title}
           </h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="exercise-instruction-text text-sm mt-1">
             {exercise.instruction}
           </p>
         </div>
