@@ -9,19 +9,34 @@ public static class SeedData
     {
         await db.Database.MigrateAsync();
 
-        // Re-seed if no quizzes or the quiz catalog is still below the expanded topic set
+        // Check if we need to reorder quizzes (check if htmlAdvanced comes before htmlCanvas)
+        var needsReorder = false;
         var quizCount = await db.Quizzes.CountAsync();
-        if (quizCount >= 33) return;  // Force reseed to fix quiz order (was 27)
-
-        // Clear old quiz data to reseed
+        
         if (quizCount > 0)
         {
-            var oldAttempts = await db.QuizAttempts.ToListAsync();
-            db.QuizAttempts.RemoveRange(oldAttempts);
-            var oldQuizzes = await db.Quizzes.Include(q => q.Questions).ThenInclude(q => q.Answers).ToListAsync();
-            db.Quizzes.RemoveRange(oldQuizzes);
-            await db.SaveChangesAsync();
+            var htmlAdvancedQuiz = await db.Quizzes.FirstOrDefaultAsync(q => q.Topic == "html-advanced");
+            var htmlCanvasQuiz = await db.Quizzes.FirstOrDefaultAsync(q => q.Topic == "html-canvas");
+            
+            // If both exist and htmlAdvanced has a higher ID than htmlCanvas, we need to reorder
+            if (htmlAdvancedQuiz != null && htmlCanvasQuiz != null && htmlAdvancedQuiz.Id > htmlCanvasQuiz.Id)
+            {
+                needsReorder = true;
+            }
         }
+        
+        // Re-seed if no quizzes, incomplete catalog, or needs reordering
+        if (quizCount < 33 || needsReorder)
+        {
+            // Clear old quiz data to reseed
+            if (quizCount > 0)
+            {
+                var oldAttempts = await db.QuizAttempts.ToListAsync();
+                db.QuizAttempts.RemoveRange(oldAttempts);
+                var oldQuizzes = await db.Quizzes.Include(q => q.Questions).ThenInclude(q => q.Answers).ToListAsync();
+                db.Quizzes.RemoveRange(oldQuizzes);
+                await db.SaveChangesAsync();
+            }
 
         // ═══════════════════════════════════════════════════
         //  HTML Quizzes (9 subcategories × 5 questions)
@@ -606,6 +621,7 @@ public static class SeedData
             jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced, jsObjectsClasses, jsAsyncProgramming, jsModulesApis
         );
         await db.SaveChangesAsync();
+        }  // End of reseed check
 
         // ═══════════════════════════════════════════════════
         //  Achievement Badges
