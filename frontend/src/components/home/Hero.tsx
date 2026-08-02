@@ -15,8 +15,30 @@ import { tutorials } from "@/data/tutorials";
 import { quizCategories } from "@/data/quiz-categories";
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
+import api from "@/lib/api";
 
 const totalVideos = courses.reduce((s, c) => s + c.videos.length, 0);
+
+// ── Hook to get total quiz count from backend ──────────────────────────────
+function useTotalQuizCount() {
+  const [count, setCount] = useState(27); // Default fallback
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const { data } = await api.get<Array<{ id: number }>>("/quiz");
+        setCount(data.length);
+      } catch (error) {
+        console.error("Failed to fetch quiz count:", error);
+        // Keep default value on error
+      }
+    };
+
+    fetchCount();
+  }, []);
+
+  return count;
+}
 
 // ── Hook to check for in-progress tutorials ──────────────────────────────
 function useContinueLearning() {
@@ -319,6 +341,7 @@ export default function Hero() {
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const resumeLesson = useContinueLearning();
+  const totalQuizCount = useTotalQuizCount();
   const [activeSnippet, setActiveSnippet] = useState(0);
   const [beeTarget, setBeeTarget] = useState(0);
   const [beeOrigin, setBeeOrigin] = useState(0);
@@ -681,7 +704,7 @@ export default function Hero() {
               color: "text-red-500   dark:text-red-400",
             },
             {
-              value: 27,
+              value: totalQuizCount,
               suffix: "",
               label: "Quiz Topics",
               icon: Brain,

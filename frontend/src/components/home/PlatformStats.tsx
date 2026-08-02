@@ -2,8 +2,26 @@
 
 import { motion } from "framer-motion";
 import { Award, BookOpen, Users, Zap, Target, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
 
-const stats = [
+export default function PlatformStats() {
+  const [quizCount, setQuizCount] = useState(27); // Default fallback
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const { data } = await api.get<Array<{ id: number }>>("/quiz");
+        setQuizCount(data.length);
+      } catch (error) {
+        console.error("Failed to fetch quiz count:", error);
+      }
+    };
+
+    fetchCount();
+  }, []);
+
+  const stats = [
   {
     icon: BookOpen,
     value: "50+",
@@ -15,7 +33,7 @@ const stats = [
   },
   {
     icon: Target,
-    value: "27",
+    value: quizCount.toString(),
     label: "Quiz Topics",
     description: "Test your knowledge with detailed feedback",
     gradient: "from-purple-500 to-pink-500",
