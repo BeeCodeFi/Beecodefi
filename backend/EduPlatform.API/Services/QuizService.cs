@@ -21,6 +21,47 @@ public class QuizService : IQuizService
             .AsNoTracking()
             .ToListAsync();
 
+        // Define the correct learning order for quizzes
+        var orderMap = new Dictionary<string, int>
+        {
+            // HTML - Progressive difficulty
+            ["html-basics"] = 1,
+            ["html-links-media"] = 2,
+            ["html-lists-tables"] = 3,
+            ["html-forms"] = 4,
+            ["html-semantic"] = 5,
+            ["html-attributes"] = 6,
+            ["html-media-embeds"] = 7,
+            ["html-accessibility"] = 8,
+            ["html-advanced"] = 9,
+            ["html-canvas"] = 10,
+            ["html-svg"] = 11,
+            ["html-web-components"] = 12,
+            ["html-drag-drop"] = 13,
+            ["html-web-storage"] = 14,
+            ["html-geolocation"] = 15,
+            // CSS - Progressive difficulty
+            ["css-basics"] = 16,
+            ["css-box-model"] = 17,
+            ["css-selectors"] = 18,
+            ["css-flexbox-grid"] = 19,
+            ["css-visual"] = 20,
+            ["css-advanced"] = 21,
+            ["css-positioning"] = 22,
+            ["css-transforms"] = 23,
+            ["css-variables"] = 24,
+            // JavaScript - Progressive difficulty
+            ["js-basics"] = 25,
+            ["js-arrays-data"] = 26,
+            ["js-functions-scope"] = 27,
+            ["js-dom-events"] = 28,
+            ["js-es6"] = 29,
+            ["js-advanced"] = 30,
+            ["js-objects-classes"] = 31,
+            ["js-async"] = 32,
+            ["js-modules-apis"] = 33
+        };
+
         var result = new List<QuizTopicDto>();
 
         foreach (var quiz in quizzes)
@@ -46,7 +87,8 @@ public class QuizService : IQuizService
             });
         }
 
-        return result;
+        // Sort by the defined order, with fallback to ID for any unmapped topics
+        return result.OrderBy(r => orderMap.TryGetValue(r.Topic, out var order) ? order : 999).ToList();
     }
 
     public async Task<List<QuizQuestionDto>> GetQuestionsByTopicAsync(string topic)
