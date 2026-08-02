@@ -69,7 +69,7 @@ function LessonContent({ content }: { content: string }) {
   const blocks = content.split("\n\n");
 
   return (
-    <div className="space-y-0">
+    <div className="space-y-0 text-gray-700 dark:text-gray-300">
       {blocks.map((block, i) => {
         // ── H2 heading with scroll anchor ──
         if (block.startsWith("## ")) {
@@ -640,7 +640,7 @@ function TutorialPageContent({
             />
 
             {/* ── Lesson body ── */}
-            <div className="mt-6">
+            <div className="mt-6 text-gray-700 dark:text-gray-300">
               <LessonContent content={lesson?.content ?? ""} />
             </div>
 
