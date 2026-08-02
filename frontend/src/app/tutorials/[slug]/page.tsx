@@ -49,18 +49,18 @@ function renderInlineMarkdown(text: string): string {
     .replace(
       /`([^`]+)`/g,
       (_, code) =>
-        `<code class="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 rounded text-[0.82em] font-mono border border-indigo-100 dark:border-indigo-800">${code
+        `<code class="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/50 !text-indigo-700 dark:!text-indigo-300 rounded text-[0.82em] font-mono border border-indigo-100 dark:border-indigo-800">${code
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")}</code>`,
     )
     .replace(
       /\*\*([^*]+)\*\*/g,
-      '<strong class="font-semibold text-gray-900 dark:text-white">$1</strong>',
+      '<strong class="font-semibold !text-gray-900 dark:!text-white">$1</strong>',
     )
     .replace(
       /\*([^*]+)\*/g,
-      '<em class="italic text-gray-700 dark:text-gray-300">$1</em>',
+      '<em class="italic !text-gray-700 dark:!text-gray-300">$1</em>',
     );
 }
 
@@ -79,7 +79,7 @@ function LessonContent({ content }: { content: string }) {
             <h2
               key={i}
               id={id}
-              className="group flex items-center gap-2 text-xl sm:text-2xl font-bold mt-10 mb-3 pt-2 text-gray-900 dark:text-white scroll-mt-28"
+              className="group flex items-center gap-2 text-xl sm:text-2xl font-bold mt-10 mb-3 pt-2 !text-gray-900 dark:!text-white scroll-mt-28"
             >
               <a
                 href={`#${id}`}
@@ -102,7 +102,7 @@ function LessonContent({ content }: { content: string }) {
                 <li key={j} className="flex items-start gap-3">
                   <span className="mt-[9px] w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
                   <span
-                    className="text-base text-gray-600 dark:text-gray-300 leading-relaxed"
+                    className="text-base !text-gray-600 dark:!text-gray-300 leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html: renderInlineMarkdown(item.replace(/^- /, "")),
                     }}
@@ -127,7 +127,7 @@ function LessonContent({ content }: { content: string }) {
                     {j + 1}
                   </span>
                   <span
-                    className="text-base text-gray-600 dark:text-gray-300 leading-relaxed"
+                    className="text-base !text-gray-600 dark:!text-gray-300 leading-relaxed"
                     dangerouslySetInnerHTML={{
                       __html: renderInlineMarkdown(
                         item.replace(/^\d+\.\s/, ""),
