@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 
 export default function PlatformStats() {
-  const [quizCount, setQuizCount] = useState(27); // Default fallback
+  const [quizCount, setQuizCount] = useState(79); // Default to known total (27 main + 52 quick quizzes)
 
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const { data } = await api.get<Array<{ id: number }>>("/quiz");
+        const { data } = await api.get<Array<{ id: number }>>("/quiz/topics");
         setQuizCount(data.length);
       } catch (error) {
         console.error("Failed to fetch quiz count:", error);

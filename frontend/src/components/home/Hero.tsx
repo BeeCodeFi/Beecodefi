@@ -21,12 +21,12 @@ const totalVideos = courses.reduce((s, c) => s + c.videos.length, 0);
 
 // ── Hook to get total quiz count from backend ──────────────────────────────
 function useTotalQuizCount() {
-  const [count, setCount] = useState(27); // Default fallback
+  const [count, setCount] = useState(79); // Default to known total (27 main + 52 quick quizzes)
 
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const { data } = await api.get<Array<{ id: number }>>("/quiz");
+        const { data } = await api.get<Array<{ id: number }>>("/quiz/topics");
         setCount(data.length);
       } catch (error) {
         console.error("Failed to fetch quiz count:", error);
