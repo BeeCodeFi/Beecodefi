@@ -29,6 +29,8 @@ import LessonFeedback from "@/components/tutorial/LessonFeedback";
 import Certificate from "@/components/tutorial/Certificate";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
+import StructuredData from "@/components/seo/StructuredData";
+import { generateLearningResourceSchema, generateBreadcrumbSchema } from "@/lib/schema";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { getUserStorageKey } from "@/lib/userStorage";
 import { useStreak } from "@/hooks/useStreak";
@@ -479,7 +481,34 @@ function TutorialPageContent({
   const quizCategory = getQuizCategoryForTutorial(slug);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <>
+      {/* SEO: LearningResource Schema */}
+      {tutorial && lesson && (
+        <StructuredData
+          data={generateLearningResourceSchema({
+            title: lesson.title,
+            description: `Learn ${lesson.title} in this interactive tutorial from ${tutorial.title} track`,
+            tutorialSlug: slug,
+            lessonSlug: lesson.slug,
+            difficulty: lesson.difficulty,
+            category: tutorial.title,
+          })}
+        />
+      )}
+
+      {/* SEO: Breadcrumb Schema */}
+      {tutorial && lesson && (
+        <StructuredData
+          data={generateBreadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Tutorials", url: "/tutorials" },
+            { name: tutorial.title, url: `/tutorials/${slug}` },
+            { name: lesson.title, url: `/tutorials/${slug}?lesson=${lesson.slug}` },
+          ])}
+        />
+      )}
+
+      <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Certificate modal */}
       <AnimatePresence>
         {showCertificate && tutorial && (
@@ -880,5 +909,6 @@ function TutorialPageContent({
         </div>
       </div>
     </div>
+    </>
   );
 }

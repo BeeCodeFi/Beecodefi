@@ -12,6 +12,8 @@ import PageTransition from "@/components/ui/PageTransition";
 import { ToastProvider } from "@/context/ToastContext";
 import OnboardingTour from "@/components/onboarding/OnboardingTour";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import StructuredData from "@/components/seo/StructuredData";
+import { generateOrganizationSchema } from "@/lib/schema";
 
 // Inter — body text (readable, neutral)
 const inter = Inter({
@@ -69,6 +71,9 @@ export default function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
       >
+        {/* SEO: Organization Schema */}
+        <StructuredData data={generateOrganizationSchema()} />
+
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>
             <ToastProvider>

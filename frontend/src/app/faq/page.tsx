@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import PageTransition from "@/components/ui/PageTransition";
+import StructuredData from "@/components/seo/StructuredData";
+import { generateFAQSchema } from "@/lib/schema";
 
 const FAQS = [
   {
@@ -102,6 +104,16 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 export default function FAQPage() {
   return (
     <PageTransition>
+      {/* SEO: FAQ Schema */}
+      <StructuredData
+        data={generateFAQSchema(
+          FAQS.map((faq) => ({
+            question: faq.question,
+            answer: faq.answer,
+          }))
+        )}
+      />
+
       <div className="min-h-screen bg-gray-50 dark:bg-[#030712] pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

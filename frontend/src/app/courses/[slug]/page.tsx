@@ -18,6 +18,8 @@ import {
 import { courses } from "@/data/courses";
 import { cn } from "@/lib/utils";
 import type { CompletedCourse } from "@/types";
+import StructuredData from "@/components/seo/StructuredData";
+import { generateCourseSchema, generateBreadcrumbSchema } from "@/lib/schema";
 
 const STORAGE_KEY = "beeCodeFi_completedCourses";
 
@@ -118,15 +120,36 @@ export default function CourseDetailPage({
     : `https://www.youtube.com/watch?v=${course.firstVideoId}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <Link
+    <>
+      {/* SEO: Course Schema */}
+      <StructuredData
+        data={generateCourseSchema({
+          title: course.title,
+          description: course.description,
+          slug: course.slug,
+          difficulty: course.difficulty,
+          videoCount: course.videos.length,
+        })}
+      />
+
+      {/* SEO: Breadcrumb Schema */}
+      <StructuredData
+        data={generateBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Courses", url: "/courses" },
+          { name: course.title, url: `/courses/${course.slug}` },
+        ])}
+      />
+
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <Link
             href="/courses"
             className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
@@ -321,6 +344,7 @@ export default function CourseDetailPage({
           </motion.div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
