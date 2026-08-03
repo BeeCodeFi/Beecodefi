@@ -23,7 +23,7 @@ import { getUserStorageKey } from "@/lib/userStorage";
 
 export default function UnifiedDashboardPage() {
   const { user, isLoading } = useAuth();
-  const streak = useStreak();
+  const { data: streak } = useStreak();
   const { bookmarks } = useBookmarks();
   const router = useRouter();
   const isAdmin =

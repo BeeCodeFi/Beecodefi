@@ -1,6 +1,9 @@
 "use client";
 
+// React
 import { useState, useEffect, useCallback } from "react";
+
+// Local imports
 import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
@@ -33,13 +36,30 @@ function saveBookmarks(userId: number | null | undefined, bm: Bookmark[]) {
 
 export function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { success, info } = useToast();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+
+  const loadData = useCallback(() => {
+    try {
+      setError(null);
+      if (authLoading) return;
+      
+      const data = loadBookmarks(user?.id);
+      setBookmarks(data);
+      setLoading(false);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to load bookmarks";
+      setError(errorMessage);
+      setBookmarks([]);
+      setLoading(false);
+    }
+  }, [authLoading, user?.id]);
 
   useEffect(() => {
-    if (isLoading) return;
-    queueMicrotask(() => setBookmarks(loadBookmarks(user?.id)));
-  }, [isLoading, user?.id]);
+    queueMicrotask(loadData);
+  }, [loadData]);
 
   const isBookmarked = useCallback(
     (tutorialSlug: string, lessonSlug: string) =>
@@ -51,44 +71,64 @@ export function useBookmarks() {
 
   const toggleBookmark = useCallback(
     (bm: Omit<Bookmark, "savedAt">) => {
-      setBookmarks((prev) => {
-        const exists = prev.some(
-          (b) =>
-            b.tutorialSlug === bm.tutorialSlug &&
-            b.lessonSlug === bm.lessonSlug,
-        );
-        const next = exists
-          ? prev.filter(
-              (b) =>
-                !(
-                  b.tutorialSlug === bm.tutorialSlug &&
-                  b.lessonSlug === bm.lessonSlug
-                ),
-            )
-          : [...prev, { ...bm, savedAt: new Date().toISOString() }];
-        saveBookmarks(user?.id, next);
-
-        // Toast feedback
-        if (exists) {
-          info("Bookmark removed", bm.lessonTitle);
-        } else {
-          success(
-            "Lesson bookmarked!",
-            `${bm.lessonTitle} saved · press B to toggle`,
+      try {
+        setBookmarks((prev) => {
+          const exists = prev.some(
+            (b) =>
+              b.tutorialSlug === bm.tutorialSlug &&
+              b.lessonSlug === bm.lessonSlug,
           );
-        }
+          const next = exists
+            ? prev.filter(
+                (b) =>
+                  !(
+                    b.tutorialSlug === bm.tutorialSlug &&
+                    b.lessonSlug === bm.lessonSlug
+                  ),
+              )
+            : [...prev, { ...bm, savedAt: new Date().toISOString() }];
+          saveBookmarks(user?.id, next);
 
-        return next;
-      });
+          // Toast feedback
+          if (exists) {
+            info("Bookmark removed", bm.lessonTitle);
+          } else {
+            success(
+              "Lesson bookmarked!",
+              `${bm.lessonTitle} saved · press B to toggle`,
+            );
+          }
+
+          return next;
+        });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to toggle bookmark";
+        setError(errorMessage);
+      }
     },
     [info, success, user?.id],
   );
 
   const clearBookmarks = useCallback(() => {
-    setBookmarks([]);
-    saveBookmarks(user?.id, []);
-    info("All bookmarks cleared");
+    try {
+      setBookmarks([]);
+      saveBookmarks(user?.id, []);
+      info("All bookmarks cleared");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to clear bookmarks";
+      setError(errorMessage);
+    }
   }, [info, user?.id]);
 
-  return { bookmarks, isBookmarked, toggleBookmark, clearBookmarks };
+  return {
+    data: bookmarks,
+    loading,
+    error,
+    refetch: loadData,
+    // Legacy aliases for backward compatibility
+    bookmarks,
+    isBookmarked,
+    toggleBookmark,
+    clearBookmarks,
+  };
 }

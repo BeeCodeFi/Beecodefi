@@ -1,5 +1,6 @@
 "use client";
 
+// React
 import {
   createContext,
   useCallback,
@@ -7,6 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
+
+// Third-party
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle2,

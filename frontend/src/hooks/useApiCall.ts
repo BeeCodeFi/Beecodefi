@@ -2,8 +2,14 @@
  * Standardized hook for making API calls with consistent error handling
  * Uses enhanced AxiosError properties from api.ts (userMessage, isRetryable)
  */
+
+// React
 import { useState, useCallback } from "react";
+
+// Third-party
 import { AxiosError } from "axios";
+
+// Local imports
 import { useToast } from "@/context/ToastContext";
 
 interface EnhancedAxiosError extends AxiosError {

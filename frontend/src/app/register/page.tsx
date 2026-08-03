@@ -1,13 +1,20 @@
 "use client";
 
+// React
 import { useState } from "react";
+
+// Next.js
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+// Third-party
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { UserPlus, User, Mail, Lock, Code2 } from "lucide-react";
+
+// Local imports
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 

@@ -1,7 +1,12 @@
 "use client";
 
+// React
 import React, { Component, ReactNode } from "react";
+
+// Third-party
 import { AlertCircle } from "lucide-react";
+
+// Local imports
 import { logError } from "@/lib/errorTracking";
 
 interface Props {
@@ -14,7 +19,7 @@ interface State {
   error?: Error;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -61,3 +66,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+export default ErrorBoundary;

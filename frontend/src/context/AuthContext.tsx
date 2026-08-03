@@ -1,5 +1,6 @@
 "use client";
 
+// React
 import {
   createContext,
   useContext,
@@ -7,6 +8,8 @@ import {
   useState,
   ReactNode,
 } from "react";
+
+// Local imports
 import api from "@/lib/api";
 import { User, AuthResponse } from "@/types";
 

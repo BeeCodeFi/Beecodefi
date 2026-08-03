@@ -46,7 +46,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout, isLoading: authLoading } = useAuth();
   const { theme, setTheme } = useTheme();
-  const streak = useStreak(!!user);
+  const { data: streak } = useStreak();
 
   useEffect(() => {
     queueMicrotask(() => setMounted(true));

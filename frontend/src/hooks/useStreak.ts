@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+// React/Next
+import { useState, useEffect, useCallback } from "react";
+
+// Local imports
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
 
@@ -43,18 +46,22 @@ function save(userId: number | null | undefined, data: StreakData) {
 
 /**
  * Tracks daily learning streak. Only activates when the user is logged in.
- * @param isLoggedIn pass !!user from useAuth()
  */
-export function useStreak(_legacyIsLoggedIn?: boolean) {
+export function useStreak() {
   const [streak, setStreak] = useState<StreakData>(EMPTY);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const userId = user?.id;
 
-  useEffect(() => {
-    const syncStreak = () => {
+  const syncStreak = useCallback(() => {
+    try {
+      setError(null);
+      
       // Do nothing if the user is not logged in
       if (userId == null) {
         setStreak(EMPTY);
+        setLoading(false);
         return;
       }
 
@@ -65,6 +72,7 @@ export function useStreak(_legacyIsLoggedIn?: boolean) {
         const next = { current: 1, longest: 1, lastActiveDate: t };
         save(userId, next);
         setStreak(next);
+        setLoading(false);
         return;
       }
 
@@ -72,6 +80,7 @@ export function useStreak(_legacyIsLoggedIn?: boolean) {
 
       if (diff === 0) {
         setStreak(data);
+        setLoading(false);
         return;
       }
 
@@ -83,6 +92,7 @@ export function useStreak(_legacyIsLoggedIn?: boolean) {
         };
         save(userId, next);
         setStreak(next);
+        setLoading(false);
         return;
       }
 
@@ -90,10 +100,23 @@ export function useStreak(_legacyIsLoggedIn?: boolean) {
       const next = { current: 1, longest: data.longest, lastActiveDate: t };
       save(userId, next);
       setStreak(next);
-    };
-
-    queueMicrotask(syncStreak);
+      setLoading(false);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to sync streak";
+      setError(errorMessage);
+      setStreak(EMPTY);
+      setLoading(false);
+    }
   }, [userId]);
 
-  return streak;
+  useEffect(() => {
+    queueMicrotask(syncStreak);
+  }, [syncStreak]);
+
+  return {
+    data: streak,
+    loading,
+    error,
+    refetch: syncStreak,
+  };
 }
