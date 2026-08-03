@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import api from "@/lib/api";
 import type { QuizAttempt } from "@/types";

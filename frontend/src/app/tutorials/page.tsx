@@ -14,7 +14,6 @@ import {
   Signal,
   Sparkles,
   Brain,
-  Zap,
 } from "lucide-react";
 import { tutorials } from "@/data/tutorials";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";

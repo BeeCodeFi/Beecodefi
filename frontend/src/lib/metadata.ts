@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 const SITE_NAME = "BEECODEFI";
 const SITE_URL = "https://beecodefi-edu.vercel.app";
-const SITE_DESCRIPTION = "Learn HTML, CSS, JavaScript and React with free interactive tutorials, video courses and quizzes. World-class web development education — completely free.";
+const _SITE_DESCRIPTION = "Learn HTML, CSS, JavaScript and React with free interactive tutorials, video courses and quizzes. World-class web development education — completely free.";
 
 interface PageMetadata {
   title: string;

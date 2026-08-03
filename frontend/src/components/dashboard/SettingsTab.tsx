@@ -22,8 +22,8 @@ import { getUserStorageKey } from "@/lib/userStorage";
 import { useToast } from "@/context/ToastContext";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5219";
-const CROP_SIZE = 256;
-const OUTPUT_SIZE = 200;
+const _CROP_SIZE = 256;
+const _OUTPUT_SIZE = 200;
 
 export default function SettingsTab({
   reloadStats,
@@ -33,7 +33,7 @@ export default function SettingsTab({
   const { user, updateUser, logout } = useAuth();
   const { success, error: toastError } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const _imgRef = useRef<HTMLImageElement>(null);
 
   // Profile form
   const [name, setName] = useState(user?.name || "");

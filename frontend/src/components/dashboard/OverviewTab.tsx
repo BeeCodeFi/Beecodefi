@@ -176,7 +176,7 @@ export default function OverviewTab({
             </Link>
           </div>
           <div className="space-y-4">
-            {tutorialProgress.map((tutorial, i) => (
+            {tutorialProgress.map((tutorial, _i) => (
               <Link
                 key={tutorial.slug}
                 href={`/tutorials/${tutorial.slug}`}

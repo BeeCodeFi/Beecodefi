@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion } from "framer-motion";
-import { Award, Download, Share2, X } from "lucide-react";
+import { Award, Share2, X } from "lucide-react";
 
 interface CertificateProps {
   name: string;
