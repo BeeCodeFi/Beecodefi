@@ -34,18 +34,25 @@ class Point {
 
 export default function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isTouch, setIsTouch] = useState(false);
+  const [isTouch, setIsTouch] = useState(true); // Default to true to prevent flash
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     // Detect touch device — hide cursor trail entirely
     const checkTouch = () => {
       const isCustomCursorDisabled =
         localStorage.getItem("beecodefi_custom_cursor") === "disabled";
       if (
         window.matchMedia("(pointer: coarse)").matches ||
+        "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
         isCustomCursorDisabled
       ) {
         setIsTouch(true);
+      } else {
+        setIsTouch(false);
       }
     };
     checkTouch();
@@ -144,7 +151,8 @@ export default function CursorTrail() {
     };
   }, [isTouch]);
 
-  if (isTouch) return null;
+  // Don't render anything until mounted and confirmed not touch
+  if (!mounted || isTouch) return null;
 
   return (
     <canvas

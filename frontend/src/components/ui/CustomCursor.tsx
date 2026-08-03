@@ -39,19 +39,26 @@ export default function CustomCursor() {
   const [hovering, setHovering] = useState(false);
   const [clicking, setClicking] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
+  const [isTouch, setIsTouch] = useState(true); // Default to true to prevent flash
+  const [mounted, setMounted] = useState(false);
   const rafId = useRef<number | null>(null);
 
   useEffect(() => {
+    setMounted(true);
+    
     // Detect touch device — hide cursor entirely
     const checkTouch = () => {
       const isCustomCursorDisabled =
         localStorage.getItem("beecodefi_custom_cursor") === "disabled";
       if (
         window.matchMedia("(pointer: coarse)").matches ||
+        "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
         isCustomCursorDisabled
       ) {
         setIsTouch(true);
+      } else {
+        setIsTouch(false);
       }
     };
     checkTouch();
@@ -93,7 +100,8 @@ export default function CustomCursor() {
     };
   }, [cursorX, cursorY, visible]);
 
-  if (isTouch) return null;
+  // Don't render anything until mounted and confirmed not touch
+  if (!mounted || isTouch) return null;
 
   return (
     <>
