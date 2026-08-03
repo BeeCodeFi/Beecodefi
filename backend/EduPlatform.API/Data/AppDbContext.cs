@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Badge> Badges => Set<Badge>();
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
     public DbSet<LessonFeedback> LessonFeedback => Set<LessonFeedback>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,6 +110,18 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(feedback => feedback.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasIndex(rt => rt.Token).IsUnique();
+            entity.HasIndex(rt => rt.ExpiresAt);
+            entity.HasIndex(rt => new { rt.UserId, rt.IsRevoked, rt.ExpiresAt });
+            entity.Property(rt => rt.Token).HasMaxLength(200);
+            entity.HasOne(rt => rt.User)
+                .WithMany()
+                .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

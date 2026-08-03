@@ -8,6 +8,7 @@ public class Quiz
     public string Category { get; set; } = string.Empty;    // parent grouping e.g. "HTML"
     public string Description { get; set; } = string.Empty;
     public string Difficulty { get; set; } = "Beginner";
+    public int DisplayOrder { get; set; } = 0;              // Order for displaying quizzes
     public ICollection<Question> Questions { get; set; } = new List<Question>();
     public ICollection<QuizAttempt> Attempts { get; set; } = new List<QuizAttempt>();
 }

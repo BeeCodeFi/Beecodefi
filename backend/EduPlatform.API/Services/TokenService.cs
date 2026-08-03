@@ -2,7 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using EduPlatform.API.Data;
 using EduPlatform.API.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EduPlatform.API.Services;
@@ -10,11 +12,12 @@ namespace EduPlatform.API.Services;
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _config;
-    private static readonly Dictionary<string, int> _refreshTokens = new();
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public TokenService(IConfiguration config)
+    public TokenService(IConfiguration config, IServiceScopeFactory scopeFactory)
     {
         _config = config;
+        _scopeFactory = scopeFactory;
     }
 
     public string GenerateAccessToken(User user)
@@ -47,16 +50,47 @@ public class TokenService : ITokenService
 
     public int? ValidateRefreshToken(string token)
     {
-        return _refreshTokens.TryGetValue(token, out var userId) ? userId : null;
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        var refreshToken = db.RefreshTokens
+            .AsNoTracking()
+            .FirstOrDefault(rt => rt.Token == token);
+
+        if (refreshToken == null || !refreshToken.IsActive)
+            return null;
+
+        return refreshToken.UserId;
     }
 
     public void StoreRefreshToken(string token, int userId)
     {
-        _refreshTokens[token] = userId;
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        var refreshToken = new RefreshToken
+        {
+            Token = token,
+            UserId = userId,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(30)
+        };
+
+        db.RefreshTokens.Add(refreshToken);
+        db.SaveChanges();
     }
 
     public void RevokeRefreshToken(string token)
     {
-        _refreshTokens.Remove(token);
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        var refreshToken = db.RefreshTokens.FirstOrDefault(rt => rt.Token == token);
+        if (refreshToken != null)
+        {
+            refreshToken.IsRevoked = true;
+            refreshToken.RevokedAt = DateTime.UtcNow;
+            db.SaveChanges();
+        }
     }
 }
