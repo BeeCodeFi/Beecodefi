@@ -926,8 +926,8 @@ function StepCard({
   step,
   index,
   isDark,
-  badge: _badge,
-  tutorialProgress: _tutorialProgress,
+  badge,
+  tutorialProgress,
 }: {
   step: Step;
   index: number;
