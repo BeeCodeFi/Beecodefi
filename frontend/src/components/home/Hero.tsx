@@ -12,14 +12,15 @@ import { ArrowRight, BookOpen, Brain, Sparkles, Play, Zap } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { courses } from "@/data/courses";
 import { tutorials } from "@/data/tutorials";
+import { fetchMergedQuizTotals } from "@/lib/quizTopics";
 import { useAuth } from "@/context/AuthContext";
 import { getUserStorageKey } from "@/lib/userStorage";
 
 const totalVideos = courses.reduce((s, c) => s + c.videos.length, 0);
 
-// ── Total quiz count: 45 standalone quizzes + 52 quick quizzes in tutorials = 97 ──
-// Breakdown: Standalone (15 HTML + 14 CSS + 16 JS) + Quick (13 HTML + 19 CSS + 20 JS)
-const totalQuizCount = 97;
+// Compute total quiz count by combining backend topics with lesson quizzes
+const FALLBACK_TOTAL_QUIZ_COUNT = 103;
+const FALLBACK_TOTAL_QUESTION_COUNT = 406;
 
 // ── Hook to check for in-progress tutorials ──────────────────────────────
 function useContinueLearning() {
@@ -329,6 +330,32 @@ export default function Hero() {
   const [snippetPositions, setSnippetPositions] = useState(
     initialSnippetPositions,
   );
+
+  const [totalQuizCount, setTotalQuizCount] = useState<number>(
+    FALLBACK_TOTAL_QUIZ_COUNT,
+  );
+  const [totalQuestionCount, setTotalQuestionCount] = useState<number>(
+    FALLBACK_TOTAL_QUESTION_COUNT,
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchCount = async () => {
+      try {
+        const { totalQuizzes, totalQuestions } = await fetchMergedQuizTotals();
+        if (mounted) {
+          setTotalQuizCount(totalQuizzes);
+          setTotalQuestionCount(totalQuestions);
+        }
+      } catch (e) {
+        // keep fallback on error
+      }
+    };
+    void fetchCount();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const nextSnippet = closestSnippetIndex(activeSnippet, snippetPositions);
@@ -664,7 +691,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.0 }}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-px
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px
               bg-gray-200/60 dark:bg-white/5 rounded-2xl overflow-hidden
               border border-gray-200/60 dark:border-white/10 shadow-sm mt-16"
         >
@@ -691,10 +718,17 @@ export default function Hero() {
               color: "text-purple-600 dark:text-purple-400",
             },
             {
+              value: totalQuestionCount,
+              suffix: "",
+              label: "Questions",
+              icon: Sparkles,
+              color: "text-emerald-600 dark:text-emerald-400",
+            },
+            {
               value: 100,
               suffix: "%",
               label: "Free",
-              icon: Sparkles,
+              icon: Zap,
               color: "text-green-600 dark:text-green-400",
             },
           ].map((s, i) => (

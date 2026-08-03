@@ -4,18 +4,27 @@ import { motion } from "framer-motion";
 import { Award, BookOpen, Users, Zap, Target, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
+import { fetchMergedQuizTotals } from "@/lib/quizTopics";
 
-// ── Total quiz count: 45 standalone quizzes + 52 quick quizzes in tutorials = 97 ──
-// Breakdown: Standalone (15 HTML + 14 CSS + 16 JS) + Quick (13 HTML + 19 CSS + 20 JS)
-const totalQuizCount = 97;
+// Fallback if API is unreachable
+const FALLBACK_TOTAL_QUIZ_COUNT = 103;
+const FALLBACK_TOTAL_QUESTION_COUNT = 406;
 
 export default function PlatformStats() {
   const [userCount, setUserCount] = useState(1000); // Default fallback
+  const [totalQuizCount, setTotalQuizCount] = useState<number>(
+    FALLBACK_TOTAL_QUIZ_COUNT,
+  );
+  const [totalQuestionCount, setTotalQuestionCount] = useState<number>(
+    FALLBACK_TOTAL_QUESTION_COUNT,
+  );
 
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const { data } = await api.get<{ totalUsers: number }>("/stats/platform");
+        const { data } = await api.get<{ totalUsers: number }>(
+          "/stats/platform",
+        );
         setUserCount(data.totalUsers);
       } catch (error) {
         console.error("Failed to fetch user count:", error);
@@ -23,6 +32,25 @@ export default function PlatformStats() {
     };
 
     fetchUserCount();
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchQuizCount = async () => {
+      try {
+        const { totalQuizzes, totalQuestions } = await fetchMergedQuizTotals();
+        if (mounted) {
+          setTotalQuizCount(totalQuizzes);
+          setTotalQuestionCount(totalQuestions);
+        }
+      } catch (e) {
+        // keep fallback
+      }
+    };
+    void fetchQuizCount();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const stats = [
@@ -43,6 +71,15 @@ export default function PlatformStats() {
       gradient: "from-purple-500 to-pink-500",
       iconBg: "bg-purple-100 dark:bg-purple-900/40",
       iconColor: "text-purple-600 dark:text-purple-400",
+    },
+    {
+      icon: TrendingUp,
+      value: totalQuestionCount.toLocaleString(),
+      label: "Quiz Questions",
+      description: "Total practice questions across all quiz topics",
+      gradient: "from-indigo-500 to-cyan-500",
+      iconBg: "bg-indigo-100 dark:bg-indigo-900/40",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
     },
     {
       icon: Award,
@@ -85,7 +122,7 @@ export default function PlatformStats() {
   return (
     <section className="py-20 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-950 dark:via-indigo-950/20 dark:to-purple-950/20 relative overflow-hidden">
       {/* Background pattern */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.03] dark:opacity-[0.015]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -107,7 +144,8 @@ export default function PlatformStats() {
             </span>
           </h2>
           <p className="text-base text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
-            From complete beginner to confident developer — all the tools, content, and motivation you need.
+            From complete beginner to confident developer — all the tools,
+            content, and motivation you need.
           </p>
         </motion.div>
 
@@ -133,7 +171,9 @@ export default function PlatformStats() {
                 </motion.div>
 
                 {/* Value */}
-                <div className={`text-3xl font-black mb-2 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                <div
+                  className={`text-3xl font-black mb-2 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}
+                >
                   {stat.value}
                 </div>
 
@@ -148,7 +188,9 @@ export default function PlatformStats() {
                 </p>
 
                 {/* Gradient bar on hover */}
-                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.gradient} scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-b-2xl`} />
+                <div
+                  className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.gradient} scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-b-2xl`}
+                />
               </div>
             </motion.div>
           ))}
