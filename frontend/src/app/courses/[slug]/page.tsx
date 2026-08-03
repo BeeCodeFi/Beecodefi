@@ -215,6 +215,8 @@ export default function CourseDetailPage({
                       ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 cursor-default"
                       : "bg-indigo-600 hover:bg-indigo-700 text-white",
                   )}
+                  aria-label={isCompleted ? "Course marked as complete" : "Mark course as complete"}
+                  aria-disabled={isCompleted}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   {isCompleted ? "Course Completed!" : "Mark as Complete"}
@@ -253,6 +255,8 @@ export default function CourseDetailPage({
                           ? "bg-orange-50 dark:bg-orange-950/30"
                           : "hover:bg-gray-50 dark:hover:bg-gray-800/50",
                       )}
+                      aria-label={`Play video: ${video.title}`}
+                      aria-current={isActive ? "true" : "false"}
                     >
                       {/* Thumbnail */}
                       <div className="relative shrink-0 w-20 rounded-lg overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800">

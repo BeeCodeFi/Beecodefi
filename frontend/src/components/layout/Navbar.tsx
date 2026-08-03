@@ -70,12 +70,16 @@ export default function Navbar() {
     }
   }, [pathname]);
 
-  // Press "/" to open search
+  // Press "/" to open search, Escape to close menus
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     const tag = (e.target as HTMLElement).tagName;
     if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
       e.preventDefault();
       setSearchOpen(true);
+    }
+    if (e.key === "Escape") {
+      setShowUserMenu(false);
+      setIsOpen(false);
     }
   }, []);
 
@@ -123,6 +127,8 @@ export default function Navbar() {
 
       <motion.nav
         className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
+        role="navigation"
+        aria-label="Main navigation"
         style={
           mounted
             ? theme === "dark"
@@ -254,6 +260,9 @@ export default function Navbar() {
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     data-tour="user-menu"
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                    aria-label="User menu"
+                    aria-expanded={showUserMenu}
+                    aria-haspopup="true"
                     data-cursor-grow
                   >
                     <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 dark:border-white/10 shrink-0 shadow-sm">

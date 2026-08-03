@@ -163,6 +163,9 @@ export default function UnifiedDashboardPage() {
                       ? "text-indigo-600 dark:text-indigo-400"
                       : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   }`}
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`${tab.id}-panel`}
                 >
                   <tab.icon className="w-4 h-4" />
                   {tab.label}

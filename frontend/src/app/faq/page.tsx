@@ -66,6 +66,8 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-6 flex items-center justify-between text-left focus:outline-none"
+        aria-expanded={isOpen}
+        aria-controls={`faq-${question.substring(0, 20).replace(/\s+/g, '-')}`}
       >
         <span className="text-lg font-semibold text-gray-900 dark:text-white">
           {question}

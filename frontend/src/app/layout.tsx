@@ -83,7 +83,7 @@ export default function RootLayout({
               <CustomCursor />
               <CursorTrail />
               <Navbar />
-              <main className="flex-1 pt-16" id="main-content">
+              <main className="flex-1 pt-16" id="main-content" role="main">
                 <PageTransition>{children}</PageTransition>
               </main>
               <Footer />

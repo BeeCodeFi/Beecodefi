@@ -307,6 +307,7 @@ function QuizPageContent() {
           <button
             onClick={() => window.location.reload()}
             className="text-xs font-semibold text-amber-700 dark:text-amber-300 hover:underline shrink-0"
+            aria-label="Retry loading quizzes"
           >
             Retry
           </button>
@@ -391,6 +392,8 @@ function QuizPageContent() {
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/25"
                   : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700",
               )}
+              aria-label="Show all quiz categories"
+              aria-pressed={activeCategory === "all"}
             >
               <span className="flex items-center gap-2">
                 <Layers className="w-4 h-4" /> All Categories
@@ -410,6 +413,8 @@ function QuizPageContent() {
                         ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/25"
                         : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700",
                     )}
+                    aria-label={`Filter by ${cat.title} quizzes`}
+                    aria-pressed={activeCategory === cat.id}
                   >
                     <span className="flex items-center gap-2">
                       <Icon className="w-4 h-4" /> {cat.title}
@@ -518,6 +523,8 @@ function CategorySection({
             ? "border-emerald-200 dark:border-emerald-900/60"
             : "border-gray-200 dark:border-gray-800",
         )}
+        aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${category.title} quiz category`}
+        aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-5">
           {/* Icon */}

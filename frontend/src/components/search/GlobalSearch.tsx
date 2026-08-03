@@ -187,6 +187,7 @@ export default function GlobalSearch({ open, onClose }: Props) {
                   <button
                     onClick={() => setQuery("")}
                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    aria-label="Clear search"
                   >
                     <X className="w-4 h-4" />
                   </button>

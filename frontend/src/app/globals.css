@@ -53,9 +53,43 @@
 
   /* ── Focus rings ── */
   :focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+  }
+
+  /* Enhanced focus for dark mode */
+  :is(.dark) :focus-visible {
+    outline-color: #818cf8;
+  }
+
+  /* Specific focus styles for buttons */
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  :is(.dark) button:focus-visible,
+  :is(.dark) a:focus-visible {
+    outline-color: #818cf8;
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
+  }
+
+  /* Focus for form inputs */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
     outline: 2px solid #6366f1;
-    outline-offset: 3px;
-    border-radius: 6px;
+    outline-offset: 0;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  :is(.dark) input:focus-visible,
+  :is(.dark) textarea:focus-visible,
+  :is(.dark) select:focus-visible {
+    outline-color: #818cf8;
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
   }
 
   /* ── Heading optical tracking ── */
