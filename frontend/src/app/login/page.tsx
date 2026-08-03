@@ -35,8 +35,14 @@ export default function LoginPage() {
       setError("");
       await login(data.email, data.password);
       router.push("/");
-    } catch {
-      setError("Invalid email or password. Please try again.");
+    } catch (error: unknown) {
+      // Use enhanced error message from api.ts interceptor
+      const enhancedError = error as { userMessage?: string; message?: string };
+      const errorMessage =
+        enhancedError.userMessage ||
+        enhancedError.message ||
+        "Invalid email or password. Please try again.";
+      setError(errorMessage);
     }
   };
 

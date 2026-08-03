@@ -39,14 +39,14 @@ export default function RegisterPage() {
       setError("");
       await registerUser(data.name, data.email, data.password);
       router.push("/");
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Registration failed";
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const axiosErr = err as { response?: { data?: { message?: string } } };
-        setError(axiosErr.response?.data?.message || errorMessage);
-      } else {
-        setError(errorMessage);
-      }
+    } catch (error: unknown) {
+      // Use enhanced error message from api.ts interceptor
+      const enhancedError = error as { userMessage?: string; message?: string };
+      const errorMessage =
+        enhancedError.userMessage ||
+        enhancedError.message ||
+        "Registration failed. Please try again.";
+      setError(errorMessage);
     }
   };
 

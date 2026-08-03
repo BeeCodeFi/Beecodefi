@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export interface Badge {
   id: number;
@@ -19,6 +20,7 @@ export interface Badge {
 
 export function useBadges() {
   const { user } = useAuth();
+  const toast = useToast();
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,15 +34,20 @@ export function useBadges() {
       try {
         const { data } = await api.get<Badge[]>("/badge");
         setBadges(data);
-      } catch (error) {
-        console.error("Failed to fetch badges:", error);
+      } catch (error: unknown) {
+        const enhancedError = error as { userMessage?: string; message?: string };
+        const errorMessage =
+          enhancedError.userMessage ||
+          enhancedError.message ||
+          "Failed to fetch badges";
+        toast.error("Error loading badges", errorMessage);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBadges();
-  }, [user]);
+  }, [user, toast]);
 
   const checkForNewBadges = async () => {
     if (!user) return [];
@@ -53,8 +60,13 @@ export function useBadges() {
         setBadges(updatedBadges);
       }
       return data;
-    } catch (error) {
-      console.error("Failed to check badges:", error);
+    } catch (error: unknown) {
+      const enhancedError = error as { userMessage?: string; message?: string };
+      const errorMessage =
+        enhancedError.userMessage ||
+        enhancedError.message ||
+        "Failed to check for new badges";
+      toast.error("Error checking badges", errorMessage);
       return [];
     }
   };

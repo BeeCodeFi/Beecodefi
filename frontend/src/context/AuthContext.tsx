@@ -43,26 +43,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { data } = await api.post<AuthResponse>("/auth/login", {
-      email,
-      password,
-    });
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    setUser(data.user);
+    try {
+      const { data } = await api.post<AuthResponse>("/auth/login", {
+        email,
+        password,
+      });
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+    } catch (error: unknown) {
+      // Re-throw with enhanced error message from api.ts interceptor
+      throw error;
+    }
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const { data } = await api.post<AuthResponse>("/auth/register", {
-      name,
-      email,
-      password,
-    });
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    setUser(data.user);
+    try {
+      const { data } = await api.post<AuthResponse>("/auth/register", {
+        name,
+        email,
+        password,
+      });
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+    } catch (error: unknown) {
+      // Re-throw with enhanced error message from api.ts interceptor
+      throw error;
+    }
   };
 
   const logout = () => {
