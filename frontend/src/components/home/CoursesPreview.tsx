@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, PlayCircle, ArrowRight } from "lucide-react";
 import { courses } from "@/data/courses";
@@ -70,9 +71,11 @@ export default function CoursesPreview() {
                   >
                     {/* Thumbnail */}
                     <div className="relative aspect-video overflow-hidden bg-slate-800">
-                      <img
+                      <Image
                         src={thumb}
                         alt={course.title}
+                        width={640}
+                        height={360}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
@@ -120,9 +123,11 @@ export default function CoursesPreview() {
                             key={v.id}
                             className="w-12 h-8 rounded overflow-hidden bg-slate-800 shrink-0 ring-1 ring-slate-700"
                           >
-                            <img
+                            <Image
                               src={`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`}
                               alt={v.title}
+                              width={320}
+                              height={180}
                               className="w-full h-full object-cover opacity-80"
                             />
                           </div>

@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -255,9 +256,11 @@ export default function CourseDetailPage({
                     >
                       {/* Thumbnail */}
                       <div className="relative shrink-0 w-20 rounded-lg overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800">
-                        <img
+                        <Image
                           src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`}
                           alt={video.title}
+                          width={320}
+                          height={180}
                           className="w-full h-full object-cover"
                         />
                         {isActive && (

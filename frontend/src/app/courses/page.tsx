@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   FileCode2,
@@ -118,9 +119,11 @@ export default function CoursesPage() {
                   >
                     {/* Thumbnail */}
                     <div className="relative overflow-hidden aspect-video bg-gray-100 dark:bg-gray-800">
-                      <img
+                      <Image
                         src={thumb}
                         alt={course.title}
+                        width={320}
+                        height={180}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${course.firstVideoId}/mqdefault.jpg`;

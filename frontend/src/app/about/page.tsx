@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Briefcase,
@@ -273,9 +274,11 @@ function ProjectCard({
             rel="noopener noreferrer"
             className="block mb-5 overflow-hidden rounded-xl aspect-[16/9] bg-gray-100 dark:bg-gray-900"
           >
-            <img
+            <Image
               src={project.image}
               alt={`${project.title} home page preview`}
+              width={1600}
+              height={900}
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               loading="lazy"
             />
@@ -398,9 +401,11 @@ export default function AboutPage() {
                 style={{ padding: 3 }}
               />
               <div className="absolute inset-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-xl">
-                <img
+                <Image
                   src="/ayush.png"
                   alt="Ayush Kumar"
+                  width={200}
+                  height={200}
                   className="w-full h-full object-cover object-top"
                   onError={(e) => {
                     // Fallback to initials if image not found

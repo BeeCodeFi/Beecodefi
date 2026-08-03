@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import {
   User,
   Camera,
@@ -269,9 +270,11 @@ export default function SettingsTab({
         <div className="flex items-center gap-6 mb-6">
           <div className="relative group">
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt="Profile"
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
               />
             ) : (
