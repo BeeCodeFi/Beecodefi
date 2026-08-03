@@ -17,8 +17,9 @@ import { getUserStorageKey } from "@/lib/userStorage";
 
 const totalVideos = courses.reduce((s, c) => s + c.videos.length, 0);
 
-// ── Total quiz count: 27 main quizzes + 52 quick quizzes in tutorials = 79 ──
-const totalQuizCount = 79;
+// ── Total quiz count: 45 standalone quizzes + 52 quick quizzes in tutorials = 97 ──
+// Breakdown: Standalone (15 HTML + 14 CSS + 16 JS) + Quick (13 HTML + 19 CSS + 20 JS)
+const totalQuizCount = 97;
 
 // ── Hook to check for in-progress tutorials ──────────────────────────────
 function useContinueLearning() {

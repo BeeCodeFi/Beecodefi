@@ -5,8 +5,9 @@ import { Award, BookOpen, Users, Zap, Target, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 
-// ── Total quiz count: 27 main quizzes + 52 quick quizzes in tutorials = 79 ──
-const totalQuizCount = 79;
+// ── Total quiz count: 45 standalone quizzes + 52 quick quizzes in tutorials = 97 ──
+// Breakdown: Standalone (15 HTML + 14 CSS + 16 JS) + Quick (13 HTML + 19 CSS + 20 JS)
+const totalQuizCount = 97;
 
 export default function PlatformStats() {
   const [userCount, setUserCount] = useState(1000); // Default fallback
@@ -27,7 +28,7 @@ export default function PlatformStats() {
   const stats = [
     {
       icon: BookOpen,
-      value: "50+",
+      value: "52",
       label: "Interactive Lessons",
       description: "Hands-on coding in HTML, CSS & JavaScript",
       gradient: "from-blue-500 to-cyan-500",
