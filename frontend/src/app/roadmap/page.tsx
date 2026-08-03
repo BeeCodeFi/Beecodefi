@@ -1294,8 +1294,8 @@ function MobileStepCard({
   step,
   index,
   isDark,
-  badge,
-  tutorialProgress,
+  badge: _badge,
+  tutorialProgress: _tutorialProgress,
 }: {
   step: Step;
   index: number;
