@@ -10,7 +10,6 @@ import {
   Play,
   BookOpen,
   Signal,
-  Sparkles,
 } from "lucide-react";
 import { courses } from "@/data/courses";
 

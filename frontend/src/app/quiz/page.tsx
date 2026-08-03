@@ -43,7 +43,7 @@ const difficultyColor: Record<string, string> = {
     "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800",
 };
 
-function getQuizSortRank(quiz: QuizTopic, categoryName: string) {
+function getQuizSortRank(quiz: QuizTopic, _categoryName: string) {
   if (quiz.topic.includes("/")) {
     const [tutorialSlug, lessonSlug] = quiz.topic.split("/");
     const tutorialIndex = tutorials.findIndex(
@@ -610,7 +610,7 @@ function CategorySection({
 
 function QuizCard({
   quiz,
-  category,
+  category: _category,
 }: {
   quiz: QuizTopic;
   category: QuizCategoryMeta;
