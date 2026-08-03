@@ -565,7 +565,7 @@ type HybridStage = {
   outcome: string;
 };
 
-const HYBRID_ROADMAP: HybridStage[] = [
+const _HYBRID_ROADMAP: HybridStage[] = [
   {
     phase: "01",
     title: "Foundations",
@@ -692,7 +692,7 @@ const HYBRID_ROADMAP: HybridStage[] = [
   },
 ] as const;
 
-function HybridRoadmapCard({
+function _HybridRoadmapCard({
   item,
   isDark,
   expanded,
@@ -926,8 +926,8 @@ function StepCard({
   step,
   index,
   isDark,
-  badge,
-  tutorialProgress,
+  badge: _badge,
+  tutorialProgress: _tutorialProgress,
 }: {
   step: Step;
   index: number;
@@ -1523,7 +1523,7 @@ export default function RoadmapPage() {
     (sum, item) => sum + item.total,
     0,
   );
-  const overallProgressPercent =
+  const _overallProgressPercent =
     totalCompletedLessons > 0
       ? Math.round((completedLessons / totalCompletedLessons) * 100)
       : 0;
