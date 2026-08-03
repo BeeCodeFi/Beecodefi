@@ -182,11 +182,28 @@ if (!app.Environment.IsDevelopment())
 var startupLogger = app.Logger;
 var resendKey = builder.Configuration["Resend:ApiKey"];
 startupLogger.LogInformation("Resend API key configured: {Configured}", !string.IsNullOrEmpty(resendKey));
-// Seed database
+
+// Apply migrations and seed database
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await SeedData.InitializeAsync(db);
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        logger.LogInformation("Applying database migrations...");
+        await db.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully");
+        
+        logger.LogInformation("Initializing seed data...");
+        await SeedData.InitializeAsync(db);
+        logger.LogInformation("Seed data initialized successfully");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while migrating or seeding the database");
+        throw;
+    }
 }
 
 app.UseCors();
