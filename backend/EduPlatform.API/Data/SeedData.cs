@@ -26,7 +26,7 @@ public static class SeedData
         }
         
         // Re-seed if no quizzes, incomplete catalog, or needs reordering
-        if (quizCount < 33 || needsReorder)
+        if (quizCount < 38 || needsReorder)
         {
             // Clear old quiz data to reseed
             if (quizCount > 0)
@@ -454,6 +454,91 @@ public static class SeedData
             }
         };
 
+        var cssTypography = new Quiz
+        {
+            Title = "Typography & Fonts",
+            Topic = "css-typography-fonts",
+            Category = "CSS",
+            Description = "Font properties, web fonts, text styling, and readability.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which CSS property controls the space between lines of text?", Difficulty = "Intermediate", Explanation = "line-height controls the vertical space between lines of text. A value between 1.5 and 1.75 is recommended for body text readability.", Answers = new List<Answer> { new() { Text = "line-height", IsCorrect = true }, new() { Text = "line-spacing", IsCorrect = false }, new() { Text = "text-spacing", IsCorrect = false }, new() { Text = "vertical-align", IsCorrect = false } } },
+                new() { Text = "What's the difference between 'rem' and 'em' units?", Difficulty = "Intermediate", Explanation = "rem is relative to the root (html) font size, while em is relative to the parent element's font size. rem is more predictable and preferred for most use cases.", Answers = new List<Answer> { new() { Text = "rem is relative to root; em is relative to parent", IsCorrect = true }, new() { Text = "em is relative to root; rem is relative to parent", IsCorrect = false }, new() { Text = "They are identical", IsCorrect = false }, new() { Text = "rem is for margins; em is for fonts", IsCorrect = false } } },
+                new() { Text = "Which format is NOT commonly used for web fonts?", Difficulty = "Intermediate", Explanation = "WOFF and WOFF2 are modern compressed web font formats with excellent browser support. TTF and OTF work but are less optimized. PDF is not a font format.", Answers = new List<Answer> { new() { Text = "PDF", IsCorrect = true }, new() { Text = "WOFF2", IsCorrect = false }, new() { Text = "TTF", IsCorrect = false }, new() { Text = "WOFF", IsCorrect = false } } },
+                new() { Text = "What does 'font-display: swap' do?", CodeSnippet = "@font-face { font-display: swap; }", Difficulty = "Advanced", Explanation = "font-display: swap shows fallback text immediately and swaps to the web font when it loads. This prevents invisible text (FOIT) and improves perceived performance.", Answers = new List<Answer> { new() { Text = "Shows fallback text immediately, then swaps to web font when loaded", IsCorrect = true }, new() { Text = "Swaps between two different fonts on hover", IsCorrect = false }, new() { Text = "Changes font size dynamically", IsCorrect = false }, new() { Text = "Switches between serif and sans-serif", IsCorrect = false } } },
+                new() { Text = "Which property controls spacing between characters?", CodeSnippet = "h1 { ???: 0.05em; }", Difficulty = "Intermediate", Explanation = "letter-spacing adds or removes space between characters. Positive values increase spacing, negative values decrease it. Use em units for scalable spacing.", Answers = new List<Answer> { new() { Text = "letter-spacing", IsCorrect = true }, new() { Text = "word-spacing", IsCorrect = false }, new() { Text = "character-spacing", IsCorrect = false }, new() { Text = "text-spacing", IsCorrect = false } } },
+            }
+        };
+
+        var cssBackgroundsGradients = new Quiz
+        {
+            Title = "Backgrounds & Gradients",
+            Topic = "css-backgrounds-gradients",
+            Category = "CSS",
+            Description = "Background properties, gradients, patterns, and layering.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does 'background-size: cover' do?", Difficulty = "Intermediate", Explanation = "cover scales the background image to cover the entire container, cropping if necessary to maintain aspect ratio. It ensures no empty space in the container.", Answers = new List<Answer> { new() { Text = "Scales image to fill container, cropping if needed", IsCorrect = true }, new() { Text = "Shows the entire image, leaving gaps if needed", IsCorrect = false }, new() { Text = "Stretches image to exact dimensions", IsCorrect = false }, new() { Text = "Tiles the image to fill space", IsCorrect = false } } },
+                new() { Text = "How do you create a gradient from left to right?", CodeSnippet = "background: ???;", Difficulty = "Intermediate", Explanation = "linear-gradient with 'to right' creates a horizontal gradient. You can also use angles like 90deg or directions like 'to bottom right'.", Answers = new List<Answer> { new() { Text = "linear-gradient(to right, #667eea, #764ba2)", IsCorrect = true }, new() { Text = "gradient(left-right, #667eea, #764ba2)", IsCorrect = false }, new() { Text = "radial-gradient(to right, #667eea, #764ba2)", IsCorrect = false }, new() { Text = "background-gradient: left-right", IsCorrect = false } } },
+                new() { Text = "How do you layer multiple backgrounds?", Difficulty = "Advanced", Explanation = "Separate multiple backgrounds with commas. The first listed appears on top. This is commonly used for overlay effects on images.", Answers = new List<Answer> { new() { Text = "Separate them with commas; first is on top", IsCorrect = true }, new() { Text = "Use multiple background properties", IsCorrect = false }, new() { Text = "Last listed appears on top", IsCorrect = false }, new() { Text = "Cannot layer backgrounds in CSS", IsCorrect = false } } },
+                new() { Text = "What does 'background-attachment: fixed' do?", Difficulty = "Intermediate", Explanation = "fixed creates a parallax effect where the background stays in place while content scrolls over it. The background is fixed relative to the viewport.", Answers = new List<Answer> { new() { Text = "Background stays fixed while content scrolls (parallax effect)", IsCorrect = true }, new() { Text = "Prevents the background from loading", IsCorrect = false }, new() { Text = "Makes the background non-removable", IsCorrect = false }, new() { Text = "Locks the background color permanently", IsCorrect = false } } },
+                new() { Text = "Which gradient type radiates from a center point?", CodeSnippet = "background: ???-gradient(circle, blue, green);", Difficulty = "Intermediate", Explanation = "radial-gradient creates a circular or elliptical gradient radiating from a center point. You can control the shape and position.", Answers = new List<Answer> { new() { Text = "radial", IsCorrect = true }, new() { Text = "circular", IsCorrect = false }, new() { Text = "center", IsCorrect = false }, new() { Text = "round", IsCorrect = false } } },
+            }
+        };
+
+        var cssPseudoElements = new Quiz
+        {
+            Title = "Pseudo-classes & Pseudo-elements",
+            Topic = "css-pseudo-selectors",
+            Category = "CSS",
+            Description = "State-based selectors, virtual elements, and advanced targeting.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What's the difference between : and :: in CSS?", Difficulty = "Intermediate", Explanation = "Single colon (:) is for pseudo-classes that select elements in a specific state. Double colon (::) is for pseudo-elements that style virtual parts of elements.", Answers = new List<Answer> { new() { Text = ": is for pseudo-classes (state); :: is for pseudo-elements (parts)", IsCorrect = true }, new() { Text = "They are interchangeable", IsCorrect = false }, new() { Text = ":: is deprecated; use : for everything", IsCorrect = false }, new() { Text = ": is for IDs; :: is for classes", IsCorrect = false } } },
+                new() { Text = "What is REQUIRED for ::before and ::after to display?", CodeSnippet = ".card::after { ??? }", Difficulty = "Intermediate", Explanation = "The content property is mandatory for ::before and ::after, even if it's an empty string. Without it, the pseudo-element won't be generated.", Answers = new List<Answer> { new() { Text = "The content property (even if empty)", IsCorrect = true }, new() { Text = "A display property", IsCorrect = false }, new() { Text = "Width and height", IsCorrect = false }, new() { Text = "A background color", IsCorrect = false } } },
+                new() { Text = "What does :nth-child(3n) select?", Difficulty = "Intermediate", Explanation = ":nth-child(3n) selects every third child element (3, 6, 9, 12...). The 'n' starts at 0 and increments: 3×0=0 (none), 3×1=3, 3×2=6, etc.", Answers = new List<Answer> { new() { Text = "Every 3rd element (3, 6, 9...)", IsCorrect = true }, new() { Text = "Only the 3rd element", IsCorrect = false }, new() { Text = "The first 3 elements", IsCorrect = false }, new() { Text = "3 random elements", IsCorrect = false } } },
+                new() { Text = "Which pseudo-class selects links the user has visited?", Difficulty = "Beginner", Explanation = ":visited applies styles to links the user has previously clicked. For privacy, browsers limit which CSS properties can be styled on :visited links.", Answers = new List<Answer> { new() { Text = ":visited", IsCorrect = true }, new() { Text = ":active", IsCorrect = false }, new() { Text = ":seen", IsCorrect = false }, new() { Text = ":clicked", IsCorrect = false } } },
+                new() { Text = "What does :not(.active) select?", Difficulty = "Intermediate", Explanation = ":not() is the negation pseudo-class. It selects all elements that do NOT match the selector inside the parentheses.", Answers = new List<Answer> { new() { Text = "All elements that don't have the 'active' class", IsCorrect = true }, new() { Text = "Elements with the 'not-active' class", IsCorrect = false }, new() { Text = "Inactive browser tabs", IsCorrect = false }, new() { Text = "Hidden elements only", IsCorrect = false } } },
+            }
+        };
+
+        var cssModernFeatures = new Quiz
+        {
+            Title = "Modern CSS Features",
+            Topic = "css-modern-features",
+            Category = "CSS",
+            Description = "Container queries, :has(), cascade layers, and cutting-edge CSS.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What do container queries let you do?", Difficulty = "Advanced", Explanation = "Container queries style elements based on their parent container's size instead of the viewport. This enables truly responsive components that adapt to their context.", Answers = new List<Answer> { new() { Text = "Style elements based on container size, not viewport", IsCorrect = true }, new() { Text = "Query database containers", IsCorrect = false }, new() { Text = "Select container elements only", IsCorrect = false }, new() { Text = "Create containers dynamically", IsCorrect = false } } },
+                new() { Text = "What does the :has() selector do?", CodeSnippet = ".card:has(img) { }", Difficulty = "Advanced", Explanation = ":has() is the parent selector. It selects elements based on their descendants. .card:has(img) selects cards that contain an image.", Answers = new List<Answer> { new() { Text = "Selects a parent based on what children it has", IsCorrect = true }, new() { Text = "Checks if an element has a specific attribute", IsCorrect = false }, new() { Text = "Tests for browser feature support", IsCorrect = false }, new() { Text = "Validates form input values", IsCorrect = false } } },
+                new() { Text = "What does 'aspect-ratio: 16 / 9' do?", Difficulty = "Advanced", Explanation = "aspect-ratio maintains a width-to-height ratio. 16/9 means for every 16 units of width, the element is 9 units tall, perfect for videos and images.", Answers = new List<Answer> { new() { Text = "Maintains a 16:9 width-to-height ratio", IsCorrect = true }, new() { Text = "Sets width to 16px and height to 9px", IsCorrect = false }, new() { Text = "Creates 16 columns and 9 rows", IsCorrect = false }, new() { Text = "Divides the viewport into a 16:9 grid", IsCorrect = false } } },
+                new() { Text = "What is the purpose of @layer in CSS?", CodeSnippet = "@layer base, components, utilities;", Difficulty = "Advanced", Explanation = "@layer gives explicit control over cascade order. Later layers win over earlier layers, regardless of specificity, making large stylesheets more predictable.", Answers = new List<Answer> { new() { Text = "Explicit control over cascade precedence", IsCorrect = true }, new() { Text = "Creates visual layers like Photoshop", IsCorrect = false }, new() { Text = "Adds 3D depth to elements", IsCorrect = false }, new() { Text = "Compresses CSS file size", IsCorrect = false } } },
+                new() { Text = "What does 'text-wrap: balance' do?", Difficulty = "Advanced", Explanation = "text-wrap: balance distributes text evenly across lines to avoid awkwardly short last lines. Most useful for headings and short paragraphs.", Answers = new List<Answer> { new() { Text = "Evenly distributes text across lines for better appearance", IsCorrect = true }, new() { Text = "Centers text horizontally", IsCorrect = false }, new() { Text = "Wraps text around images", IsCorrect = false }, new() { Text = "Prevents text from wrapping", IsCorrect = false } } },
+            }
+        };
+
+        var cssArchitecture = new Quiz
+        {
+            Title = "CSS Architecture & Best Practices",
+            Topic = "css-architecture-practices",
+            Category = "CSS",
+            Description = "BEM methodology, naming conventions, performance, and maintainability.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does BEM stand for?", Difficulty = "Advanced", Explanation = "BEM (Block Element Modifier) is a naming convention that creates clear relationships between HTML and CSS, making code more maintainable.", Answers = new List<Answer> { new() { Text = "Block Element Modifier", IsCorrect = true }, new() { Text = "Base Element Model", IsCorrect = false }, new() { Text = "Browser Extension Module", IsCorrect = false }, new() { Text = "Best Element Method", IsCorrect = false } } },
+                new() { Text = "In BEM, what does .card__title--large represent?", Difficulty = "Advanced", Explanation = "This is a BEM modifier: card is the block, title is the element, and large is the modifier that creates a variant of card__title.", Answers = new List<Answer> { new() { Text = "An element 'title' with modifier 'large' inside block 'card'", IsCorrect = true }, new() { Text = "Three separate unrelated classes", IsCorrect = false }, new() { Text = "A deeply nested HTML structure", IsCorrect = false }, new() { Text = "An error in CSS syntax", IsCorrect = false } } },
+                new() { Text = "Why should you avoid !important in components?", Difficulty = "Advanced", Explanation = "!important creates specificity problems that cascade through your codebase. It makes styles hard to override and leads to specificity wars.", Answers = new List<Answer> { new() { Text = "It creates specificity problems and makes code unmaintainable", IsCorrect = true }, new() { Text = "It's deprecated and will be removed", IsCorrect = false }, new() { Text = "It slows down page rendering", IsCorrect = false }, new() { Text = "It only works in older browsers", IsCorrect = false } } },
+                new() { Text = "What is the recommended approach for responsive design?", Difficulty = "Advanced", Explanation = "Mobile-first means writing base styles for small screens and using min-width media queries to enhance for larger screens. This aligns with mobile-first web traffic.", Answers = new List<Answer> { new() { Text = "Mobile-first: base styles for mobile, enhance with min-width queries", IsCorrect = true }, new() { Text = "Desktop-first: base styles for desktop, reduce with max-width queries", IsCorrect = false }, new() { Text = "Use JavaScript to detect device type", IsCorrect = false }, new() { Text = "Create separate stylesheets for each device", IsCorrect = false } } },
+                new() { Text = "Which CSS properties should you animate for best performance?", Difficulty = "Advanced", Explanation = "transform and opacity are GPU-accelerated and don't trigger layout recalculations, enabling smooth 60fps animations. Animating width, height, or position is expensive.", Answers = new List<Answer> { new() { Text = "transform and opacity (GPU-accelerated)", IsCorrect = true }, new() { Text = "width and height (causes layout shifts)", IsCorrect = false }, new() { Text = "margin and padding (causes reflow)", IsCorrect = false }, new() { Text = "top and left (causes repaint)", IsCorrect = false } } },
+            }
+        };
+
         // ═══════════════════════════════════════════════════
         //  JavaScript Quizzes (9 subcategories × 5 questions)
         // ═══════════════════════════════════════════════════
@@ -615,8 +700,9 @@ public static class SeedData
             // HTML - Progressive difficulty order
             htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAttributes, htmlMediaEmbeds, htmlAccessibility, htmlAdvanced,
             htmlCanvas, htmlSvg, htmlWebComponents, htmlDragDrop, htmlWebStorage, htmlGeolocation,
-            // CSS - Progressive difficulty order
+            // CSS - Progressive difficulty order (15 total CSS quizzes)
             cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
+            cssTypography, cssBackgroundsGradients, cssPseudoElements, cssModernFeatures, cssArchitecture,
             // JavaScript - Progressive difficulty order
             jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced, jsObjectsClasses, jsAsyncProgramming, jsModulesApis
         );
