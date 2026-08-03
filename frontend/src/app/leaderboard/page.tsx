@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Medal, Award, TrendingUp, Zap, BookOpen, Target, Crown } from "lucide-react";
+import { Trophy, Medal, Award, TrendingUp, Zap, BookOpen, Target, Crown, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,16 @@ interface LeaderboardEntry {
   averageScore: number;
   currentStreak: number;
   profileImageUrl?: string | null;
+}
+
+interface PaginatedLeaderboard {
+  items: LeaderboardEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 interface UserStats {
@@ -32,13 +42,26 @@ export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
   const { user } = useAuth();
+  const pageSize = 20;
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const { data: leaderboardData } = await api.get<LeaderboardEntry[]>("/leaderboard");
-        setLeaderboard(leaderboardData);
+        const { data: leaderboardData } = await api.get<PaginatedLeaderboard>(
+          `/leaderboard?page=${page}&pageSize=${pageSize}`
+        );
+        setLeaderboard(leaderboardData.items);
+        setTotalPages(leaderboardData.totalPages);
+        setTotalCount(leaderboardData.totalCount);
+        setHasNextPage(leaderboardData.hasNextPage);
+        setHasPreviousPage(leaderboardData.hasPreviousPage);
 
         if (user) {
           const { data: statsData } = await api.get<UserStats>("/leaderboard/me");
@@ -52,7 +75,14 @@ export default function LeaderboardPage() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, page]);
+
+  const goToPage = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Crown className="w-6 h-6 text-yellow-500" />;
@@ -270,6 +300,72 @@ export default function LeaderboardPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+          
+          {/* Pagination Controls */}
+          {!loading && leaderboard.length > 0 && totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Page {page} of {totalPages} · {totalCount} learners
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => goToPage(page - 1)}
+                  disabled={!hasPreviousPage}
+                  className={`p-2 rounded-lg border transition-colors ${
+                    hasPreviousPage
+                      ? "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      : "border-gray-200 dark:border-gray-800 text-gray-300 dark:text-gray-700 cursor-not-allowed"
+                  }`}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                
+                {/* Page numbers */}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (page <= 3) {
+                      pageNum = i + 1;
+                    } else if (page >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = page - 2 + i;
+                    }
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => goToPage(pageNum)}
+                        className={`min-w-[2rem] px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                          page === pageNum
+                            ? "bg-indigo-600 text-white"
+                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => goToPage(page + 1)}
+                  disabled={!hasNextPage}
+                  className={`p-2 rounded-lg border transition-colors ${
+                    hasNextPage
+                      ? "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      : "border-gray-200 dark:border-gray-800 text-gray-300 dark:text-gray-700 cursor-not-allowed"
+                  }`}
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
         </motion.div>

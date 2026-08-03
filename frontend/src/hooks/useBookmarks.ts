@@ -1,7 +1,7 @@
 "use client";
 
 // React
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 // Local imports
 import { useToast } from "@/context/ToastContext";
@@ -38,8 +38,14 @@ export function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { success, info } = useToast();
+  const toast = useToast();
+  const toastRef = useRef(toast);
   const { user, isLoading: authLoading } = useAuth();
+
+  // Keep toast ref updated
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
 
   const loadData = useCallback(() => {
     try {
@@ -91,9 +97,9 @@ export function useBookmarks() {
 
           // Toast feedback
           if (exists) {
-            info("Bookmark removed", bm.lessonTitle);
+            toastRef.current.info("Bookmark removed", bm.lessonTitle);
           } else {
-            success(
+            toastRef.current.success(
               "Lesson bookmarked!",
               `${bm.lessonTitle} saved · press B to toggle`,
             );
@@ -106,19 +112,19 @@ export function useBookmarks() {
         setError(errorMessage);
       }
     },
-    [info, success, user?.id],
+    [user?.id],
   );
 
   const clearBookmarks = useCallback(() => {
     try {
       setBookmarks([]);
       saveBookmarks(user?.id, []);
-      info("All bookmarks cleared");
+      toastRef.current.info("All bookmarks cleared");
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to clear bookmarks";
       setError(errorMessage);
     }
-  }, [info, user?.id]);
+  }, [user?.id]);
 
   return {
     data: bookmarks,

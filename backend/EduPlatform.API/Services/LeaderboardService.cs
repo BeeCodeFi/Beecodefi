@@ -13,9 +13,13 @@ public class LeaderboardService : ILeaderboardService
         _db = db;
     }
 
-    public async Task<List<LeaderboardEntryDto>> GetLeaderboardAsync(int limit)
+    public async Task<PaginatedLeaderboardDto> GetLeaderboardAsync(int page = 1, int pageSize = 20)
     {
-        var userStats = await _db.Users
+        // Ensure valid page and pageSize values
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var userStatsQuery = _db.Users
             .Select(u => new
             {
                 u.Id,
@@ -31,13 +35,20 @@ public class LeaderboardService : ILeaderboardService
                               _db.TutorialProgress.Count(p => p.UserId == u.Id) * 5
             })
             .OrderByDescending(u => u.TotalPoints)
-            .ThenByDescending(u => u.CurrentStreak)
-            .Take(limit)
+            .ThenByDescending(u => u.CurrentStreak);
+
+        var totalCount = await userStatsQuery.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var userStats = await userStatsQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
+        var startRank = ((page - 1) * pageSize) + 1;
         var leaderboard = userStats.Select((u, index) => new LeaderboardEntryDto
         {
-            Rank = index + 1,
+            Rank = startRank + index,
             UserName = u.Name,
             TotalPoints = u.TotalPoints,
             QuizzesCompleted = u.QuizzesCompleted,
@@ -47,7 +58,16 @@ public class LeaderboardService : ILeaderboardService
             ProfileImageUrl = u.ProfileImageUrl
         }).ToList();
 
-        return leaderboard;
+        return new PaginatedLeaderboardDto
+        {
+            Items = leaderboard,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = totalPages,
+            HasNextPage = page < totalPages,
+            HasPreviousPage = page > 1
+        };
     }
 
     public async Task<UserStatsDto> GetMyStatsAsync(int userId)

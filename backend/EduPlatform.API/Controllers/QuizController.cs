@@ -46,10 +46,10 @@ public class QuizController : BaseController
 
     [Authorize]
     [HttpGet("history")]
-    public async Task<ActionResult<List<QuizAttemptDto>>> GetHistory()
+    public async Task<ActionResult<PaginatedQuizHistoryDto>> GetHistory([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         int userId = GetUserId();
-        var history = await _quizService.GetHistoryAsync(userId);
+        var history = await _quizService.GetHistoryAsync(userId, page, pageSize);
         return Ok(history);
     }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 // React
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 // Local imports
 import api from "@/lib/api";
@@ -24,9 +24,15 @@ export interface Badge {
 export function useBadges() {
   const { user } = useAuth();
   const toast = useToast();
+  const toastRef = useRef(toast);
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Keep toast ref updated
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
 
   const fetchBadges = useCallback(async () => {
     if (!user) {
@@ -45,11 +51,11 @@ export function useBadges() {
         enhancedError.message ||
         "Failed to fetch badges";
       setError(errorMessage);
-      toast.error("Error loading badges", errorMessage);
+      toastRef.current.error("Error loading badges", errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [user, toast]);
+  }, [user]); // Only depend on user
 
   useEffect(() => {
     fetchBadges();
@@ -72,10 +78,10 @@ export function useBadges() {
         enhancedError.userMessage ||
         enhancedError.message ||
         "Failed to check for new badges";
-      toast.error("Error checking badges", errorMessage);
+      toastRef.current.error("Error checking badges", errorMessage);
       return [];
     }
-  }, [user, toast]);
+  }, [user]); // Only depend on user
 
   const getTutorialBadge = useCallback(
     (tutorialSlug: string) => {

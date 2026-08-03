@@ -4,6 +4,6 @@ namespace EduPlatform.API.Services;
 
 public interface ILeaderboardService
 {
-    Task<List<LeaderboardEntryDto>> GetLeaderboardAsync(int limit);
+    Task<PaginatedLeaderboardDto> GetLeaderboardAsync(int page = 1, int pageSize = 20);
     Task<UserStatsDto> GetMyStatsAsync(int userId);
 }

@@ -126,12 +126,23 @@ public class QuizService : IQuizService
         };
     }
 
-    public async Task<List<QuizAttemptDto>> GetHistoryAsync(int userId)
+    public async Task<PaginatedQuizHistoryDto> GetHistoryAsync(int userId, int page = 1, int pageSize = 10)
     {
-        return await _db.QuizAttempts
+        // Ensure valid page and pageSize values
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var query = _db.QuizAttempts
             .Where(a => a.UserId == userId)
             .Include(a => a.Quiz)
-            .OrderByDescending(a => a.CompletedAt)
+            .OrderByDescending(a => a.CompletedAt);
+
+        var totalCount = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(a => new QuizAttemptDto
             {
                 Id = a.Id,
@@ -145,5 +156,16 @@ public class QuizService : IQuizService
             })
             .AsNoTracking()
             .ToListAsync();
+
+        return new PaginatedQuizHistoryDto
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = totalPages,
+            HasNextPage = page < totalPages,
+            HasPreviousPage = page > 1
+        };
     }
 }
