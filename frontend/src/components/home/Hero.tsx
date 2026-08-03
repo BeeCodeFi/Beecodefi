@@ -729,7 +729,7 @@ export default function Hero() {
               suffix: "%",
               label: "Free",
               icon: Zap,
-              color: "text-green-600 dark:text-green-400",
+              color: "text-sky-600 dark:text-sky-400",
             },
           ].map((s, i) => (
             <motion.div

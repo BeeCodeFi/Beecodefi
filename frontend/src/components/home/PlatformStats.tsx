@@ -91,15 +91,6 @@ export default function PlatformStats() {
       iconColor: "text-amber-600 dark:text-amber-400",
     },
     {
-      icon: Zap,
-      value: "100%",
-      label: "Free Forever",
-      description: "No paywalls, no limits, no credit card",
-      gradient: "from-green-500 to-emerald-500",
-      iconBg: "bg-green-100 dark:bg-green-900/40",
-      iconColor: "text-green-600 dark:text-green-400",
-    },
-    {
       icon: Users,
       value: userCount.toLocaleString(),
       label: "Active Learners",
