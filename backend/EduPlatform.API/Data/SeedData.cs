@@ -26,7 +26,7 @@ public static class SeedData
         }
         
         // Re-seed if no quizzes, incomplete catalog, or needs reordering
-        if (quizCount < 38 || needsReorder)
+        if (quizCount < 45 || needsReorder)
         {
             // Clear old quiz data to reseed
             if (quizCount > 0)
@@ -696,15 +696,135 @@ public static class SeedData
             }
         };
 
+        var jsStrings = new Quiz
+        {
+            Title = "Strings & String Methods",
+            Topic = "js-strings",
+            Category = "JavaScript",
+            Description = "String manipulation, methods, and template literals.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which method removes whitespace from both ends of a string?", Difficulty = "Beginner", Explanation = ".trim() is essential for cleaning user input from forms, removing leading and trailing spaces.", Answers = new List<Answer> { new() { Text = ".trim()", IsCorrect = true }, new() { Text = ".clean()", IsCorrect = false }, new() { Text = ".strip()", IsCorrect = false }, new() { Text = ".remove()", IsCorrect = false } } },
+                new() { Text = "How do you create a template literal in JavaScript?", CodeSnippet = "const msg = ??? Hello ${name} ???;", Difficulty = "Beginner", Explanation = "Template literals use backticks (`) and ${} for interpolation, making string building cleaner than concatenation.", Answers = new List<Answer> { new() { Text = "Backticks (`)", IsCorrect = true }, new() { Text = "Single quotes (')", IsCorrect = false }, new() { Text = "Double quotes (\")", IsCorrect = false }, new() { Text = "Parentheses (())", IsCorrect = false } } },
+                new() { Text = "Which method converts a string to uppercase?", Difficulty = "Beginner", Answers = new List<Answer> { new() { Text = ".toUpperCase()", IsCorrect = true }, new() { Text = ".upper()", IsCorrect = false }, new() { Text = ".uppercase()", IsCorrect = false }, new() { Text = ".capitalize()", IsCorrect = false } } },
+                new() { Text = "What does .split(',') do?", CodeSnippet = "const arr = 'a,b,c'.split(',');", Difficulty = "Beginner", Explanation = ".split() divides a string into an array based on a delimiter. The inverse is .join().", Answers = new List<Answer> { new() { Text = "Splits the string into an array at each comma", IsCorrect = true }, new() { Text = "Removes all commas from the string", IsCorrect = false }, new() { Text = "Replaces commas with spaces", IsCorrect = false }, new() { Text = "Counts the number of commas", IsCorrect = false } } },
+                new() { Text = "Which method checks if a string contains a substring?", Difficulty = "Beginner", Explanation = ".includes() returns true/false and is the modern, readable way to check for substrings.", Answers = new List<Answer> { new() { Text = ".includes()", IsCorrect = true }, new() { Text = ".has()", IsCorrect = false }, new() { Text = ".contains()", IsCorrect = false }, new() { Text = ".find()", IsCorrect = false } } },
+            }
+        };
+
+        var jsNumbersMath = new Quiz
+        {
+            Title = "Numbers, Math & Dates",
+            Topic = "js-numbers-math",
+            Category = "JavaScript",
+            Description = "Number operations, Math object methods, and Date handling.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which method rounds a number down to the nearest integer?", Difficulty = "Beginner", Explanation = "Math.floor() always rounds down: 4.9 becomes 4. Math.ceil() rounds up, Math.round() rounds to nearest.", Answers = new List<Answer> { new() { Text = "Math.floor()", IsCorrect = true }, new() { Text = "Math.round()", IsCorrect = false }, new() { Text = "Math.down()", IsCorrect = false }, new() { Text = "Math.trunc()", IsCorrect = false } } },
+                new() { Text = "What does Math.random() return?", Difficulty = "Beginner", Explanation = "Math.random() returns a decimal from 0 (inclusive) to 1 (exclusive). Multiply and floor to get random integers.", Answers = new List<Answer> { new() { Text = "A random decimal between 0 and 1", IsCorrect = true }, new() { Text = "A random integer between 1 and 100", IsCorrect = false }, new() { Text = "A random boolean", IsCorrect = false }, new() { Text = "A random string", IsCorrect = false } } },
+                new() { Text = "How do you format a number to 2 decimal places?", CodeSnippet = "const price = 9.9987;\nconst formatted = price.???(2);", Difficulty = "Beginner", Explanation = ".toFixed(n) formats to n decimal places and returns a string. Use Number() if you need a number back.", Answers = new List<Answer> { new() { Text = ".toFixed()", IsCorrect = true }, new() { Text = ".round()", IsCorrect = false }, new() { Text = ".format()", IsCorrect = false }, new() { Text = ".decimal()", IsCorrect = false } } },
+                new() { Text = "What value represents 'Not a Number' in JavaScript?", Difficulty = "Beginner", Explanation = "NaN results from invalid math operations like '2' * 'hello'. Use Number.isNaN() to check for it.", Answers = new List<Answer> { new() { Text = "NaN", IsCorrect = true }, new() { Text = "null", IsCorrect = false }, new() { Text = "undefined", IsCorrect = false }, new() { Text = "Infinity", IsCorrect = false } } },
+                new() { Text = "Which method creates a Date object for the current time?", Difficulty = "Beginner", Explanation = "new Date() with no arguments creates a Date for the current moment. Pass a string/timestamp for specific dates.", Answers = new List<Answer> { new() { Text = "new Date()", IsCorrect = true }, new() { Text = "Date.now()", IsCorrect = false }, new() { Text = "Date.current()", IsCorrect = false }, new() { Text = "getCurrentDate()", IsCorrect = false } } },
+            }
+        };
+
+        var jsControlFlow = new Quiz
+        {
+            Title = "Control Flow & Loops",
+            Topic = "js-control-flow",
+            Category = "JavaScript",
+            Description = "Conditionals, loops, ternary operators, and control structures.",
+            Difficulty = "Beginner",
+            Questions = new List<Question>
+            {
+                new() { Text = "Which values are falsy in JavaScript?", Difficulty = "Beginner", Explanation = "JavaScript has 6 falsy values: false, 0, '' (empty string), null, undefined, and NaN. Everything else is truthy.", Answers = new List<Answer> { new() { Text = "false, 0, '', null, undefined, NaN", IsCorrect = true }, new() { Text = "Only false and null", IsCorrect = false }, new() { Text = "false, 0, null", IsCorrect = false }, new() { Text = "All numbers", IsCorrect = false } } },
+                new() { Text = "Which loop is best for iterating over array values?", Difficulty = "Beginner", Explanation = "for...of iterates over iterable values (arrays, strings). for...in iterates over object keys.", Answers = new List<Answer> { new() { Text = "for...of", IsCorrect = true }, new() { Text = "for...in", IsCorrect = false }, new() { Text = "while", IsCorrect = false }, new() { Text = "do...while", IsCorrect = false } } },
+                new() { Text = "What does the ternary operator do?", CodeSnippet = "const status = age >= 18 ? 'adult' : 'minor';", Difficulty = "Beginner", Explanation = "The ternary operator (condition ? valueIfTrue : valueIfFalse) is a compact one-line conditional.", Answers = new List<Answer> { new() { Text = "Returns one of two values based on a condition", IsCorrect = true }, new() { Text = "Creates a loop", IsCorrect = false }, new() { Text = "Declares three variables", IsCorrect = false }, new() { Text = "Throws an error", IsCorrect = false } } },
+                new() { Text = "What does the ?? (nullish coalescing) operator do?", CodeSnippet = "const count = userCount ?? 0;", Difficulty = "Intermediate", Explanation = "?? returns the right side only if the left is null or undefined. Unlike ||, it doesn't treat 0 or '' as falsy.", Answers = new List<Answer> { new() { Text = "Returns right side only for null/undefined", IsCorrect = true }, new() { Text = "Returns right side for all falsy values", IsCorrect = false }, new() { Text = "Adds two numbers", IsCorrect = false }, new() { Text = "Compares two values", IsCorrect = false } } },
+                new() { Text = "What does optional chaining (?.) do?", CodeSnippet = "const city = user?.address?.city;", Difficulty = "Intermediate", Explanation = "Optional chaining short-circuits to undefined when it hits null/undefined, preventing TypeErrors.", Answers = new List<Answer> { new() { Text = "Returns undefined instead of throwing if a property is null/undefined", IsCorrect = true }, new() { Text = "Makes the property required", IsCorrect = false }, new() { Text = "Creates a Promise chain", IsCorrect = false }, new() { Text = "Assigns a default value", IsCorrect = false } } },
+            }
+        };
+
+        var jsHigherOrderFunctions = new Quiz
+        {
+            Title = "Higher-Order Functions",
+            Topic = "js-higher-order-functions",
+            Category = "JavaScript",
+            Description = "map, filter, reduce, and functional programming patterns.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does .map() return?", Difficulty = "Intermediate", Explanation = ".map() creates a new array by transforming each element. The original array is unchanged.", Answers = new List<Answer> { new() { Text = "A new array with the same length", IsCorrect = true }, new() { Text = "A single accumulated value", IsCorrect = false }, new() { Text = "undefined", IsCorrect = false }, new() { Text = "A boolean", IsCorrect = false } } },
+                new() { Text = "Which method keeps only elements that pass a test?", Difficulty = "Intermediate", Explanation = ".filter() returns a new array containing elements where the callback returns true.", Answers = new List<Answer> { new() { Text = ".filter()", IsCorrect = true }, new() { Text = ".map()", IsCorrect = false }, new() { Text = ".reduce()", IsCorrect = false }, new() { Text = ".find()", IsCorrect = false } } },
+                new() { Text = "What does .reduce() do?", CodeSnippet = "const sum = nums.reduce((acc, n) => acc + n, 0);", Difficulty = "Intermediate", Explanation = ".reduce() iterates through an array and accumulates a single result — number, string, object, or any value.", Answers = new List<Answer> { new() { Text = "Combines all elements into a single accumulated value", IsCorrect = true }, new() { Text = "Creates a new array", IsCorrect = false }, new() { Text = "Finds the first matching element", IsCorrect = false }, new() { Text = "Sorts the array", IsCorrect = false } } },
+                new() { Text = "What does .forEach() return?", Difficulty = "Intermediate", Explanation = ".forEach() performs a callback for each item and returns undefined. Use .map() when you need a new array.", Answers = new List<Answer> { new() { Text = "undefined", IsCorrect = true }, new() { Text = "A new array", IsCorrect = false }, new() { Text = "The original array", IsCorrect = false }, new() { Text = "A boolean", IsCorrect = false } } },
+                new() { Text = "How do you chain array methods?", CodeSnippet = "const result = nums.filter(n => n > 5).map(n => n * 2);", Difficulty = "Intermediate", Explanation = "Methods that return arrays can be chained: filter → map → reduce. Each operates on the result of the previous.", Answers = new List<Answer> { new() { Text = "Call methods one after another on the result", IsCorrect = true }, new() { Text = "Use the + operator between methods", IsCorrect = false }, new() { Text = "Wrap methods in parentheses", IsCorrect = false }, new() { Text = "Methods cannot be chained", IsCorrect = false } } },
+            }
+        };
+
+        var jsErrorHandling = new Quiz
+        {
+            Title = "Error Handling",
+            Topic = "js-error-handling",
+            Category = "JavaScript",
+            Description = "try/catch/finally, throwing errors, and error recovery patterns.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does the finally block do in try/catch/finally?", Difficulty = "Intermediate", Explanation = "finally always executes after try (and catch if triggered) — perfect for cleanup like closing connections.", Answers = new List<Answer> { new() { Text = "Always runs regardless of whether an error occurred", IsCorrect = true }, new() { Text = "Only runs if there's an error", IsCorrect = false }, new() { Text = "Only runs if there's no error", IsCorrect = false }, new() { Text = "Runs the code one final time", IsCorrect = false } } },
+                new() { Text = "How do you throw a custom error?", Difficulty = "Intermediate", Explanation = "throw new Error('message') creates and throws an error. Always throw Error objects to get stack traces.", Answers = new List<Answer> { new() { Text = "throw new Error('message')", IsCorrect = true }, new() { Text = "throw 'message'", IsCorrect = false }, new() { Text = "error('message')", IsCorrect = false }, new() { Text = "raise Error('message')", IsCorrect = false } } },
+                new() { Text = "What happens if you don't catch an error in async/await?", Difficulty = "Intermediate", Explanation = "Uncaught errors in async functions become unhandled promise rejections, which can crash Node.js or silently fail.", Answers = new List<Answer> { new() { Text = "Unhandled promise rejection (can crash or silently fail)", IsCorrect = true }, new() { Text = "The error is automatically logged", IsCorrect = false }, new() { Text = "The function returns null", IsCorrect = false }, new() { Text = "The code continues normally", IsCorrect = false } } },
+                new() { Text = "How do you create a custom error class?", Difficulty = "Advanced", Explanation = "Extend the Error class to create domain-specific error types that can be caught with instanceof.", Answers = new List<Answer> { new() { Text = "class MyError extends Error { }", IsCorrect = true }, new() { Text = "class MyError implements Error { }", IsCorrect = false }, new() { Text = "const MyError = Error()", IsCorrect = false }, new() { Text = "function MyError() extends Error", IsCorrect = false } } },
+                new() { Text = "What should you never do with errors?", Difficulty = "Intermediate", Explanation = "Empty catch blocks hide bugs. Always at minimum log the error, or rethrow it if you can't handle it.", Answers = new List<Answer> { new() { Text = "Silently swallow them with empty catch blocks", IsCorrect = true }, new() { Text = "Log them to the console", IsCorrect = false }, new() { Text = "Re-throw unexpected errors", IsCorrect = false }, new() { Text = "Show user-friendly messages", IsCorrect = false } } },
+            }
+        };
+
+        var jsRegularExpressions = new Quiz
+        {
+            Title = "Regular Expressions",
+            Topic = "js-regular-expressions",
+            Category = "JavaScript",
+            Description = "Regex patterns, flags, and text pattern matching.",
+            Difficulty = "Advanced",
+            Questions = new List<Question>
+            {
+                new() { Text = "What does the ^ anchor match in a regex?", Difficulty = "Advanced", Explanation = "The ^ anchor asserts that the match begins at the start of the input string.", Answers = new List<Answer> { new() { Text = "The start of a string", IsCorrect = true }, new() { Text = "The end of a string", IsCorrect = false }, new() { Text = "Any digit", IsCorrect = false }, new() { Text = "A literal caret character", IsCorrect = false } } },
+                new() { Text = "What does the 'g' flag do in a regex?", CodeSnippet = "const re = /pattern/g;", Difficulty = "Advanced", Explanation = "The global flag continues searching after the first match, finding all occurrences.", Answers = new List<Answer> { new() { Text = "Finds all matches instead of stopping at the first", IsCorrect = true }, new() { Text = "Makes the pattern case-insensitive", IsCorrect = false }, new() { Text = "Makes the pattern match globally across files", IsCorrect = false }, new() { Text = "Groups the matches", IsCorrect = false } } },
+                new() { Text = "Which method tests if a pattern matches a string?", Difficulty = "Advanced", Explanation = "RegExp.prototype.test() returns true or false depending on whether the pattern matches.", Answers = new List<Answer> { new() { Text = "regex.test(string)", IsCorrect = true }, new() { Text = "regex.match(string)", IsCorrect = false }, new() { Text = "regex.check(string)", IsCorrect = false }, new() { Text = "regex.find(string)", IsCorrect = false } } },
+                new() { Text = "What does \\d+ match?", Difficulty = "Advanced", Explanation = "\\d matches any digit (0-9), and + means 'one or more'. So \\d+ matches one or more consecutive digits.", Answers = new List<Answer> { new() { Text = "One or more digits", IsCorrect = true }, new() { Text = "Exactly one digit", IsCorrect = false }, new() { Text = "Zero or more digits", IsCorrect = false }, new() { Text = "A literal 'd' character", IsCorrect = false } } },
+                new() { Text = "How do you make a regex case-insensitive?", Difficulty = "Advanced", Explanation = "The 'i' flag makes matching case-insensitive: /hello/i matches 'Hello', 'HELLO', etc.", Answers = new List<Answer> { new() { Text = "Add the 'i' flag: /pattern/i", IsCorrect = true }, new() { Text = "Use .toLowerCase() on the regex", IsCorrect = false }, new() { Text = "Wrap the pattern in brackets", IsCorrect = false }, new() { Text = "Add the 'c' flag", IsCorrect = false } } },
+            }
+        };
+
+        var jsBrowserStorage = new Quiz
+        {
+            Title = "Browser Storage & Web APIs",
+            Topic = "js-browser-storage",
+            Category = "JavaScript",
+            Description = "localStorage, sessionStorage, cookies, and browser APIs.",
+            Difficulty = "Intermediate",
+            Questions = new List<Question>
+            {
+                new() { Text = "What's the difference between localStorage and sessionStorage?", Difficulty = "Intermediate", Explanation = "localStorage persists even after closing the browser; sessionStorage clears when the tab/window closes.", Answers = new List<Answer> { new() { Text = "localStorage persists; sessionStorage clears on tab close", IsCorrect = true }, new() { Text = "They are identical", IsCorrect = false }, new() { Text = "sessionStorage is faster", IsCorrect = false }, new() { Text = "localStorage has more storage", IsCorrect = false } } },
+                new() { Text = "How do you store an object in localStorage?", CodeSnippet = "localStorage.setItem('user', ???);", Difficulty = "Intermediate", Explanation = "localStorage only stores strings. Use JSON.stringify() to store and JSON.parse() to retrieve objects.", Answers = new List<Answer> { new() { Text = "JSON.stringify(object)", IsCorrect = true }, new() { Text = "object.toString()", IsCorrect = false }, new() { Text = "String(object)", IsCorrect = false }, new() { Text = "Pass the object directly", IsCorrect = false } } },
+                new() { Text = "What is the IntersectionObserver used for?", Difficulty = "Intermediate", Explanation = "IntersectionObserver detects when elements enter/leave the viewport — used for lazy loading, infinite scroll, animations.", Answers = new List<Answer> { new() { Text = "Detecting when elements enter or leave the viewport", IsCorrect = true }, new() { Text = "Observing CSS changes", IsCorrect = false }, new() { Text = "Watching JavaScript errors", IsCorrect = false }, new() { Text = "Monitoring network requests", IsCorrect = false } } },
+                new() { Text = "What does navigator.clipboard.writeText() do?", Difficulty = "Intermediate", Explanation = "The Clipboard API allows programmatic access to copy/paste. Requires user permission.", Answers = new List<Answer> { new() { Text = "Copies text to the clipboard", IsCorrect = true }, new() { Text = "Reads text from the clipboard", IsCorrect = false }, new() { Text = "Clears the clipboard", IsCorrect = false }, new() { Text = "Writes to a text file", IsCorrect = false } } },
+                new() { Text = "What is the typical storage limit for localStorage?", Difficulty = "Intermediate", Explanation = "Most browsers allow 5-10 MB per origin for Web Storage. Much larger than cookies (4 KB) but smaller than IndexedDB.", Answers = new List<Answer> { new() { Text = "5-10 MB", IsCorrect = true }, new() { Text = "4 KB", IsCorrect = false }, new() { Text = "100 MB", IsCorrect = false }, new() { Text = "Unlimited", IsCorrect = false } } },
+            }
+        };
+
         db.Quizzes.AddRange(
-            // HTML - Progressive difficulty order
+            // HTML - Progressive difficulty order (15 total)
             htmlBasics, htmlLinksMedia, htmlListsTables, htmlForms, htmlSemantic, htmlAttributes, htmlMediaEmbeds, htmlAccessibility, htmlAdvanced,
             htmlCanvas, htmlSvg, htmlWebComponents, htmlDragDrop, htmlWebStorage, htmlGeolocation,
-            // CSS - Progressive difficulty order (15 total CSS quizzes)
+            // CSS - Progressive difficulty order (14 total)
             cssBasics, cssBoxModel, cssSelectors, cssFlexboxGrid, cssVisual, cssAdvanced, cssPositioning, cssTransforms, cssVariables,
             cssTypography, cssBackgroundsGradients, cssPseudoElements, cssModernFeatures, cssArchitecture,
-            // JavaScript - Progressive difficulty order
-            jsBasics, jsArraysData, jsFunctionsScope, jsDomEvents, jsEs6, jsAdvanced, jsObjectsClasses, jsAsyncProgramming, jsModulesApis
+            // JavaScript - Progressive difficulty order (16 total)
+            jsBasics, jsStrings, jsNumbersMath, jsArraysData, jsFunctionsScope, jsControlFlow, jsHigherOrderFunctions, jsDomEvents, 
+            jsEs6, jsObjectsClasses, jsAsyncProgramming, jsModulesApis, jsErrorHandling, jsRegularExpressions, jsBrowserStorage, jsAdvanced
         );
         await db.SaveChangesAsync();
         }  // End of reseed check
