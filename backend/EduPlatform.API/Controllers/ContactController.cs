@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EduPlatform.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ContactController : ControllerBase
+public class ContactController : BaseController
 {
     private readonly AppDbContext _db;
     private readonly IEmailService _emailService;

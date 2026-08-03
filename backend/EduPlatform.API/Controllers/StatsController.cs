@@ -1,33 +1,22 @@
-using EduPlatform.API.Data;
+using EduPlatform.API.DTOs;
+using EduPlatform.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EduPlatform.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class StatsController : ControllerBase
+public class StatsController : BaseController
 {
-    private readonly AppDbContext _db;
+    private readonly IStatsService _statsService;
 
-    public StatsController(AppDbContext db)
+    public StatsController(IStatsService statsService)
     {
-        _db = db;
+        _statsService = statsService;
     }
 
     [HttpGet("platform")]
     public async Task<ActionResult<PlatformStatsDto>> GetPlatformStats(CancellationToken cancellationToken)
     {
-        var totalUsers = await _db.Users.CountAsync(cancellationToken);
-        
-        return Ok(new PlatformStatsDto
-        {
-            TotalUsers = totalUsers
-        });
+        var stats = await _statsService.GetPlatformStatsAsync(cancellationToken);
+        return Ok(stats);
     }
-}
-
-public sealed class PlatformStatsDto
-{
-    public int TotalUsers { get; set; }
 }

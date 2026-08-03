@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using EduPlatform.API.Data;
 using EduPlatform.API.DTOs;
 using EduPlatform.API.Models;
@@ -8,9 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduPlatform.API.Controllers;
 
-[ApiController]
 [Route("api/lesson-feedback")]
-public class LessonFeedbackController : ControllerBase
+public class LessonFeedbackController : BaseController
 {
     private readonly AppDbContext _db;
 
@@ -22,10 +20,7 @@ public class LessonFeedbackController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Submit([FromBody] SubmitLessonFeedbackDto dto)
     {
-        int? userId = int.TryParse(
-            User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId)
-            ? parsedUserId
-            : null;
+        int? userId = GetOptionalUserId();
 
         var existing = userId.HasValue
             ? await _db.LessonFeedback.FirstOrDefaultAsync(feedback =>
