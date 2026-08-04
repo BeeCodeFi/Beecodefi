@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils";
 import { getUserStorageKey } from "@/lib/userStorage";
 import { useAuth } from "@/context/AuthContext";
 import { readQuizProgress, saveQuizProgress } from "@/lib/quizProgress";
-import { useStreak } from "@/hooks/useStreak";
 import api from "@/lib/api";
 
 export interface LessonQuizQuestion {

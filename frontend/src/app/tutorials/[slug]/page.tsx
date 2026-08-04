@@ -204,7 +204,6 @@ function TutorialPageContent({
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { user } = useAuth();
   const { success, info } = useToast();
-  const { pingStreak } = useStreak(); // Track activity-based streak
 
   const tutorial = tutorials.find((t) => t.slug === slug);
 
