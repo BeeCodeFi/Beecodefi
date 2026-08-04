@@ -26,6 +26,11 @@ export interface LessonQuizQuestion {
   explanation: string;
 }
 
+interface ShuffledQuestion extends LessonQuizQuestion {
+  shuffledOptions: string[];
+  shuffledCorrectIndex: number;
+}
+
 interface Props {
   questions: LessonQuizQuestion[];
   lessonTitle: string;
@@ -38,6 +43,30 @@ interface SavedResult {
   total: number;
 }
 
+// Fisher-Yates shuffle algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Shuffle question options while tracking correct answer position
+function shuffleQuestion(question: LessonQuizQuestion): ShuffledQuestion {
+  const indices = question.options.map((_, i) => i);
+  const shuffledIndices = shuffleArray(indices);
+  const shuffledOptions = shuffledIndices.map(i => question.options[i]);
+  const shuffledCorrectIndex = shuffledIndices.indexOf(question.correctIndex);
+  
+  return {
+    ...question,
+    shuffledOptions,
+    shuffledCorrectIndex,
+  };
+}
+
 export default function LessonQuiz({
   questions,
   lessonTitle,
@@ -46,6 +75,7 @@ export default function LessonQuiz({
 }: Props) {
   const { user, isLoading: authLoading } = useAuth();
   const { pingStreak } = useStreak();
+  const [shuffledQuestions, setShuffledQuestions] = useState<ShuffledQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -55,6 +85,11 @@ export default function LessonQuiz({
     new Set(),
   );
   const [bestResult, setBestResult] = useState<SavedResult | null>(null);
+
+  // Shuffle questions once on mount
+  useEffect(() => {
+    setShuffledQuestions(questions.map(shuffleQuestion));
+  }, [questions]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -82,8 +117,8 @@ export default function LessonQuiz({
     });
   }, [authLoading, quizTopic, storageKey, user?.id]);
 
-  const q = questions[currentIndex];
-  const isLast = currentIndex === questions.length - 1;
+  const q = shuffledQuestions[currentIndex];
+  const isLast = currentIndex === shuffledQuestions.length - 1;
 
   const handleSelect = (idx: number) => {
     if (revealed) return;
@@ -91,9 +126,9 @@ export default function LessonQuiz({
   };
 
   const handleCheck = () => {
-    if (selectedIndex === null) return;
+    if (selectedIndex === null || !q) return;
     setRevealed(true);
-    if (selectedIndex === q.correctIndex) {
+    if (selectedIndex === q.shuffledCorrectIndex) {
       setScore((s) => s + 1);
       setAnsweredCorrectly((prev) => new Set(prev).add(currentIndex));
     }
@@ -161,6 +196,7 @@ export default function LessonQuiz({
   };
 
   const handleRetry = () => {
+    setShuffledQuestions(questions.map(shuffleQuestion));
     setCurrentIndex(0);
     setSelectedIndex(null);
     setRevealed(false);
@@ -168,6 +204,10 @@ export default function LessonQuiz({
     setFinished(false);
     setAnsweredCorrectly(new Set());
   };
+
+  if (shuffledQuestions.length === 0) {
+    return null; // Loading state
+  }
 
   if (finished) {
     const percentage = Math.round((score / questions.length) * 100);
@@ -253,7 +293,7 @@ export default function LessonQuiz({
 
       {/* Progress dots */}
       <div className="flex gap-1.5 mb-5">
-        {questions.map((_, i) => (
+        {shuffledQuestions.map((_, i) => (
           <div
             key={i}
             className={cn(
@@ -294,9 +334,9 @@ export default function LessonQuiz({
 
           {/* Options */}
           <div className="space-y-2.5">
-            {q.options.map((option, idx) => {
+            {q.shuffledOptions.map((option, idx) => {
               const isSelected = selectedIndex === idx;
-              const isCorrect = idx === q.correctIndex;
+              const isCorrect = idx === q.shuffledCorrectIndex;
               let optionStyle =
                 "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300";
 
