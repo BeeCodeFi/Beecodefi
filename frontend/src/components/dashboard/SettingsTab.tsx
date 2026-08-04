@@ -196,7 +196,9 @@ export default function SettingsTab({
     try {
       await api.post("/account/reset-progress", { type });
 
+      // Clear localStorage based on reset type
       if (type === "tutorial" || type === "all") {
+        // Clear tutorial progress
         const keysToRemove: string[] = [];
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
@@ -209,14 +211,43 @@ export default function SettingsTab({
         keysToRemove.forEach((key) => localStorage.removeItem(key));
       }
 
+      if (type === "quiz" || type === "all") {
+        // Clear quiz progress from localStorage
+        const quizKeysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (
+            key?.includes("quiz-") || 
+            key?.includes("-quiz-") || 
+            key?.includes("lesson-quiz-")
+          ) {
+            quizKeysToRemove.push(key);
+          }
+        }
+        quizKeysToRemove.forEach((key) => localStorage.removeItem(key));
+        
+        // Dispatch storage event to notify quiz page to refresh
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('quiz-progress-updated'));
+      }
+
       setResetMsg({
         type: "success",
         text: `${type === "all" ? "All" : type} progress reset successfully`,
       });
+      success("Progress reset", `Your ${type} progress has been cleared`);
       setResetConfirm(null);
       reloadStats();
+      
+      // If quiz or all was reset, refresh the page to update quiz counts
+      if (type === "quiz" || type === "all") {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
     } catch {
       setResetMsg({ type: "error", text: "Failed to reset progress" });
+      toastError("Reset failed", "Could not reset your progress");
     } finally {
       setResetting(false);
     }

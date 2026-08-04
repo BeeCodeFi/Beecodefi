@@ -15,4 +15,6 @@ public class User
     public DateTime? LastActivityDate { get; set; }
     public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
     public ICollection<TutorialProgress> TutorialProgress { get; set; } = new List<TutorialProgress>();
+    public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+    public ICollection<RecentActivity> RecentActivities { get; set; } = new List<RecentActivity>();
 }

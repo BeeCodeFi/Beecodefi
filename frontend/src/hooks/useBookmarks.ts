@@ -1,37 +1,17 @@
 "use client";
 
-// React
 import { useState, useEffect, useCallback, useRef } from "react";
-
-// Local imports
 import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@/context/AuthContext";
-import { getUserStorageKey } from "@/lib/userStorage";
+import api from "@/lib/api";
 
 interface Bookmark {
+  id: number;
   tutorialSlug: string;
   lessonSlug: string;
   lessonTitle: string;
   trackTitle: string;
   savedAt: string;
-}
-
-function loadBookmarks(userId: number | null | undefined): Bookmark[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(
-      localStorage.getItem(getUserStorageKey(userId, "bookmarks")) ?? "[]",
-    );
-  } catch {
-    return [];
-  }
-}
-
-function saveBookmarks(userId: number | null | undefined, bm: Bookmark[]) {
-  localStorage.setItem(
-    getUserStorageKey(userId, "bookmarks"),
-    JSON.stringify(bm),
-  );
 }
 
 export function useBookmarks() {
@@ -42,29 +22,35 @@ export function useBookmarks() {
   const toastRef = useRef(toast);
   const { user, isLoading: authLoading } = useAuth();
 
-  // Keep toast ref updated
   useEffect(() => {
     toastRef.current = toast;
   }, [toast]);
 
-  const loadData = useCallback(() => {
+  const loadData = useCallback(async () => {
+    if (authLoading) return;
+    
+    if (!user) {
+      setBookmarks([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setError(null);
-      if (authLoading) return;
-      
-      const data = loadBookmarks(user?.id);
-      setBookmarks(data);
+      const response = await api.get<Bookmark[]>("/bookmark");
+      setBookmarks(response.data);
       setLoading(false);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load bookmarks";
+      console.error("[BOOKMARKS ERROR]", err);
       setError(errorMessage);
       setBookmarks([]);
       setLoading(false);
     }
-  }, [authLoading, user?.id]);
+  }, [authLoading, user]);
 
   useEffect(() => {
-    queueMicrotask(loadData);
+    loadData();
   }, [loadData]);
 
   const isBookmarked = useCallback(
@@ -76,55 +62,68 @@ export function useBookmarks() {
   );
 
   const toggleBookmark = useCallback(
-    (bm: Omit<Bookmark, "savedAt">) => {
+    async (bm: { tutorialSlug: string; lessonSlug: string; lessonTitle: string; trackTitle: string }) => {
+      if (!user) {
+        toastRef.current.error("Please sign in to bookmark lessons");
+        return;
+      }
+
       try {
-        setBookmarks((prev) => {
-          const exists = prev.some(
-            (b) =>
-              b.tutorialSlug === bm.tutorialSlug &&
-              b.lessonSlug === bm.lessonSlug,
+        const exists = isBookmarked(bm.tutorialSlug, bm.lessonSlug);
+
+        if (exists) {
+          // Remove bookmark
+          await api.delete(`/bookmark?tutorialSlug=${bm.tutorialSlug}&lessonSlug=${bm.lessonSlug}`);
+          setBookmarks((prev) =>
+            prev.filter(
+              (b) =>
+                !(b.tutorialSlug === bm.tutorialSlug && b.lessonSlug === bm.lessonSlug),
+            ),
           );
-          const next = exists
-            ? prev.filter(
-                (b) =>
-                  !(
-                    b.tutorialSlug === bm.tutorialSlug &&
-                    b.lessonSlug === bm.lessonSlug
-                  ),
-              )
-            : [...prev, { ...bm, savedAt: new Date().toISOString() }];
-          saveBookmarks(user?.id, next);
-
-          // Toast feedback
-          if (exists) {
-            toastRef.current.info("Bookmark removed", bm.lessonTitle);
-          } else {
-            toastRef.current.success(
-              "Lesson bookmarked!",
-              `${bm.lessonTitle} saved · press B to toggle`,
-            );
-          }
-
-          return next;
-        });
+          toastRef.current.info("Bookmark removed", bm.lessonTitle);
+        } else {
+          // Add bookmark
+          const response = await api.post<Bookmark>("/bookmark", {
+            tutorialSlug: bm.tutorialSlug,
+            lessonSlug: bm.lessonSlug,
+            lessonTitle: bm.lessonTitle,
+            trackTitle: bm.trackTitle,
+          });
+          setBookmarks((prev) => [response.data, ...prev]);
+          toastRef.current.success(
+            "Lesson bookmarked!",
+            `${bm.lessonTitle} saved · press B to toggle`,
+          );
+        }
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : "Failed to toggle bookmark";
+        console.error("[BOOKMARKS ERROR]", err);
         setError(errorMessage);
+        toastRef.current.error("Failed to update bookmark", errorMessage);
       }
     },
-    [user?.id],
+    [user, isBookmarked],
   );
 
-  const clearBookmarks = useCallback(() => {
+  const clearBookmarks = useCallback(async () => {
+    if (!user) return;
+
     try {
+      // Delete all bookmarks
+      await Promise.all(
+        bookmarks.map((b) =>
+          api.delete(`/bookmark?tutorialSlug=${b.tutorialSlug}&lessonSlug=${b.lessonSlug}`),
+        ),
+      );
       setBookmarks([]);
-      saveBookmarks(user?.id, []);
       toastRef.current.info("All bookmarks cleared");
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to clear bookmarks";
+      console.error("[BOOKMARKS ERROR]", err);
       setError(errorMessage);
+      toastRef.current.error("Failed to clear bookmarks", errorMessage);
     }
-  }, [user?.id]);
+  }, [user, bookmarks]);
 
   return {
     data: bookmarks,

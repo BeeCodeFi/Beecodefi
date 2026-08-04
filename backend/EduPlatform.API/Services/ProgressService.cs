@@ -42,6 +42,30 @@ public class ProgressService : IProgressService
         
         // Update streak when lesson is completed
         await _streakService.UpdateStreakAsync(userId);
+        
+        // Track in Recent Activity - keep only the most recent for this lesson
+        var existingActivity = await _db.RecentActivities
+            .Where(ra => ra.UserId == userId 
+                && ra.TutorialSlug == dto.TutorialSlug 
+                && ra.LessonSlug == dto.LessonSlug)
+            .ToListAsync();
+        
+        if (existingActivity.Any())
+        {
+            _db.RecentActivities.RemoveRange(existingActivity);
+        }
+        
+        _db.RecentActivities.Add(new RecentActivity
+        {
+            UserId = userId,
+            TutorialSlug = dto.TutorialSlug,
+            LessonSlug = dto.LessonSlug,
+            TutorialTitle = dto.TutorialTitle ?? dto.TutorialSlug,
+            LessonTitle = dto.LessonTitle ?? dto.LessonSlug,
+            Timestamp = DateTime.UtcNow
+        });
+        
+        await _db.SaveChangesAsync();
     }
 
     public async Task UnmarkCompleteAsync(int userId, string tutorialSlug, string lessonSlug)

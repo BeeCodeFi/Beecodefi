@@ -19,6 +19,8 @@ public class AppDbContext : DbContext
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
     public DbSet<LessonFeedback> LessonFeedback => Set<LessonFeedback>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Bookmark> Bookmarks => Set<Bookmark>();
+    public DbSet<RecentActivity> RecentActivities => Set<RecentActivity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -136,6 +138,34 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(rt => rt.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Bookmark>(entity =>
+        {
+            entity.HasOne(b => b.User)
+                .WithMany(u => u.Bookmarks)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(b => new { b.UserId, b.TutorialSlug, b.LessonSlug }).IsUnique();
+            entity.Property(b => b.TutorialSlug).HasMaxLength(100);
+            entity.Property(b => b.LessonSlug).HasMaxLength(150);
+            entity.Property(b => b.LessonTitle).HasMaxLength(200);
+            entity.Property(b => b.TrackTitle).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<RecentActivity>(entity =>
+        {
+            entity.HasOne(ra => ra.User)
+                .WithMany(u => u.RecentActivities)
+                .HasForeignKey(ra => ra.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ra => new { ra.UserId, ra.Timestamp });
+            entity.Property(ra => ra.TutorialSlug).HasMaxLength(100);
+            entity.Property(ra => ra.LessonSlug).HasMaxLength(150);
+            entity.Property(ra => ra.TutorialTitle).HasMaxLength(200);
+            entity.Property(ra => ra.LessonTitle).HasMaxLength(200);
         });
     }
 }

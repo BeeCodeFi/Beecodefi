@@ -353,22 +353,17 @@ function TutorialPageContent({
       const lessonTitle = tutorial.lessons[index]?.title;
       
       if (lessonSlug) {
-        // Save to backend (which will automatically update streak)
+        // Save to backend (which will automatically update streak and recent activity)
         api
-          .post("/progress/mark", { tutorialSlug: slug, lessonSlug })
+          .post("/progress/mark", { 
+            tutorialSlug: slug, 
+            lessonSlug,
+            tutorialTitle: tutorial.title,
+            lessonTitle: lessonTitle
+          })
           .catch(() => {});
         
-        // Save to Recent Activity
-        localStorage.setItem(
-          getUserStorageKey(user?.id, "lastVisitedLesson"),
-          JSON.stringify({
-            tutorialSlug: slug,
-            lessonSlug: lessonSlug,
-            tutorialTitle: tutorial.title,
-            lessonTitle: lessonTitle,
-            timestamp: Date.now(),
-          }),
-        );
+        // No need for localStorage recent activity anymore - it's in the database
       }
       
       // Toast: lesson completed
