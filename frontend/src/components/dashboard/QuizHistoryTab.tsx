@@ -25,24 +25,28 @@ export default function QuizHistoryTab() {
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
   const pageSize = 10;
 
+  const loadQuizHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      console.log('[QUIZ HISTORY] Fetching page', page);
+      const { data } = await api.get<PaginatedQuizHistory>(
+        `/quiz/history?page=${page}&pageSize=${pageSize}`
+      );
+      console.log('[QUIZ HISTORY] Response:', data);
+      setQuizHistory(data.items);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+      setHasNextPage(data.hasNextPage);
+      setHasPreviousPage(data.hasPreviousPage);
+    } catch (error) {
+      console.error('[QUIZ HISTORY] Failed to load:', error);
+      // silently fail
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadQuizHistory = async () => {
-      setHistoryLoading(true);
-      try {
-        const { data } = await api.get<PaginatedQuizHistory>(
-          `/quiz/history?page=${page}&pageSize=${pageSize}`
-        );
-        setQuizHistory(data.items);
-        setTotalPages(data.totalPages);
-        setTotalCount(data.totalCount);
-        setHasNextPage(data.hasNextPage);
-        setHasPreviousPage(data.hasPreviousPage);
-      } catch {
-        // silently fail
-      } finally {
-        setHistoryLoading(false);
-      }
-    };
     loadQuizHistory();
   }, [page]);
 
@@ -58,11 +62,20 @@ export default function QuizHistoryTab() {
         <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <Trophy className="w-5 h-5 text-yellow-500" /> Quiz History
         </h2>
-        {totalCount > 0 && (
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {totalCount} total attempt{totalCount !== 1 ? 's' : ''}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {totalCount > 0 && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {totalCount} total attempt{totalCount !== 1 ? 's' : ''}
+            </span>
+          )}
+          <button
+            onClick={() => loadQuizHistory()}
+            disabled={historyLoading}
+            className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline disabled:opacity-50"
+          >
+            {historyLoading ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
       </div>
 
       {historyLoading ? (

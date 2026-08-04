@@ -67,10 +67,13 @@ export default function QuizSessionPage({
 
   const handleSubmit = async () => {
     try {
+      console.log('[QUIZ] Submitting quiz:', { quizId, answers });
       const { data } = await api.post<QuizResult>("/quiz/submit", {
         quizId,
         answers,
       });
+      console.log('[QUIZ] Quiz submitted successfully:', data);
+      
       const categoryKey = quizTitle?.toLowerCase().includes("html")
         ? "html"
         : quizTitle?.toLowerCase().includes("css")
@@ -104,10 +107,12 @@ export default function QuizSessionPage({
       setState("results");
       
       // Refresh dashboard data
+      console.log('[QUIZ] Refreshing dashboard...');
       if (typeof window !== 'undefined' && (window as any).__refetchDashboard) {
         (window as any).__refetchDashboard();
       }
-    } catch {
+    } catch (error) {
+      console.error('[QUIZ] Failed to submit quiz:', error);
       // Fallback: calculate locally
       setState("results");
     }

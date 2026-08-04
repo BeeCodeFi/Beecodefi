@@ -57,10 +57,18 @@ export default function OverviewTab({
     }
 
     try {
+      console.log('[DASHBOARD] Fetching quiz count...');
       const { data } = await api.get('/quiz/history?page=1&pageSize=1');
+      console.log('[DASHBOARD] Quiz history response:', data);
       setQuizCount(data.totalCount || 0);
     } catch (error) {
-      console.error('Failed to fetch quiz count:', error);
+      console.error('[DASHBOARD] Failed to fetch quiz count:', error);
+      // Try to get more details
+      if (error && typeof error === 'object' && 'response' in error) {
+        const err = error as any;
+        console.error('[DASHBOARD] Error response:', err.response?.data);
+        console.error('[DASHBOARD] Error status:', err.response?.status);
+      }
       setQuizCount(0);
     } finally {
       setLoadingQuizCount(false);
