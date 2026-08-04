@@ -19,7 +19,7 @@ import BookmarksTab from "@/components/dashboard/BookmarksTab";
 import QuizHistoryTab from "@/components/dashboard/QuizHistoryTab";
 import SettingsTab from "@/components/dashboard/SettingsTab";
 import { useRouter } from "next/navigation";
-import { getUserStorageKey } from "@/lib/userStorage";
+import api from "@/lib/api";
 
 export default function UnifiedDashboardPage() {
   const { user, isLoading } = useAuth();
@@ -43,82 +43,74 @@ export default function UnifiedDashboardPage() {
       percent: number;
     }[]
   >([]);
-  const [recentLessons, setRecentLessons] = useState<
+  const [recentActivity, setRecentActivity] = useState<
     {
       tutorialSlug: string;
       lessonSlug: string;
       tutorialTitle: string;
       lessonTitle: string;
-      timestamp: number;
+      timestamp: string;
     }[]
   >([]);
+  const [loadingProgress, setLoadingProgress] = useState(true);
 
-  const loadProgress = () => {
-    const progress = tutorials.map((tutorial) => {
-      const progressRaw = localStorage.getItem(
-        getUserStorageKey(user?.id, `tutorial-progress-${tutorial.slug}`),
-      );
-      const completed: number[] = progressRaw ? JSON.parse(progressRaw) : [];
-      const total = tutorial.lessons.length;
-      const percent = Math.round((completed.length / total) * 100);
-      return {
-        slug: tutorial.slug,
-        title: tutorial.title,
-        completed: completed.length,
-        total,
-        percent,
-      };
-    });
-    setTutorialProgress(progress);
+  const loadProgress = async () => {
+    try {
+      setLoadingProgress(true);
+      
+      // Fetch progress from backend
+      const { data: progressData } = await api.get<Array<{
+        tutorialSlug: string;
+        lessonSlug: string;
+        completedAt: string;
+      }>>("/progress");
 
-    // Get recent lessons from localStorage progress data
-    const recentLessonsList: {
-      tutorialSlug: string;
-      lessonSlug: string;
-      tutorialTitle: string;
-      lessonTitle: string;
-      timestamp: number;
-    }[] = [];
+      // Calculate progress for each tutorial
+      const progress = tutorials.map((tutorial) => {
+        const completed = progressData.filter(
+          (p) => p.tutorialSlug === tutorial.slug
+        ).length;
+        const total = tutorial.lessons.length;
+        const percent = Math.round((completed / total) * 100);
+        return {
+          slug: tutorial.slug,
+          title: tutorial.title,
+          completed,
+          total,
+          percent,
+        };
+      });
+      setTutorialProgress(progress);
 
-    tutorials.forEach((tutorial) => {
-      const progressRaw = localStorage.getItem(
-        getUserStorageKey(user?.id, `tutorial-progress-${tutorial.slug}`),
-      );
-      if (progressRaw) {
-        try {
-          const completed: number[] = JSON.parse(progressRaw);
-          completed.forEach((lessonIndex) => {
-            const lesson = tutorial.lessons[lessonIndex];
-            if (lesson) {
-              recentLessonsList.push({
-                tutorialSlug: tutorial.slug,
-                lessonSlug: lesson.slug,
-                tutorialTitle: tutorial.title,
-                lessonTitle: lesson.title,
-                timestamp: Date.now(), // We don't have real timestamps, so use current time
-              });
-            }
-          });
-        } catch {
-          // Invalid data
-        }
-      }
-    });
-
-    // Sort by most recent (in this case, just reverse order since we don't have timestamps)
-    // and take the last 5
-    setRecentLessons(recentLessonsList.slice(-5).reverse());
+      // Fetch recent activity from backend
+      const { data: activityData } = await api.get<Array<{
+        tutorialSlug: string;
+        lessonSlug: string;
+        tutorialTitle: string;
+        lessonTitle: string;
+        timestamp: string;
+      }>>("/recentactivity?limit=5");
+      
+      setRecentActivity(activityData);
+    } catch (error) {
+      console.error("Failed to load progress:", error);
+      // Fallback to empty state
+      setTutorialProgress([]);
+      setRecentActivity([]);
+    } finally {
+      setLoadingProgress(false);
+    }
   };
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login");
     } else if (user) {
-      queueMicrotask(() => loadProgress());
+      loadProgress();
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || !user) {
+  if (isLoading || !user || loadingProgress) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
@@ -207,7 +199,8 @@ export default function UnifiedDashboardPage() {
                 streak={streak}
                 bookmarksCount={bookmarks.length}
                 tutorialProgress={tutorialProgress}
-                recentLessons={recentLessons}
+                recentActivity={recentActivity}
+                onRefresh={loadProgress}
               />
             )}
             {activeTab === "bookmarks" && <BookmarksTab />}

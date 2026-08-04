@@ -102,6 +102,11 @@ export default function QuizSessionPage({
       }
       setResult(data);
       setState("results");
+      
+      // Refresh dashboard data
+      if (typeof window !== 'undefined' && (window as any).__refetchDashboard) {
+        (window as any).__refetchDashboard();
+      }
     } catch {
       // Fallback: calculate locally
       setState("results");

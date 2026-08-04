@@ -25,48 +25,66 @@ interface TutorialProgressItem {
   percent: number;
 }
 
-interface RecentLessonItem {
+interface RecentActivityItem {
   tutorialSlug: string;
   lessonSlug: string;
   lessonTitle: string;
   tutorialTitle: string;
+  timestamp: string;
 }
 
 export default function OverviewTab({
   streak,
   bookmarksCount,
   tutorialProgress,
-  recentLessons,
+  recentActivity,
+  onRefresh,
 }: {
   streak: { current: number; longest: number };
   bookmarksCount: number;
   tutorialProgress: TutorialProgressItem[];
-  recentLessons: RecentLessonItem[];
+  recentActivity: RecentActivityItem[];
+  onRefresh?: () => void;
 }) {
   const { user } = useAuth();
   const [quizCount, setQuizCount] = useState(0);
   const [loadingQuizCount, setLoadingQuizCount] = useState(true);
 
+  const fetchQuizCount = async () => {
+    if (!user) {
+      setLoadingQuizCount(false);
+      return;
+    }
+
+    try {
+      const { data } = await api.get('/quiz/history?page=1&pageSize=1');
+      setQuizCount(data.totalCount || 0);
+    } catch (error) {
+      console.error('Failed to fetch quiz count:', error);
+      setQuizCount(0);
+    } finally {
+      setLoadingQuizCount(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchQuizCount = async () => {
-      if (!user) {
-        setLoadingQuizCount(false);
-        return;
-      }
-
-      try {
-        const { data } = await api.get('/quiz/history?page=1&pageSize=1');
-        setQuizCount(data.totalCount || 0);
-      } catch (error) {
-        console.error('Failed to fetch quiz count:', error);
-        setQuizCount(0);
-      } finally {
-        setLoadingQuizCount(false);
-      }
-    };
-
     fetchQuizCount();
   }, [user]);
+
+  // Expose refetch function globally for when quizzes are completed
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__refetchDashboard = () => {
+        fetchQuizCount();
+        onRefresh?.();
+      };
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).__refetchDashboard;
+      }
+    };
+  }, [onRefresh]);
 
   const totalLessonsCompleted = tutorialProgress.reduce(
     (sum, t) => sum + t.completed,
@@ -254,27 +272,43 @@ export default function OverviewTab({
             Recent Activity
           </h2>
           <div className="space-y-3">
-            {recentLessons.length > 0 ? (
-              recentLessons.map((lesson, i) => (
-                <Link
-                  key={i}
-                  href={`/tutorials/${lesson.tutorialSlug}?lesson=${lesson.lessonSlug}`}
-                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
-                    <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
-                      {lesson.lessonTitle}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {lesson.tutorialTitle}
-                    </p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-1 transition-all shrink-0" />
-                </Link>
-              ))
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity, i) => {
+                // Check if it's a quiz activity
+                const isQuiz = activity.tutorialSlug === 'quiz' || activity.tutorialSlug === 'lesson-quiz';
+                const icon = isQuiz ? Trophy : BookOpen;
+                const iconColor = isQuiz ? 'text-yellow-600 dark:text-yellow-400' : 'text-purple-600 dark:text-purple-400';
+                const bgColor = isQuiz ? 'bg-yellow-100 dark:bg-yellow-900/40' : 'bg-purple-100 dark:bg-purple-900/40';
+                const hoverColor = isQuiz ? 'group-hover:text-yellow-600 dark:group-hover:text-yellow-400' : 'group-hover:text-purple-600 dark:group-hover:text-purple-400';
+                
+                const Icon = icon;
+                
+                // For quizzes, link to quiz page; for lessons, link to lesson
+                const href = isQuiz 
+                  ? `/quiz/${activity.lessonSlug}`
+                  : `/tutorials/${activity.tutorialSlug}?lesson=${activity.lessonSlug}`;
+                
+                return (
+                  <Link
+                    key={i}
+                    href={href}
+                    className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
+                  >
+                    <div className={`w-10 h-10 rounded-lg ${bgColor} flex items-center justify-center shrink-0`}>
+                      <Icon className={`w-5 h-5 ${iconColor}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold text-gray-900 dark:text-white ${hoverColor} transition-colors truncate`}>
+                        {activity.lessonTitle}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {activity.tutorialTitle}
+                      </p>
+                    </div>
+                    <ArrowRight className={`w-4 h-4 text-gray-400 ${hoverColor} group-hover:translate-x-1 transition-all shrink-0`} />
+                  </Link>
+                );
+              })
             ) : (
               <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-20" />
