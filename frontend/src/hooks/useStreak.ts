@@ -15,13 +15,19 @@ interface StreakData {
 
 const EMPTY: StreakData = { current: 0, longest: 0, lastActiveDate: "" };
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  // Use local date to avoid timezone issues
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function daysBetween(a: string, b: string) {
-  return Math.round(
-    (new Date(b).getTime() - new Date(a).getTime()) / 86_400_000,
-  );
+  // Parse dates in local timezone to avoid UTC midnight issues
+  const dateA = new Date(a + 'T00:00:00');
+  const dateB = new Date(b + 'T00:00:00');
+  return Math.round((dateB.getTime() - dateA.getTime()) / 86_400_000);
 }
 
 function load(userId: number | null | undefined): StreakData {
@@ -67,9 +73,18 @@ export function useStreak() {
 
       const data = load(userId);
       const t = today();
+      
+      console.log('[STREAK] Syncing streak:', {
+        userId,
+        today: t,
+        lastActiveDate: data.lastActiveDate,
+        currentStreak: data.current,
+        longestStreak: data.longest
+      });
 
       if (!data.lastActiveDate) {
         const next = { current: 1, longest: 1, lastActiveDate: t };
+        console.log('[STREAK] First time user, initializing:', next);
         save(userId, next);
         setStreak(next);
         setLoading(false);
@@ -77,8 +92,10 @@ export function useStreak() {
       }
 
       const diff = daysBetween(data.lastActiveDate, t);
+      console.log('[STREAK] Days between last active and today:', diff);
 
       if (diff === 0) {
+        console.log('[STREAK] Already logged in today, keeping current streak');
         setStreak(data);
         setLoading(false);
         return;
@@ -90,6 +107,7 @@ export function useStreak() {
           longest: Math.max(data.longest, data.current + 1),
           lastActiveDate: t,
         };
+        console.log('[STREAK] Consecutive day! Incrementing streak:', next);
         save(userId, next);
         setStreak(next);
         setLoading(false);
@@ -98,11 +116,13 @@ export function useStreak() {
 
       // Streak broken
       const next = { current: 1, longest: data.longest, lastActiveDate: t };
+      console.log('[STREAK] Streak broken (missed days). Resetting to 1:', next);
       save(userId, next);
       setStreak(next);
       setLoading(false);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to sync streak";
+      console.error('[STREAK ERROR]', err);
       setError(errorMessage);
       setStreak(EMPTY);
       setLoading(false);
