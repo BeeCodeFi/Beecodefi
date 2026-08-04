@@ -345,12 +345,11 @@ public class QuizService : IQuizService
 
         try
         {
-            // Get regular quiz attempts - one per quiz per day (latest attempt)
-            var quizAttempts = await _db.QuizAttempts
+            // Get all regular quiz attempts for the user
+            var allQuizAttempts = await _db.QuizAttempts
                 .Where(a => a.UserId == userId)
                 .Include(a => a.Quiz)
-                .GroupBy(a => new { a.QuizId, Date = a.CompletedAt.Date })
-                .Select(g => g.OrderByDescending(a => a.CompletedAt).First())
+                .OrderByDescending(a => a.CompletedAt)
                 .Select(a => new QuizAttemptDto
                 {
                     Id = a.Id,
@@ -364,13 +363,12 @@ public class QuizService : IQuizService
                 })
                 .ToListAsync();
 
-            Console.WriteLine($"[QuizService] Found {quizAttempts.Count} unique regular quiz attempts (one per day)");
+            Console.WriteLine($"[QuizService] Found {allQuizAttempts.Count} regular quiz attempts");
 
-            // Get lesson quiz attempts - one per quiz per day (latest attempt)
-            var lessonQuizAttempts = await _db.LessonQuizAttempts
+            // Get all lesson quiz attempts for the user
+            var allLessonQuizAttempts = await _db.LessonQuizAttempts
                 .Where(a => a.UserId == userId)
-                .GroupBy(a => new { a.QuizTopic, Date = a.CompletedAt.Date })
-                .Select(g => g.OrderByDescending(a => a.CompletedAt).First())
+                .OrderByDescending(a => a.CompletedAt)
                 .Select(a => new QuizAttemptDto
                 {
                     Id = -a.Id, // Negative ID to distinguish from regular quizzes
@@ -384,11 +382,22 @@ public class QuizService : IQuizService
                 })
                 .ToListAsync();
 
-            Console.WriteLine($"[QuizService] Found {lessonQuizAttempts.Count} unique lesson quiz attempts (one per day)");
+            Console.WriteLine($"[QuizService] Found {allLessonQuizAttempts.Count} lesson quiz attempts");
+
+            // Group by quiz+date in memory (one per quiz per day)
+            var groupedQuizAttempts = allQuizAttempts
+                .GroupBy(a => new { a.Topic, Date = a.CompletedAt.Date })
+                .Select(g => g.OrderByDescending(a => a.CompletedAt).First())
+                .ToList();
+
+            var groupedLessonQuizAttempts = allLessonQuizAttempts
+                .GroupBy(a => new { a.Topic, Date = a.CompletedAt.Date })
+                .Select(g => g.OrderByDescending(a => a.CompletedAt).First())
+                .ToList();
 
             // Combine both lists and sort by completion date
-            var combinedList = quizAttempts
-                .Concat(lessonQuizAttempts)
+            var combinedList = groupedQuizAttempts
+                .Concat(groupedLessonQuizAttempts)
                 .OrderByDescending(a => a.CompletedAt)
                 .ToList();
 
@@ -400,7 +409,7 @@ public class QuizService : IQuizService
                 .Take(pageSize)
                 .ToList();
 
-            Console.WriteLine($"[QuizService] Returning {items.Count} items out of {totalCount} total");
+            Console.WriteLine($"[QuizService] Returning {items.Count} items out of {totalCount} total (after grouping)");
 
             return new PaginatedQuizHistoryDto
             {
