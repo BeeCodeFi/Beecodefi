@@ -9,4 +9,6 @@ public interface IQuizService
     Task<QuizResultDto> SubmitQuizAsync(SubmitQuizDto dto, int? userId = null);
     Task<QuizResultDto> SubmitLessonQuizAsync(SubmitLessonQuizDto dto, int? userId = null);
     Task<PaginatedQuizHistoryDto> GetHistoryAsync(int userId, int page = 1, int pageSize = 10);
+    Task<bool> CheckLessonQuizTableExistsAsync();
+    Task<int> GetLessonQuizCountAsync(int? userId);
 }

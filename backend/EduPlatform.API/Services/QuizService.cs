@@ -174,65 +174,114 @@ public class QuizService : IQuizService
         };
     }
 
+    public async Task<bool> CheckLessonQuizTableExistsAsync()
+    {
+        try
+        {
+            await _db.LessonQuizAttempts.AnyAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<int> GetLessonQuizCountAsync(int? userId)
+    {
+        try
+        {
+            if (userId.HasValue)
+            {
+                return await _db.LessonQuizAttempts.CountAsync(q => q.UserId == userId.Value);
+            }
+            return await _db.LessonQuizAttempts.CountAsync();
+        }
+        catch
+        {
+            return -1;
+        }
+    }
+
     public async Task<PaginatedQuizHistoryDto> GetHistoryAsync(int userId, int page = 1, int pageSize = 10)
     {
+        Console.WriteLine($"[QuizService] GetHistoryAsync called for user {userId}");
+        
         // Ensure valid page and pageSize values
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 100);
 
-        // Get regular quiz attempts
-        var quizAttempts = _db.QuizAttempts
-            .Where(a => a.UserId == userId)
-            .Include(a => a.Quiz)
-            .Select(a => new QuizAttemptDto
-            {
-                Id = a.Id,
-                QuizTitle = a.Quiz.Title,
-                Topic = a.Quiz.Topic,
-                Category = a.Quiz.Category,
-                Score = a.Score,
-                TotalQuestions = a.TotalQuestions,
-                Percentage = Math.Round((double)a.Score / a.TotalQuestions * 100, 1),
-                CompletedAt = a.CompletedAt
-            });
-
-        // Get lesson quiz attempts
-        var lessonQuizAttempts = _db.LessonQuizAttempts
-            .Where(a => a.UserId == userId)
-            .Select(a => new QuizAttemptDto
-            {
-                Id = -a.Id, // Negative ID to distinguish from regular quizzes
-                QuizTitle = a.QuizTitle,
-                Topic = a.QuizTopic,
-                Category = a.Category,
-                Score = a.Score,
-                TotalQuestions = a.TotalQuestions,
-                Percentage = Math.Round((double)a.Score / a.TotalQuestions * 100, 1),
-                CompletedAt = a.CompletedAt
-            });
-
-        // Combine both and order by completion date
-        var combinedQuery = quizAttempts.Union(lessonQuizAttempts)
-            .OrderByDescending(a => a.CompletedAt);
-
-        var totalCount = await combinedQuery.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-        var items = await combinedQuery
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return new PaginatedQuizHistoryDto
+        try
         {
-            Items = items,
-            TotalCount = totalCount,
-            Page = page,
-            PageSize = pageSize,
-            TotalPages = totalPages,
-            HasNextPage = page < totalPages,
-            HasPreviousPage = page > 1
-        };
+            // Get regular quiz attempts
+            var quizAttempts = await _db.QuizAttempts
+                .Where(a => a.UserId == userId)
+                .Include(a => a.Quiz)
+                .Select(a => new QuizAttemptDto
+                {
+                    Id = a.Id,
+                    QuizTitle = a.Quiz.Title,
+                    Topic = a.Quiz.Topic,
+                    Category = a.Quiz.Category,
+                    Score = a.Score,
+                    TotalQuestions = a.TotalQuestions,
+                    Percentage = Math.Round((double)a.Score / a.TotalQuestions * 100, 1),
+                    CompletedAt = a.CompletedAt
+                })
+                .ToListAsync();
+
+            Console.WriteLine($"[QuizService] Found {quizAttempts.Count} regular quiz attempts");
+
+            // Get lesson quiz attempts
+            var lessonQuizAttempts = await _db.LessonQuizAttempts
+                .Where(a => a.UserId == userId)
+                .Select(a => new QuizAttemptDto
+                {
+                    Id = -a.Id, // Negative ID to distinguish from regular quizzes
+                    QuizTitle = a.QuizTitle,
+                    Topic = a.QuizTopic,
+                    Category = a.Category,
+                    Score = a.Score,
+                    TotalQuestions = a.TotalQuestions,
+                    Percentage = Math.Round((double)a.Score / a.TotalQuestions * 100, 1),
+                    CompletedAt = a.CompletedAt
+                })
+                .ToListAsync();
+
+            Console.WriteLine($"[QuizService] Found {lessonQuizAttempts.Count} lesson quiz attempts");
+
+            // Combine both lists and sort by completion date
+            var combinedList = quizAttempts
+                .Concat(lessonQuizAttempts)
+                .OrderByDescending(a => a.CompletedAt)
+                .ToList();
+
+            var totalCount = combinedList.Count;
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            var items = combinedList
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            Console.WriteLine($"[QuizService] Returning {items.Count} items out of {totalCount} total");
+
+            return new PaginatedQuizHistoryDto
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+                HasNextPage = page < totalPages,
+                HasPreviousPage = page > 1
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[QuizService ERROR] GetHistoryAsync failed: {ex.Message}");
+            Console.WriteLine($"[QuizService ERROR] Inner: {ex.InnerException?.Message}");
+            throw;
+        }
     }
 }

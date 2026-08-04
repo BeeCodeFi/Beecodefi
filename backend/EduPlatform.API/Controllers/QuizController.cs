@@ -65,12 +65,56 @@ public class QuizController : BaseController
         return Ok(result);
     }
 
-    [Authorize]
     [HttpGet("history")]
     public async Task<ActionResult<PaginatedQuizHistoryDto>> GetHistory([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        int userId = GetUserId();
-        var history = await _quizService.GetHistoryAsync(userId, page, pageSize);
-        return Ok(history);
+        try
+        {
+            int userId = GetUserId();
+            Console.WriteLine($"[QUIZ HISTORY] Fetching history for user {userId}, page {page}");
+            
+            var history = await _quizService.GetHistoryAsync(userId, page, pageSize);
+            
+            Console.WriteLine($"[QUIZ HISTORY] Found {history.TotalCount} total attempts for user {userId}");
+            return Ok(history);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[QUIZ HISTORY ERROR] {ex.Message}");
+            Console.WriteLine($"[QUIZ HISTORY ERROR] Stack: {ex.StackTrace}");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("debug-lesson-quizzes")]
+    public async Task<ActionResult> DebugLessonQuizzes()
+    {
+        try
+        {
+            int? userId = GetOptionalUserId();
+            
+            // Check if table exists
+            var tableExists = await _quizService.CheckLessonQuizTableExistsAsync();
+            
+            // Get count
+            var count = await _quizService.GetLessonQuizCountAsync(userId);
+            
+            return Ok(new { 
+                tableExists, 
+                userId,
+                lessonQuizCount = count,
+                message = tableExists 
+                    ? $"Table exists with {count} records" 
+                    : "LessonQuizAttempts table does NOT exist!"
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new { 
+                error = ex.Message,
+                innerError = ex.InnerException?.Message,
+                stackTrace = ex.StackTrace
+            });
+        }
     }
 }
