@@ -115,11 +115,22 @@ public class AccountService : IAccountService
                     await _db.QuizAttempts
                         .Where(qa => qa.UserId == userId && qa.QuizId == quiz.Id)
                         .ExecuteDeleteAsync();
+                    
+                    // Also delete lesson quiz attempts for this topic
+                    await _db.LessonQuizAttempts
+                        .Where(lqa => lqa.UserId == userId && lqa.QuizTopic == dto.QuizTopic)
+                        .ExecuteDeleteAsync();
                 }
                 else
                 {
+                    // Delete all quiz attempts
                     await _db.QuizAttempts
                         .Where(qa => qa.UserId == userId)
+                        .ExecuteDeleteAsync();
+                    
+                    // Delete all lesson quiz attempts
+                    await _db.LessonQuizAttempts
+                        .Where(lqa => lqa.UserId == userId)
                         .ExecuteDeleteAsync();
                 }
                 break;
@@ -140,7 +151,13 @@ public class AccountService : IAccountService
                 break;
 
             case "all":
+                // Delete all quiz attempts
                 await _db.QuizAttempts.Where(qa => qa.UserId == userId).ExecuteDeleteAsync();
+                
+                // Delete all lesson quiz attempts
+                await _db.LessonQuizAttempts.Where(lqa => lqa.UserId == userId).ExecuteDeleteAsync();
+                
+                // Delete all tutorial progress
                 await _db.TutorialProgress.Where(tp => tp.UserId == userId).ExecuteDeleteAsync();
                 break;
 
