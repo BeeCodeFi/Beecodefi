@@ -33,7 +33,6 @@ import StructuredData from "@/components/seo/StructuredData";
 import { generateLearningResourceSchema, generateBreadcrumbSchema } from "@/lib/schema";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { getUserStorageKey } from "@/lib/userStorage";
-import { useStreak } from "@/hooks/useStreak";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
@@ -349,15 +348,12 @@ function TutorialPageContent({
       return next;
     });
     
-    // Ping streak for completing a lesson
-    pingStreak();
-    
     if (tutorial) {
       const lessonSlug = tutorial.lessons[index]?.slug;
       const lessonTitle = tutorial.lessons[index]?.title;
       
       if (lessonSlug) {
-        // Save to backend
+        // Save to backend (which will automatically update streak)
         api
           .post("/progress/mark", { tutorialSlug: slug, lessonSlug })
           .catch(() => {});

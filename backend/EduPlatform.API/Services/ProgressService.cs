@@ -8,10 +8,12 @@ namespace EduPlatform.API.Services;
 public class ProgressService : IProgressService
 {
     private readonly AppDbContext _db;
+    private readonly IStreakService _streakService;
 
-    public ProgressService(AppDbContext db)
+    public ProgressService(AppDbContext db, IStreakService streakService)
     {
         _db = db;
+        _streakService = streakService;
     }
 
     public async Task MarkCompleteAsync(int userId, MarkProgressDto dto)
@@ -37,6 +39,9 @@ public class ProgressService : IProgressService
         });
 
         await _db.SaveChangesAsync();
+        
+        // Update streak when lesson is completed
+        await _streakService.UpdateStreakAsync(userId);
     }
 
     public async Task UnmarkCompleteAsync(int userId, string tutorialSlug, string lessonSlug)

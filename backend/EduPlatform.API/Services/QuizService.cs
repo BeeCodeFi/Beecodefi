@@ -8,10 +8,12 @@ namespace EduPlatform.API.Services;
 public class QuizService : IQuizService
 {
     private readonly AppDbContext _db;
+    private readonly IStreakService _streakService;
 
-    public QuizService(AppDbContext db)
+    public QuizService(AppDbContext db, IStreakService streakService)
     {
         _db = db;
+        _streakService = streakService;
     }
 
     public async Task<List<QuizTopicDto>> GetTopicsAsync(int? userId = null)
@@ -106,15 +108,50 @@ public class QuizService : IQuizService
 
         if (userId.HasValue)
         {
-            _db.QuizAttempts.Add(new QuizAttempt
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
+            
+            // Check if user already has an attempt for this quiz today
+            var existingAttemptToday = await _db.QuizAttempts
+                .Where(a => a.UserId == userId.Value 
+                    && a.QuizId == dto.QuizId 
+                    && a.CompletedAt >= today 
+                    && a.CompletedAt < tomorrow)
+                .FirstOrDefaultAsync();
+
+            if (existingAttemptToday != null)
             {
-                UserId = userId.Value,
-                QuizId = dto.QuizId,
-                Score = score,
-                TotalQuestions = quiz.Questions.Count,
-                CompletedAt = DateTime.UtcNow
-            });
+                // Update existing attempt if new score is better
+                if (score > existingAttemptToday.Score)
+                {
+                    existingAttemptToday.Score = score;
+                    existingAttemptToday.CompletedAt = DateTime.UtcNow;
+                    _db.QuizAttempts.Update(existingAttemptToday);
+                }
+                // If score is not better, just update the timestamp but keep the best score
+                else
+                {
+                    existingAttemptToday.CompletedAt = DateTime.UtcNow;
+                    _db.QuizAttempts.Update(existingAttemptToday);
+                }
+            }
+            else
+            {
+                // Create new attempt for a different day
+                _db.QuizAttempts.Add(new QuizAttempt
+                {
+                    UserId = userId.Value,
+                    QuizId = dto.QuizId,
+                    Score = score,
+                    TotalQuestions = quiz.Questions.Count,
+                    CompletedAt = DateTime.UtcNow
+                });
+            }
+            
             await _db.SaveChangesAsync();
+            
+            // Update streak when quiz is completed
+            await _streakService.UpdateStreakAsync(userId.Value);
         }
 
         return new QuizResultDto
@@ -134,24 +171,61 @@ public class QuizService : IQuizService
         {
             try
             {
-                var attempt = new LessonQuizAttempt
-                {
-                    UserId = userId.Value,
-                    QuizTopic = dto.QuizTopic,
-                    QuizTitle = dto.QuizTitle,
-                    Category = dto.Category,
-                    Score = dto.Score,
-                    TotalQuestions = dto.TotalQuestions,
-                    CompletedAt = DateTime.UtcNow
-                };
+                var today = DateTime.UtcNow.Date;
+                var tomorrow = today.AddDays(1);
                 
-                Console.WriteLine($"[QuizService] Adding LessonQuizAttempt to database...");
-                _db.LessonQuizAttempts.Add(attempt);
+                // Check if user already has an attempt for this lesson quiz today
+                var existingAttemptToday = await _db.LessonQuizAttempts
+                    .Where(a => a.UserId == userId.Value 
+                        && a.QuizTopic == dto.QuizTopic 
+                        && a.CompletedAt >= today 
+                        && a.CompletedAt < tomorrow)
+                    .FirstOrDefaultAsync();
+
+                if (existingAttemptToday != null)
+                {
+                    Console.WriteLine($"[QuizService] Found existing attempt today, updating...");
+                    
+                    // Update existing attempt if new score is better
+                    if (dto.Score > existingAttemptToday.Score)
+                    {
+                        existingAttemptToday.Score = dto.Score;
+                        existingAttemptToday.CompletedAt = DateTime.UtcNow;
+                        _db.LessonQuizAttempts.Update(existingAttemptToday);
+                        Console.WriteLine($"[QuizService] Updated with better score: {dto.Score}");
+                    }
+                    else
+                    {
+                        // Just update timestamp, keep the best score
+                        existingAttemptToday.CompletedAt = DateTime.UtcNow;
+                        _db.LessonQuizAttempts.Update(existingAttemptToday);
+                        Console.WriteLine($"[QuizService] Updated timestamp only, kept existing score: {existingAttemptToday.Score}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"[QuizService] No existing attempt today, creating new entry...");
+                    
+                    var attempt = new LessonQuizAttempt
+                    {
+                        UserId = userId.Value,
+                        QuizTopic = dto.QuizTopic,
+                        QuizTitle = dto.QuizTitle,
+                        Category = dto.Category,
+                        Score = dto.Score,
+                        TotalQuestions = dto.TotalQuestions,
+                        CompletedAt = DateTime.UtcNow
+                    };
+                    
+                    _db.LessonQuizAttempts.Add(attempt);
+                }
                 
                 Console.WriteLine($"[QuizService] Saving changes to database...");
                 await _db.SaveChangesAsync();
+                Console.WriteLine($"[QuizService] Successfully saved/updated lesson quiz attempt");
                 
-                Console.WriteLine($"[QuizService] Successfully saved lesson quiz attempt with ID: {attempt.Id}");
+                // Update streak when lesson quiz is completed
+                await _streakService.UpdateStreakAsync(userId.Value);
             }
             catch (Exception ex)
             {
@@ -193,9 +267,19 @@ public class QuizService : IQuizService
         {
             if (userId.HasValue)
             {
-                return await _db.LessonQuizAttempts.CountAsync(q => q.UserId == userId.Value);
+                // Count unique quizzes (distinct quiz topics) not total attempts
+                return await _db.LessonQuizAttempts
+                    .Where(q => q.UserId == userId.Value)
+                    .Select(q => q.QuizTopic)
+                    .Distinct()
+                    .CountAsync();
             }
-            return await _db.LessonQuizAttempts.CountAsync();
+            
+            // Count unique quizzes across all users
+            return await _db.LessonQuizAttempts
+                .Select(q => q.QuizTopic)
+                .Distinct()
+                .CountAsync();
         }
         catch
         {
@@ -213,10 +297,12 @@ public class QuizService : IQuizService
 
         try
         {
-            // Get regular quiz attempts
+            // Get regular quiz attempts - one per quiz per day (latest attempt)
             var quizAttempts = await _db.QuizAttempts
                 .Where(a => a.UserId == userId)
                 .Include(a => a.Quiz)
+                .GroupBy(a => new { a.QuizId, Date = a.CompletedAt.Date })
+                .Select(g => g.OrderByDescending(a => a.CompletedAt).First())
                 .Select(a => new QuizAttemptDto
                 {
                     Id = a.Id,
@@ -230,11 +316,13 @@ public class QuizService : IQuizService
                 })
                 .ToListAsync();
 
-            Console.WriteLine($"[QuizService] Found {quizAttempts.Count} regular quiz attempts");
+            Console.WriteLine($"[QuizService] Found {quizAttempts.Count} unique regular quiz attempts (one per day)");
 
-            // Get lesson quiz attempts
+            // Get lesson quiz attempts - one per quiz per day (latest attempt)
             var lessonQuizAttempts = await _db.LessonQuizAttempts
                 .Where(a => a.UserId == userId)
+                .GroupBy(a => new { a.QuizTopic, Date = a.CompletedAt.Date })
+                .Select(g => g.OrderByDescending(a => a.CompletedAt).First())
                 .Select(a => new QuizAttemptDto
                 {
                     Id = -a.Id, // Negative ID to distinguish from regular quizzes
@@ -248,7 +336,7 @@ public class QuizService : IQuizService
                 })
                 .ToListAsync();
 
-            Console.WriteLine($"[QuizService] Found {lessonQuizAttempts.Count} lesson quiz attempts");
+            Console.WriteLine($"[QuizService] Found {lessonQuizAttempts.Count} unique lesson quiz attempts (one per day)");
 
             // Combine both lists and sort by completion date
             var combinedList = quizAttempts

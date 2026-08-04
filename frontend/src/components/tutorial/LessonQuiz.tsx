@@ -74,7 +74,6 @@ export default function LessonQuiz({
   quizTopic,
 }: Props) {
   const { user, isLoading: authLoading } = useAuth();
-  const { pingStreak } = useStreak();
   const [shuffledQuestions, setShuffledQuestions] = useState<ShuffledQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -138,10 +137,7 @@ export default function LessonQuiz({
     if (isLast) {
       const nextResult = { score, total: questions.length };
       
-      // Ping streak for completing a quiz
-      pingStreak();
-      
-      // Submit to backend if user is authenticated
+      // Submit to backend if user is authenticated (backend will automatically update streak)
       if (user && quizTopic) {
         try {
           // Extract category and title from quizTopic

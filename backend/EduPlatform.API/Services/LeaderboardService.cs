@@ -25,7 +25,9 @@ public class LeaderboardService : ILeaderboardService
                 u.Id,
                 u.Name,
                 u.ProfileImageUrl,
-                QuizzesCompleted = _db.QuizAttempts.Count(a => a.UserId == u.Id) + _db.LessonQuizAttempts.Count(a => a.UserId == u.Id),
+                // Count unique quizzes, not total attempts
+                QuizzesCompleted = _db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() + 
+                                   _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count(),
                 LessonsCompleted = _db.TutorialProgress.Count(p => p.UserId == u.Id),
                 AverageScore = (_db.QuizAttempts.Where(a => a.UserId == u.Id).Any() || _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Any())
                     ? (_db.QuizAttempts.Where(a => a.UserId == u.Id).Sum(a => (double)a.Score / a.TotalQuestions * 100) +
@@ -33,9 +35,10 @@ public class LeaderboardService : ILeaderboardService
                       (_db.QuizAttempts.Count(a => a.UserId == u.Id) + _db.LessonQuizAttempts.Count(a => a.UserId == u.Id))
                     : 0,
                 CurrentStreak = u.CurrentStreak,
-                TotalPoints = _db.QuizAttempts.Where(a => a.UserId == u.Id).Sum(a => a.Score * 10) +
-                              _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Sum(a => a.Score * 10) +
-                              _db.TutorialProgress.Count(p => p.UserId == u.Id) * 5
+                // Points: 10 points per unique quiz completed + 5 points per lesson completed
+                TotalPoints = (_db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() * 10) +
+                              (_db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count() * 10) +
+                              (_db.TutorialProgress.Count(p => p.UserId == u.Id) * 5)
             })
             .OrderByDescending(u => u.TotalPoints)
             .ThenByDescending(u => u.CurrentStreak);
@@ -75,8 +78,9 @@ public class LeaderboardService : ILeaderboardService
 
     public async Task<UserStatsDto> GetMyStatsAsync(int userId)
     {
-        var quizzesCompleted = await _db.QuizAttempts.CountAsync(a => a.UserId == userId) +
-                               await _db.LessonQuizAttempts.CountAsync(a => a.UserId == userId);
+        // Count unique quizzes, not total attempts
+        var quizzesCompleted = await _db.QuizAttempts.Where(a => a.UserId == userId).Select(a => a.QuizId).Distinct().CountAsync() +
+                               await _db.LessonQuizAttempts.Where(a => a.UserId == userId).Select(a => a.QuizTopic).Distinct().CountAsync();
         var lessonsCompleted = await _db.TutorialProgress.CountAsync(p => p.UserId == userId);
         
         var hasQuizzes = await _db.QuizAttempts.Where(a => a.UserId == userId).AnyAsync() ||
@@ -92,15 +96,14 @@ public class LeaderboardService : ILeaderboardService
         var currentStreak = user?.CurrentStreak ?? 0;
         var longestStreak = user?.LongestStreak ?? 0;
 
-        var totalPoints = await _db.QuizAttempts.Where(a => a.UserId == userId).SumAsync(a => a.Score * 10) +
-                          await _db.LessonQuizAttempts.Where(a => a.UserId == userId).SumAsync(a => a.Score * 10) +
-                          lessonsCompleted * 5;
+        // Points: 10 points per unique quiz + 5 points per lesson
+        var totalPoints = (quizzesCompleted * 10) + (lessonsCompleted * 5);
 
-        // Calculate global rank
+        // Calculate global rank - must use same distinct counting logic
         var usersWithMorePoints = await _db.Users
-            .Where(u => _db.QuizAttempts.Where(a => a.UserId == u.Id).Sum(a => a.Score * 10) +
-                        _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Sum(a => a.Score * 10) +
-                        _db.TutorialProgress.Count(p => p.UserId == u.Id) * 5 > totalPoints)
+            .Where(u => (_db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() * 10) +
+                        (_db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count() * 10) +
+                        (_db.TutorialProgress.Count(p => p.UserId == u.Id) * 5) > totalPoints)
             .CountAsync();
 
         var globalRank = usersWithMorePoints + 1;

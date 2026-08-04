@@ -58,6 +58,7 @@ builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IStatsService, StatsService>();
+builder.Services.AddScoped<IStreakService, StreakService>();
 builder.Services.AddHostedService<RefreshTokenCleanupService>();
 
 // Rate Limiting

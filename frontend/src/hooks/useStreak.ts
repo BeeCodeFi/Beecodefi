@@ -1,58 +1,19 @@
 "use client";
 
-// React/Next
 import { useState, useEffect, useCallback } from "react";
-
-// Local imports
 import { useAuth } from "@/context/AuthContext";
-import { getUserStorageKey } from "@/lib/userStorage";
 
 interface StreakData {
   current: number;
   longest: number;
-  lastActiveDate: string; // ISO date string YYYY-MM-DD
+  lastActiveDate: string | null;
 }
 
-const EMPTY: StreakData = { current: 0, longest: 0, lastActiveDate: "" };
-function today() {
-  // Use local date to avoid timezone issues
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function daysBetween(a: string, b: string) {
-  // Parse dates in local timezone to avoid UTC midnight issues
-  const dateA = new Date(a + 'T00:00:00');
-  const dateB = new Date(b + 'T00:00:00');
-  return Math.round((dateB.getTime() - dateA.getTime()) / 86_400_000);
-}
-
-function load(userId: number | null | undefined): StreakData {
-  if (typeof window === "undefined") return EMPTY;
-  try {
-    return (
-      JSON.parse(
-        localStorage.getItem(getUserStorageKey(userId, "streak")) ?? "null",
-      ) ?? EMPTY
-    );
-  } catch {
-    return EMPTY;
-  }
-}
-
-function save(userId: number | null | undefined, data: StreakData) {
-  localStorage.setItem(
-    getUserStorageKey(userId, "streak"),
-    JSON.stringify(data),
-  );
-}
+const EMPTY: StreakData = { current: 0, longest: 0, lastActiveDate: null };
 
 /**
- * Tracks daily learning streak based on actual activity.
- * Call pingStreak() when the user completes a learning activity (lesson, quiz, etc.)
+ * Tracks daily learning streak from the database.
+ * All streak data is stored on the backend and synced across devices.
  */
 export function useStreak() {
   const [streak, setStreak] = useState<StreakData>(EMPTY);
@@ -61,117 +22,58 @@ export function useStreak() {
   const { user } = useAuth();
   const userId = user?.id;
 
-  const syncStreak = useCallback(() => {
+  const fetchStreak = useCallback(async () => {
+    if (!userId) {
+      setStreak(EMPTY);
+      setLoading(false);
+      return;
+    }
+
     try {
       setError(null);
-      
-      // Do nothing if the user is not logged in
-      if (userId == null) {
-        setStreak(EMPTY);
-        setLoading(false);
-        return;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/streak`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch streak");
       }
 
-      const data = load(userId);
-      const t = today();
-      
-      console.log('[STREAK] Loading streak data:', {
-        userId,
-        today: t,
+      const data = await response.json();
+      setStreak({
+        current: data.currentStreak ?? 0,
+        longest: data.longestStreak ?? 0,
         lastActiveDate: data.lastActiveDate,
-        currentStreak: data.current,
-        longestStreak: data.longest
       });
-
-      // If never synced, just load existing data without updating
-      if (!data.lastActiveDate) {
-        console.log('[STREAK] No previous streak data');
-        setStreak(EMPTY);
-        setLoading(false);
-        return;
-      }
-
-      const diff = daysBetween(data.lastActiveDate, t);
-      console.log('[STREAK] Days between last active and today:', diff);
-
-      // Check if streak is still valid
-      if (diff === 0 || diff === 1) {
-        console.log('[STREAK] Streak is current');
-        setStreak(data);
-      } else {
-        // Streak broken - show 0 until next activity
-        console.log('[STREAK] Streak broken (missed days)');
-        setStreak({ current: 0, longest: data.longest, lastActiveDate: data.lastActiveDate });
-      }
-      
       setLoading(false);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to sync streak";
-      console.error('[STREAK ERROR]', err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch streak";
+      console.error("[STREAK ERROR]", err);
       setError(errorMessage);
       setStreak(EMPTY);
       setLoading(false);
     }
   }, [userId]);
 
-  // Function to call when user completes an activity (lesson, quiz, etc.)
-  const pingStreak = useCallback(() => {
-    if (userId == null) return;
-    
-    const data = load(userId);
-    const t = today();
-    
-    console.log('[STREAK] Pinging streak from activity:', {
-      userId,
-      today: t,
-      lastActiveDate: data.lastActiveDate
-    });
-
-    if (!data.lastActiveDate) {
-      const next = { current: 1, longest: 1, lastActiveDate: t };
-      console.log('[STREAK] First activity, initializing:', next);
-      save(userId, next);
-      setStreak(next);
-      return;
-    }
-
-    const diff = daysBetween(data.lastActiveDate, t);
-    console.log('[STREAK] Days since last activity:', diff);
-
-    if (diff === 0) {
-      console.log('[STREAK] Already active today, keeping current streak');
-      // Already active today, no need to update
-      return;
-    }
-
-    if (diff === 1) {
-      const next = {
-        current: data.current + 1,
-        longest: Math.max(data.longest, data.current + 1),
-        lastActiveDate: t,
-      };
-      console.log('[STREAK] Consecutive day! Incrementing streak:', next);
-      save(userId, next);
-      setStreak(next);
-      return;
-    }
-
-    // Streak broken, reset to 1
-    const next = { current: 1, longest: data.longest, lastActiveDate: t };
-    console.log('[STREAK] Streak broken, resetting to 1:', next);
-    save(userId, next);
-    setStreak(next);
-  }, [userId]);
+  // No need for manual pingStreak - backend updates automatically when activities happen
+  // (lessons completed, quizzes submitted)
 
   useEffect(() => {
-    queueMicrotask(syncStreak);
-  }, [syncStreak]);
+    fetchStreak();
+  }, [fetchStreak]);
 
   return {
     data: streak,
     loading,
     error,
-    refetch: syncStreak,
-    pingStreak, // Call this when user completes an activity
+    refetch: fetchStreak,
   };
 }
