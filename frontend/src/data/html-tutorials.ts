@@ -193,7 +193,7 @@ Some elements are **void elements** and do not need a closing tag, such as \`<im
 
 Elements can be placed inside other elements. This is called **nesting**. For example:
 
-\`\`\`html
+\`\`\`
 <p>My favorite language is <strong>HTML</strong>.</p>
 \`\`\`
 
@@ -213,7 +213,7 @@ Examples:
 
 Comments are notes for developers and are not shown in the browser:
 
-\`\`\`html
+\`\`\`
 <!-- This is a hidden comment -->
 \`\`\`
 
@@ -1762,4 +1762,3 @@ Special characters in HTML:
 
 // Merge with advanced lessons
 export const allHtmlLessons = [...htmlLessons, ...htmlAdvancedLessons];
-

@@ -37,6 +37,15 @@ public class SubmitQuizDto
     public Dictionary<int, int> Answers { get; set; } = new();
 }
 
+public class SubmitLessonQuizDto
+{
+    public string QuizTopic { get; set; } = string.Empty;  // e.g., "html/canvas-api"
+    public string QuizTitle { get; set; } = string.Empty;  // e.g., "HTML • Canvas API"
+    public string Category { get; set; } = string.Empty;   // e.g., "HTML"
+    public int Score { get; set; }
+    public int TotalQuestions { get; set; }
+}
+
 public class QuizResultDto
 {
     public int Score { get; set; }

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { getUserStorageKey } from "@/lib/userStorage";
 import { useAuth } from "@/context/AuthContext";
 import { readQuizProgress, saveQuizProgress } from "@/lib/quizProgress";
+import api from "@/lib/api";
 
 export interface LessonQuizQuestion {
   id: string;
@@ -96,9 +97,31 @@ export default function LessonQuiz({
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (isLast) {
       const nextResult = { score, total: questions.length };
+      
+      // Submit to backend if user is authenticated
+      if (user && quizTopic) {
+        try {
+          // Extract category and title from quizTopic
+          const parts = quizTopic.split('/');
+          const category = parts[0].toUpperCase(); // e.g., "html" -> "HTML"
+          const quizTitle = `${category} • ${lessonTitle}`;
+          
+          await api.post('/quiz/submit-lesson', {
+            quizTopic: quizTopic,
+            quizTitle: quizTitle,
+            category: category,
+            score: nextResult.score,
+            totalQuestions: nextResult.total
+          });
+        } catch (error) {
+          console.error("Failed to submit lesson quiz:", error);
+          // Continue even if submission fails - quiz is still saved locally
+        }
+      }
+      
       setBestResult((previous) => {
         const best =
           !previous || nextResult.score > previous.score
@@ -288,7 +311,9 @@ export default function LessonQuiz({
                   <span className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold shrink-0">
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  <span className="flex-1">{option}</span>
+                  <span className="flex-1" style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' }}>
+                    {option}
+                  </span>
                   {revealed && isCorrect && (
                     <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                   )}

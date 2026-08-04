@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Question> Questions => Set<Question>();
     public DbSet<Answer> Answers => Set<Answer>();
     public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();
+    public DbSet<LessonQuizAttempt> LessonQuizAttempts => Set<LessonQuizAttempt>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     public DbSet<TutorialProgress> TutorialProgress => Set<TutorialProgress>();
     public DbSet<Badge> Badges => Set<Badge>();
@@ -62,6 +63,19 @@ public class AppDbContext : DbContext
                 .WithMany(q => q.Attempts)
                 .HasForeignKey(qa => qa.QuizId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LessonQuizAttempt>(entity =>
+        {
+            entity.HasOne(lqa => lqa.User)
+                .WithMany()
+                .HasForeignKey(lqa => lqa.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(lqa => lqa.QuizTopic);
+            entity.Property(lqa => lqa.QuizTopic).HasMaxLength(100);
+            entity.Property(lqa => lqa.QuizTitle).HasMaxLength(200);
+            entity.Property(lqa => lqa.Category).HasMaxLength(50);
         });
 
         modelBuilder.Entity<TutorialProgress>(entity =>

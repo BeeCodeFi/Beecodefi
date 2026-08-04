@@ -36,6 +36,14 @@ public class QuizController : BaseController
         }
     }
 
+    [HttpPost("submit-lesson")]
+    public async Task<ActionResult<QuizResultDto>> SubmitLessonQuiz([FromBody] SubmitLessonQuizDto dto)
+    {
+        int? userId = GetOptionalUserId();
+        var result = await _quizService.SubmitLessonQuizAsync(dto, userId);
+        return Ok(result);
+    }
+
     [HttpPost("submit")]
     public async Task<ActionResult<QuizResultDto>> Submit([FromBody] SubmitQuizDto dto)
     {

@@ -126,23 +126,42 @@ public class QuizService : IQuizService
         };
     }
 
+    public async Task<QuizResultDto> SubmitLessonQuizAsync(SubmitLessonQuizDto dto, int? userId = null)
+    {
+        if (userId.HasValue)
+        {
+            _db.LessonQuizAttempts.Add(new LessonQuizAttempt
+            {
+                UserId = userId.Value,
+                QuizTopic = dto.QuizTopic,
+                QuizTitle = dto.QuizTitle,
+                Category = dto.Category,
+                Score = dto.Score,
+                TotalQuestions = dto.TotalQuestions,
+                CompletedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync();
+        }
+
+        return new QuizResultDto
+        {
+            Score = dto.Score,
+            TotalQuestions = dto.TotalQuestions,
+            Percentage = Math.Round((double)dto.Score / dto.TotalQuestions * 100, 1),
+            Results = new List<QuestionResultDto>()
+        };
+    }
+
     public async Task<PaginatedQuizHistoryDto> GetHistoryAsync(int userId, int page = 1, int pageSize = 10)
     {
         // Ensure valid page and pageSize values
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 100);
 
-        var query = _db.QuizAttempts
+        // Get regular quiz attempts
+        var quizAttempts = _db.QuizAttempts
             .Where(a => a.UserId == userId)
             .Include(a => a.Quiz)
-            .OrderByDescending(a => a.CompletedAt);
-
-        var totalCount = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-        var items = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
             .Select(a => new QuizAttemptDto
             {
                 Id = a.Id,
@@ -153,7 +172,33 @@ public class QuizService : IQuizService
                 TotalQuestions = a.TotalQuestions,
                 Percentage = Math.Round((double)a.Score / a.TotalQuestions * 100, 1),
                 CompletedAt = a.CompletedAt
-            })
+            });
+
+        // Get lesson quiz attempts
+        var lessonQuizAttempts = _db.LessonQuizAttempts
+            .Where(a => a.UserId == userId)
+            .Select(a => new QuizAttemptDto
+            {
+                Id = -a.Id, // Negative ID to distinguish from regular quizzes
+                QuizTitle = a.QuizTitle,
+                Topic = a.QuizTopic,
+                Category = a.Category,
+                Score = a.Score,
+                TotalQuestions = a.TotalQuestions,
+                Percentage = Math.Round((double)a.Score / a.TotalQuestions * 100, 1),
+                CompletedAt = a.CompletedAt
+            });
+
+        // Combine both and order by completion date
+        var combinedQuery = quizAttempts.Union(lessonQuizAttempts)
+            .OrderByDescending(a => a.CompletedAt);
+
+        var totalCount = await combinedQuery.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var items = await combinedQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
 
