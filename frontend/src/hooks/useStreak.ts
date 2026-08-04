@@ -51,7 +51,8 @@ function save(userId: number | null | undefined, data: StreakData) {
 }
 
 /**
- * Tracks daily learning streak. Only activates when the user is logged in.
+ * Tracks daily learning streak based on actual activity.
+ * Call pingStreak() when the user completes a learning activity (lesson, quiz, etc.)
  */
 export function useStreak() {
   const [streak, setStreak] = useState<StreakData>(EMPTY);
@@ -74,7 +75,7 @@ export function useStreak() {
       const data = load(userId);
       const t = today();
       
-      console.log('[STREAK] Syncing streak:', {
+      console.log('[STREAK] Loading streak data:', {
         userId,
         today: t,
         lastActiveDate: data.lastActiveDate,
@@ -82,11 +83,10 @@ export function useStreak() {
         longestStreak: data.longest
       });
 
+      // If never synced, just load existing data without updating
       if (!data.lastActiveDate) {
-        const next = { current: 1, longest: 1, lastActiveDate: t };
-        console.log('[STREAK] First time user, initializing:', next);
-        save(userId, next);
-        setStreak(next);
+        console.log('[STREAK] No previous streak data');
+        setStreak(EMPTY);
         setLoading(false);
         return;
       }
@@ -94,31 +94,16 @@ export function useStreak() {
       const diff = daysBetween(data.lastActiveDate, t);
       console.log('[STREAK] Days between last active and today:', diff);
 
-      if (diff === 0) {
-        console.log('[STREAK] Already logged in today, keeping current streak');
+      // Check if streak is still valid
+      if (diff === 0 || diff === 1) {
+        console.log('[STREAK] Streak is current');
         setStreak(data);
-        setLoading(false);
-        return;
+      } else {
+        // Streak broken - show 0 until next activity
+        console.log('[STREAK] Streak broken (missed days)');
+        setStreak({ current: 0, longest: data.longest, lastActiveDate: data.lastActiveDate });
       }
-
-      if (diff === 1) {
-        const next = {
-          current: data.current + 1,
-          longest: Math.max(data.longest, data.current + 1),
-          lastActiveDate: t,
-        };
-        console.log('[STREAK] Consecutive day! Incrementing streak:', next);
-        save(userId, next);
-        setStreak(next);
-        setLoading(false);
-        return;
-      }
-
-      // Streak broken
-      const next = { current: 1, longest: data.longest, lastActiveDate: t };
-      console.log('[STREAK] Streak broken (missed days). Resetting to 1:', next);
-      save(userId, next);
-      setStreak(next);
+      
       setLoading(false);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to sync streak";
@@ -127,6 +112,55 @@ export function useStreak() {
       setStreak(EMPTY);
       setLoading(false);
     }
+  }, [userId]);
+
+  // Function to call when user completes an activity (lesson, quiz, etc.)
+  const pingStreak = useCallback(() => {
+    if (userId == null) return;
+    
+    const data = load(userId);
+    const t = today();
+    
+    console.log('[STREAK] Pinging streak from activity:', {
+      userId,
+      today: t,
+      lastActiveDate: data.lastActiveDate
+    });
+
+    if (!data.lastActiveDate) {
+      const next = { current: 1, longest: 1, lastActiveDate: t };
+      console.log('[STREAK] First activity, initializing:', next);
+      save(userId, next);
+      setStreak(next);
+      return;
+    }
+
+    const diff = daysBetween(data.lastActiveDate, t);
+    console.log('[STREAK] Days since last activity:', diff);
+
+    if (diff === 0) {
+      console.log('[STREAK] Already active today, keeping current streak');
+      // Already active today, no need to update
+      return;
+    }
+
+    if (diff === 1) {
+      const next = {
+        current: data.current + 1,
+        longest: Math.max(data.longest, data.current + 1),
+        lastActiveDate: t,
+      };
+      console.log('[STREAK] Consecutive day! Incrementing streak:', next);
+      save(userId, next);
+      setStreak(next);
+      return;
+    }
+
+    // Streak broken, reset to 1
+    const next = { current: 1, longest: data.longest, lastActiveDate: t };
+    console.log('[STREAK] Streak broken, resetting to 1:', next);
+    save(userId, next);
+    setStreak(next);
   }, [userId]);
 
   useEffect(() => {
@@ -138,5 +172,6 @@ export function useStreak() {
     loading,
     error,
     refetch: syncStreak,
+    pingStreak, // Call this when user completes an activity
   };
 }

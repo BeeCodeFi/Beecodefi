@@ -205,7 +205,7 @@ function TutorialPageContent({
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const { user } = useAuth();
   const { success, info } = useToast();
-  useStreak(); // ping streak only for the current account
+  const { pingStreak } = useStreak(); // Track activity-based streak
 
   const tutorial = tutorials.find((t) => t.slug === slug);
 
@@ -348,6 +348,10 @@ function TutorialPageContent({
       );
       return next;
     });
+    
+    // Ping streak for completing a lesson
+    pingStreak();
+    
     if (tutorial) {
       const lessonSlug = tutorial.lessons[index]?.slug;
       const lessonTitle = tutorial.lessons[index]?.title;

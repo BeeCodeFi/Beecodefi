@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { getUserStorageKey } from "@/lib/userStorage";
 import { useAuth } from "@/context/AuthContext";
 import { readQuizProgress, saveQuizProgress } from "@/lib/quizProgress";
+import { useStreak } from "@/hooks/useStreak";
 import api from "@/lib/api";
 
 export interface LessonQuizQuestion {
@@ -44,6 +45,7 @@ export default function LessonQuiz({
   quizTopic,
 }: Props) {
   const { user, isLoading: authLoading } = useAuth();
+  const { pingStreak } = useStreak();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -100,6 +102,9 @@ export default function LessonQuiz({
   const handleNext = async () => {
     if (isLast) {
       const nextResult = { score, total: questions.length };
+      
+      // Ping streak for completing a quiz
+      pingStreak();
       
       // Submit to backend if user is authenticated
       if (user && quizTopic) {
