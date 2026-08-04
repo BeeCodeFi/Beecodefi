@@ -152,6 +152,30 @@ public class QuizService : IQuizService
             
             // Update streak when quiz is completed
             await _streakService.UpdateStreakAsync(userId.Value);
+            
+            // Track in Recent Activity
+            var existingActivity = await _db.RecentActivities
+                .Where(ra => ra.UserId == userId.Value 
+                    && ra.TutorialSlug == "quiz"
+                    && ra.LessonSlug == quiz.Topic)
+                .ToListAsync();
+            
+            if (existingActivity.Any())
+            {
+                _db.RecentActivities.RemoveRange(existingActivity);
+            }
+            
+            _db.RecentActivities.Add(new RecentActivity
+            {
+                UserId = userId.Value,
+                TutorialSlug = "quiz",
+                LessonSlug = quiz.Topic,
+                TutorialTitle = "Quiz",
+                LessonTitle = quiz.Title,
+                Timestamp = DateTime.UtcNow
+            });
+            
+            await _db.SaveChangesAsync();
         }
 
         return new QuizResultDto
@@ -226,6 +250,30 @@ public class QuizService : IQuizService
                 
                 // Update streak when lesson quiz is completed
                 await _streakService.UpdateStreakAsync(userId.Value);
+                
+                // Track in Recent Activity
+                var existingActivity = await _db.RecentActivities
+                    .Where(ra => ra.UserId == userId.Value 
+                        && ra.TutorialSlug == "lesson-quiz"
+                        && ra.LessonSlug == dto.QuizTopic)
+                    .ToListAsync();
+                
+                if (existingActivity.Any())
+                {
+                    _db.RecentActivities.RemoveRange(existingActivity);
+                }
+                
+                _db.RecentActivities.Add(new RecentActivity
+                {
+                    UserId = userId.Value,
+                    TutorialSlug = "lesson-quiz",
+                    LessonSlug = dto.QuizTopic,
+                    TutorialTitle = dto.Category ?? "Lesson Quiz",
+                    LessonTitle = dto.QuizTitle,
+                    Timestamp = DateTime.UtcNow
+                });
+                
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {
