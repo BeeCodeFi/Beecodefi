@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -13,6 +14,8 @@ import {
   ArrowRight,
   Trophy,
 } from "lucide-react";
+import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface TutorialProgressItem {
   slug: string;
@@ -40,6 +43,31 @@ export default function OverviewTab({
   tutorialProgress: TutorialProgressItem[];
   recentLessons: RecentLessonItem[];
 }) {
+  const { user } = useAuth();
+  const [quizCount, setQuizCount] = useState(0);
+  const [loadingQuizCount, setLoadingQuizCount] = useState(true);
+
+  useEffect(() => {
+    const fetchQuizCount = async () => {
+      if (!user) {
+        setLoadingQuizCount(false);
+        return;
+      }
+
+      try {
+        const { data } = await api.get('/quiz/history?page=1&pageSize=1');
+        setQuizCount(data.totalCount || 0);
+      } catch (error) {
+        console.error('Failed to fetch quiz count:', error);
+        setQuizCount(0);
+      } finally {
+        setLoadingQuizCount(false);
+      }
+    };
+
+    fetchQuizCount();
+  }, [user]);
+
   const totalLessonsCompleted = tutorialProgress.reduce(
     (sum, t) => sum + t.completed,
     0,
@@ -132,7 +160,7 @@ export default function OverviewTab({
           </div>
         </motion.div>
 
-        {/* Quizzes Taken */}
+        {/* Quizzes Completed */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -145,13 +173,23 @@ export default function OverviewTab({
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                Ready for Quiz?
+                Quizzes Completed
               </p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
-                Test Skill
-              </p>
+              {loadingQuizCount ? (
+                <div className="h-8 w-16 bg-gray-200 dark:bg-gray-800 animate-pulse rounded"></div>
+              ) : (
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {quizCount}
+                </p>
+              )}
             </div>
           </div>
+          <Link
+            href="/quiz"
+            className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400 hover:underline"
+          >
+            Test your skills <ArrowRight className="w-3 h-3" />
+          </Link>
         </motion.div>
       </div>
 
