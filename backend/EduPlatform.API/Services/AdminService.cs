@@ -28,7 +28,9 @@ public class AdminService : IAdminService
                 CurrentStreak = user.CurrentStreak,
                 LongestStreak = user.LongestStreak,
                 LessonsCompleted = user.TutorialProgress.Count,
-                QuizAttempts = user.QuizAttempts.Count,
+                // Count unique quizzes, not total attempts
+                QuizAttempts = user.QuizAttempts.Select(a => a.QuizId).Distinct().Count() + 
+                               _db.LessonQuizAttempts.Where(a => a.UserId == user.Id).Select(a => a.QuizTopic).Distinct().Count(),
                 AverageQuizScore = user.QuizAttempts.Any()
                     ? Math.Round(user.QuizAttempts.Average(attempt =>
                         attempt.TotalQuestions == 0
