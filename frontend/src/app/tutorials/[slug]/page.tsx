@@ -802,46 +802,6 @@ function TutorialPageContent({
             {/* ── End-of-course quiz CTA ── */}
             {quizCategory && !hasNext && <QuizCTA category={quizCategory} />}
 
-            {/* ── Prerequisites (previous lesson) ── */}
-            {hasPrev && (
-              <div className="mt-10 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-                <div className="px-5 py-3 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
-                    Prerequisites
-                  </span>
-                </div>
-                <button
-                  onClick={() => goToLesson(currentLessonIndex - 1)}
-                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50/80 dark:hover:bg-gray-900/40 transition-colors text-left group"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-900/50 flex items-center justify-center shrink-0">
-                    <ChevronLeft className="w-5 h-5 text-gray-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold !text-gray-900 dark:!text-white group-hover:!text-gray-700 dark:group-hover:!text-gray-300 transition-colors truncate">
-                      {tutorial.lessons[currentLessonIndex - 1].title}
-                    </p>
-                    {tutorial.lessons[currentLessonIndex - 1]
-                      .estimatedMinutes && (
-                      <p className="text-xs !text-gray-400 mt-0.5">
-                        ⏱{" "}
-                        {
-                          tutorial.lessons[currentLessonIndex - 1]
-                            .estimatedMinutes
-                        }{" "}
-                        min ·{" "}
-                        {tutorial.lessons[currentLessonIndex - 1].difficulty ??
-                          "beginner"}
-                      </p>
-                    )}
-                  </div>
-                  <ChevronLeft className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors shrink-0" />
-                </button>
-              </div>
-            )}
-
-
-
             {/* ── Bottom prev/next navigation ── */}
             <div className="flex items-center justify-between mt-14 pt-8 border-t border-gray-100 dark:border-gray-800">
               <button
