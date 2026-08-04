@@ -71,31 +71,43 @@ export default function UnifiedDashboardPage() {
     });
     setTutorialProgress(progress);
 
-    const lastLesson = localStorage.getItem(
-      getUserStorageKey(user?.id, "lastVisitedLesson"),
-    );
-    if (lastLesson) {
-      try {
-        const data = JSON.parse(lastLesson);
-        const tutorial = tutorials.find((t) => t.slug === data.tutorialSlug);
-        const lesson = tutorial?.lessons.find(
-          (l) => l.slug === data.lessonSlug,
-        );
-        if (tutorial && lesson) {
-          setRecentLessons([
-            {
-              tutorialSlug: tutorial.slug,
-              lessonSlug: lesson.slug,
-              tutorialTitle: tutorial.title,
-              lessonTitle: lesson.title,
-              timestamp: Date.now(),
-            },
-          ]);
+    // Get recent lessons from localStorage progress data
+    const recentLessonsList: {
+      tutorialSlug: string;
+      lessonSlug: string;
+      tutorialTitle: string;
+      lessonTitle: string;
+      timestamp: number;
+    }[] = [];
+
+    tutorials.forEach((tutorial) => {
+      const progressRaw = localStorage.getItem(
+        getUserStorageKey(user?.id, `tutorial-progress-${tutorial.slug}`),
+      );
+      if (progressRaw) {
+        try {
+          const completed: number[] = JSON.parse(progressRaw);
+          completed.forEach((lessonIndex) => {
+            const lesson = tutorial.lessons[lessonIndex];
+            if (lesson) {
+              recentLessonsList.push({
+                tutorialSlug: tutorial.slug,
+                lessonSlug: lesson.slug,
+                tutorialTitle: tutorial.title,
+                lessonTitle: lesson.title,
+                timestamp: Date.now(), // We don't have real timestamps, so use current time
+              });
+            }
+          });
+        } catch {
+          // Invalid data
         }
-      } catch {
-        // Invalid data
       }
-    }
+    });
+
+    // Sort by most recent (in this case, just reverse order since we don't have timestamps)
+    // and take the last 5
+    setRecentLessons(recentLessonsList.slice(-5).reverse());
   };
 
   useEffect(() => {

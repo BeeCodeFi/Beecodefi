@@ -350,13 +350,28 @@ function TutorialPageContent({
     });
     if (tutorial) {
       const lessonSlug = tutorial.lessons[index]?.slug;
+      const lessonTitle = tutorial.lessons[index]?.title;
+      
       if (lessonSlug) {
+        // Save to backend
         api
           .post("/progress/mark", { tutorialSlug: slug, lessonSlug })
           .catch(() => {});
+        
+        // Save to Recent Activity
+        localStorage.setItem(
+          getUserStorageKey(user?.id, "lastVisitedLesson"),
+          JSON.stringify({
+            tutorialSlug: slug,
+            lessonSlug: lessonSlug,
+            tutorialTitle: tutorial.title,
+            lessonTitle: lessonTitle,
+            timestamp: Date.now(),
+          }),
+        );
       }
+      
       // Toast: lesson completed
-      const lessonTitle = tutorial.lessons[index]?.title;
       if (lessonTitle) success("Lesson completed! ✓", lessonTitle);
     }
   };
