@@ -109,15 +109,25 @@ export default function LessonQuiz({
           const category = parts[0].toUpperCase(); // e.g., "html" -> "HTML"
           const quizTitle = `${category} • ${lessonTitle}`;
           
-          await api.post('/quiz/submit-lesson', {
+          console.log('Submitting lesson quiz:', {
+            quizTopic,
+            quizTitle,
+            category,
+            score: nextResult.score,
+            totalQuestions: nextResult.total
+          });
+          
+          const response = await api.post('/quiz/submit-lesson', {
             quizTopic: quizTopic,
             quizTitle: quizTitle,
             category: category,
             score: nextResult.score,
             totalQuestions: nextResult.total
           });
+          
+          console.log('Lesson quiz submitted successfully:', response.data);
         } catch (error) {
-          console.error("Failed to submit lesson quiz:", error);
+          console.error("Failed to submit lesson quiz - backend may need migration:", error);
           // Continue even if submission fails - quiz is still saved locally
         }
       }
