@@ -39,9 +39,22 @@ public class QuizController : BaseController
     [HttpPost("submit-lesson")]
     public async Task<ActionResult<QuizResultDto>> SubmitLessonQuiz([FromBody] SubmitLessonQuizDto dto)
     {
-        int? userId = GetOptionalUserId();
-        var result = await _quizService.SubmitLessonQuizAsync(dto, userId);
-        return Ok(result);
+        try
+        {
+            int? userId = GetOptionalUserId();
+            Console.WriteLine($"[QUIZ] Submitting lesson quiz - User: {userId}, Topic: {dto.QuizTopic}, Score: {dto.Score}/{dto.TotalQuestions}");
+            
+            var result = await _quizService.SubmitLessonQuizAsync(dto, userId);
+            
+            Console.WriteLine($"[QUIZ] Lesson quiz submitted successfully for user {userId}");
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[QUIZ ERROR] Failed to submit lesson quiz: {ex.Message}");
+            Console.WriteLine($"[QUIZ ERROR] Stack trace: {ex.StackTrace}");
+            return StatusCode(500, new { error = ex.Message, details = ex.ToString() });
+        }
     }
 
     [HttpPost("submit")]

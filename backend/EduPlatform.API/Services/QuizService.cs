@@ -128,19 +128,41 @@ public class QuizService : IQuizService
 
     public async Task<QuizResultDto> SubmitLessonQuizAsync(SubmitLessonQuizDto dto, int? userId = null)
     {
+        Console.WriteLine($"[QuizService] SubmitLessonQuizAsync called - UserId: {userId}, Topic: {dto.QuizTopic}");
+        
         if (userId.HasValue)
         {
-            _db.LessonQuizAttempts.Add(new LessonQuizAttempt
+            try
             {
-                UserId = userId.Value,
-                QuizTopic = dto.QuizTopic,
-                QuizTitle = dto.QuizTitle,
-                Category = dto.Category,
-                Score = dto.Score,
-                TotalQuestions = dto.TotalQuestions,
-                CompletedAt = DateTime.UtcNow
-            });
-            await _db.SaveChangesAsync();
+                var attempt = new LessonQuizAttempt
+                {
+                    UserId = userId.Value,
+                    QuizTopic = dto.QuizTopic,
+                    QuizTitle = dto.QuizTitle,
+                    Category = dto.Category,
+                    Score = dto.Score,
+                    TotalQuestions = dto.TotalQuestions,
+                    CompletedAt = DateTime.UtcNow
+                };
+                
+                Console.WriteLine($"[QuizService] Adding LessonQuizAttempt to database...");
+                _db.LessonQuizAttempts.Add(attempt);
+                
+                Console.WriteLine($"[QuizService] Saving changes to database...");
+                await _db.SaveChangesAsync();
+                
+                Console.WriteLine($"[QuizService] Successfully saved lesson quiz attempt with ID: {attempt.Id}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[QuizService ERROR] Failed to save lesson quiz: {ex.Message}");
+                Console.WriteLine($"[QuizService ERROR] Inner exception: {ex.InnerException?.Message}");
+                throw;
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[QuizService] No userId provided, skipping database save");
         }
 
         return new QuizResultDto
