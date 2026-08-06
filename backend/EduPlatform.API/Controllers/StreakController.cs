@@ -21,11 +21,15 @@ public class StreakController : BaseController
     {
         try
         {
-            var streak = await _streakService.GetStreakAsync(GetUserId());
+            var userId = GetUserId();
+            Console.WriteLine($"[STREAK API] Getting streak for userId: {userId}");
+            var streak = await _streakService.GetStreakAsync(userId);
+            Console.WriteLine($"[STREAK API] Returning streak data: Current={streak.CurrentStreak}, Longest={streak.LongestStreak}, LastActive={streak.LastActiveDate}");
             return Ok(streak);
         }
         catch (KeyNotFoundException ex)
         {
+            Console.WriteLine($"[STREAK API] User not found: {ex.Message}");
             return NotFound(new { message = ex.Message });
         }
     }
