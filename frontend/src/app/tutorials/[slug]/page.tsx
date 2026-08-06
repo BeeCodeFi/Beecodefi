@@ -218,19 +218,45 @@ function TutorialPageContent({
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+      
+      // Save scroll position to sessionStorage for page reloads
+      sessionStorage.setItem(
+        `scroll-${slug}-${currentLessonIndex}`,
+        String(scrollTop)
+      );
     };
     window.addEventListener("scroll", update, { passive: true });
     update();
     return () => window.removeEventListener("scroll", update);
-  }, []);
+  }, [slug, currentLessonIndex]);
+
+  // Restore scroll position on lesson load
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem(
+      `scroll-${slug}-${currentLessonIndex}`
+    );
+    if (savedScroll) {
+      const scrollPos = parseInt(savedScroll, 10);
+      // Use setTimeout to ensure content is rendered
+      setTimeout(() => {
+        window.scrollTo({ top: scrollPos, behavior: 'instant' as ScrollBehavior });
+      }, 0);
+    }
+  }, [slug, currentLessonIndex]);
 
   // Reset scroll progress when lesson changes
   useEffect(() => {
-    queueMicrotask(() => {
-      setScrollProgress(0);
-      window.scrollTo({ top: 0 });
-    });
-  }, [currentLessonIndex]);
+    // Only reset to top when manually navigating between lessons
+    // Don't reset when component first mounts
+    if (hydrated) {
+      queueMicrotask(() => {
+        setScrollProgress(0);
+        // Clear saved scroll for this lesson since we're navigating away
+        sessionStorage.removeItem(`scroll-${slug}-${currentLessonIndex}`);
+        window.scrollTo({ top: 0 });
+      });
+    }
+  }, [currentLessonIndex, hydrated, slug]);
 
   // Save current lesson to localStorage whenever it changes
   useEffect(() => {
@@ -278,25 +304,37 @@ function TutorialPageContent({
       }
     }
 
-    // If no URL param, load from localStorage
+    // If no URL param, determine which lesson to show
     const savedIndex = localStorage.getItem(
       getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
     );
+    
+    let targetIndex = 0;
+    
     if (savedIndex !== null) {
+      // User has a saved lesson - use that
       const idx = parseInt(savedIndex, 10);
       if (!isNaN(idx) && idx >= 0 && idx < tutorial.lessons.length) {
-        const lessonSlug = tutorial.lessons[idx]?.slug;
-        queueMicrotask(() => {
-          setCurrentLessonIndex(idx);
-          // Update URL to match the saved lesson
-          if (lessonSlug) {
-            router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
-              scroll: false,
-            });
-          }
-        });
+        targetIndex = idx;
+      }
+    } else {
+      // No saved lesson - find the first incomplete lesson
+      const firstIncomplete = tutorial.lessons.findIndex((_, i) => !localIndices.has(i));
+      if (firstIncomplete !== -1) {
+        targetIndex = firstIncomplete;
       }
     }
+    
+    const lessonSlug = tutorial.lessons[targetIndex]?.slug;
+    queueMicrotask(() => {
+      setCurrentLessonIndex(targetIndex);
+      // Update URL to match the selected lesson
+      if (lessonSlug) {
+        router.replace(`/tutorials/${slug}?lesson=${lessonSlug}`, {
+          scroll: false,
+        });
+      }
+    });
 
     const token = localStorage.getItem("token");
     if (!token) return;

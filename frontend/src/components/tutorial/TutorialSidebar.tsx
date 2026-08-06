@@ -25,6 +25,11 @@ export default function TutorialSidebar({
   isOpen,
 }: TutorialSidebarProps) {
   const quizCat = getQuizCategoryForTutorial(slug);
+  
+  // Find the next incomplete lesson (the one user should do next)
+  const nextIncompleteIndex = tutorial.lessons.findIndex(
+    (_, i) => !completedLessons.has(i)
+  );
 
   return (
     <aside
@@ -90,6 +95,7 @@ export default function TutorialSidebar({
           {tutorial.lessons.map((l, i) => {
             const isCompleted = completedLessons.has(i);
             const isCurrent = i === currentLessonIndex;
+            const isNextIncomplete = i === nextIncompleteIndex && !isCurrent;
             return (
               <button
                 key={l.slug}
@@ -106,6 +112,8 @@ export default function TutorialSidebar({
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                 ) : isCurrent ? (
                   <Zap className="w-4 h-4 text-indigo-500 shrink-0" />
+                ) : isNextIncomplete ? (
+                  <Zap className="w-4 h-4 text-yellow-500 shrink-0" />
                 ) : (
                   <Circle className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0" />
                 )}
