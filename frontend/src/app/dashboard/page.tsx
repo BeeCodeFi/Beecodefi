@@ -23,7 +23,7 @@ import api from "@/lib/api";
 
 export default function UnifiedDashboardPage() {
   const { user, isLoading } = useAuth();
-  const { data: streak } = useStreak();
+  const { data: streak, refetch: refetchStreak } = useStreak();
   const { bookmarks } = useBookmarks();
   const router = useRouter();
   const isAdmin =
@@ -57,6 +57,8 @@ export default function UnifiedDashboardPage() {
   const loadProgress = async () => {
     try {
       setLoadingProgress(true);
+      
+      console.log('[DASHBOARD] Loading progress and recent activity...');
       
       // Fetch progress from backend
       const { data: progressData } = await api.get<Array<{
@@ -92,8 +94,9 @@ export default function UnifiedDashboardPage() {
       }>>("/recentactivity?limit=5");
       
       setRecentActivity(activityData);
+      console.log('[DASHBOARD] Progress loaded successfully');
     } catch (error) {
-      console.error("Failed to load progress:", error);
+      console.error("[DASHBOARD] Failed to load progress:", error);
       // Fallback to empty state
       setTutorialProgress([]);
       setRecentActivity([]);
@@ -200,7 +203,12 @@ export default function UnifiedDashboardPage() {
                 bookmarksCount={bookmarks.length}
                 tutorialProgress={tutorialProgress}
                 recentActivity={recentActivity}
-                onRefresh={loadProgress}
+                onRefresh={() => {
+                  console.log('[DASHBOARD PAGE] onRefresh called - loading progress and refetching streak...');
+                  loadProgress();
+                  console.log('[DASHBOARD PAGE] Calling refetchStreak...');
+                  refetchStreak();
+                }}
               />
             )}
             {activeTab === "bookmarks" && <BookmarksTab />}

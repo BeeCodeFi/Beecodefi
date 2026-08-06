@@ -83,8 +83,14 @@ export default function OverviewTab({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).__refetchDashboard = () => {
+        console.log('[DASHBOARD] Refetching all data (quiz count, progress, streak)...');
         fetchQuizCount();
-        onRefresh?.();
+        if (onRefresh) {
+          console.log('[DASHBOARD] Calling onRefresh (includes streak refetch)...');
+          onRefresh();
+        } else {
+          console.warn('[DASHBOARD] onRefresh is not defined!');
+        }
       };
     }
     return () => {
@@ -146,18 +152,34 @@ export default function OverviewTab({
           transition={{ delay: 0.2 }}
           className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
-              <Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
+                <Flame className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  Current Streak
+                </p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {streak.current} days
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                Current Streak
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {streak.current} days
-              </p>
-            </div>
+            {onRefresh && (
+              <button
+                onClick={() => {
+                  console.log('[DASHBOARD] Manual refresh button clicked');
+                  onRefresh();
+                }}
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                title="Refresh streak"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+            )}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             Longest streak: {streak.longest} days

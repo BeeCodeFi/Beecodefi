@@ -24,12 +24,14 @@ export function useStreak() {
 
   const fetchStreak = useCallback(async () => {
     if (!userId) {
+      console.log('[STREAK HOOK] No userId, setting empty streak');
       setStreak(EMPTY);
       setLoading(false);
       return;
     }
 
     try {
+      console.log('[STREAK HOOK] Fetching streak from API...');
       setError(null);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/streak`,
@@ -47,6 +49,7 @@ export function useStreak() {
       }
 
       const data = await response.json();
+      console.log('[STREAK HOOK] Streak data received:', data);
       setStreak({
         current: data.currentStreak ?? 0,
         longest: data.longestStreak ?? 0,
