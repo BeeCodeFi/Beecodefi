@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
+import api from "@/lib/api";
 
 interface StreakData {
   current: number;
@@ -33,22 +34,12 @@ export function useStreak() {
     try {
       console.log('[STREAK HOOK] Fetching streak from API...');
       setError(null);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/streak`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const { data } = await api.get<{
+        currentStreak: number;
+        longestStreak: number;
+        lastActiveDate: string | null;
+      }>('/streak');
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch streak");
-      }
-
-      const data = await response.json();
       console.log('[STREAK HOOK] Streak data received:', data);
       setStreak({
         current: data.currentStreak ?? 0,
