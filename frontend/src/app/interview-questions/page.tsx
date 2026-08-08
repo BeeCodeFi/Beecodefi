@@ -3,8 +3,22 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FileCode2, Palette, Braces, ArrowRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const categories = [
+type Category = {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  color: string;
+  shadowColor: string;
+  description: string;
+  href: string;
+  count?: number;
+  comingSoon?: boolean;
+};
+
+
+const categories: Category[] = [
   {
     id: "html",
     name: "HTML",
@@ -31,9 +45,9 @@ const categories = [
     icon: Braces,
     color: "from-yellow-500 to-amber-500",
     shadowColor: "shadow-yellow-200 dark:shadow-yellow-900/40",
-    description: "Core concepts, async, DOM manipulation, and ES6+",
+    description: "Core concepts, async, closures, DOM, and ES6+",
     href: "/interview-questions/javascript",
-    comingSoon: true,
+    count: 30,
   },
 ];
 
@@ -57,7 +71,7 @@ export default function InterviewQuestionsPage() {
             <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-                50+ questions available
+                80+ questions available
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" />
