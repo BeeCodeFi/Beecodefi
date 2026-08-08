@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/ignyo/OneDrive/Desktop/WORKSPACE/06_STUDY/Projects/BeeCodeFi//**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -155,9 +155,28 @@
 #### C. Community Features
 - [x] Comments/discussions on each lesson -- COMPLETE (Database-backed)
 - [x] Upvote/downvote system -- COMPLETE (Database-backed)
-- [ ] User-submitted code examples
-- [ ] "Ask AI" button for instant explanations
-- [ ] Community-contributed tips section
+- [x] User-submitted code examples -- COMPLETE (Database-backed)
+  - [x] Backend models: LessonCodeExample, LessonCodeExampleVote
+  - [x] API endpoints: LessonCodeExampleController
+  - [x] Frontend hooks: useLessonCodeExamples
+  - [x] UI components: LessonCodeExamples
+  - [x] Admin approval interface in Admin Dashboard
+  - [x] Vote system (upvote/downvote)
+  - [x] CRUD operations for own examples
+- [x] "Ask AI" button for instant explanations -- COMPLETE (Database-backed)
+  - [x] Backend service: AiExplanationService
+  - [x] API endpoint: AiExplanationController
+  - [x] Frontend hook: useAiExplanation
+  - [x] UI component: AskAiButton
+  - [x] Integration with tutorial pages
+- [x] Community-contributed tips section -- COMPLETE
+  - [x] Backend models: LessonTip, LessonTipVote
+  - [x] API endpoints: LessonTipController
+  - [x] Frontend hooks: useLessonTips
+  - [x] UI components: LessonTips
+  - [x] Admin approval interface in Admin Dashboard
+  - [x] Vote system (upvote/downvote)
+  - [x] CRUD operations for own tips
 
 #### D. Video Tutorials Integration (SKIPPED - Per user request)
 - [ ] Embed short video explanations for complex topics

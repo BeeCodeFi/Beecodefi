@@ -116,4 +116,119 @@ public class AdminService : IAdminService
             LessonFeedback = lessonFeedback,
         };
     }
+
+    public async Task<List<LessonCodeExampleDto>> GetPendingCodeExamplesAsync(CancellationToken cancellationToken)
+    {
+        var pendingExamples = await _db.LessonCodeExamples
+            .AsNoTracking()
+            .Where(c => !c.IsApproved)
+            .Include(c => c.User)
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => new LessonCodeExampleDto
+            {
+                Id = c.Id,
+                UserId = c.UserId,
+                UserName = c.User.Name,
+                TutorialSlug = c.TutorialSlug,
+                LessonSlug = c.LessonSlug,
+                Title = c.Title,
+                Description = c.Description,
+                Code = c.Code,
+                Language = c.Language,
+                Upvotes = c.Upvotes,
+                Downvotes = c.Downvotes,
+                IsApproved = c.IsApproved,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                UserVote = null,
+                IsOwner = false
+            })
+            .ToListAsync(cancellationToken);
+
+        return pendingExamples;
+    }
+
+    public async Task<bool> ApproveCodeExampleAsync(int codeExampleId, CancellationToken cancellationToken)
+    {
+        var example = await _db.LessonCodeExamples
+            .FirstOrDefaultAsync(c => c.Id == codeExampleId, cancellationToken);
+
+        if (example == null)
+            return false;
+
+        example.IsApproved = true;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+    public async Task<bool> RejectCodeExampleAsync(int codeExampleId, CancellationToken cancellationToken)
+    {
+        var example = await _db.LessonCodeExamples
+            .FirstOrDefaultAsync(c => c.Id == codeExampleId, cancellationToken);
+
+        if (example == null)
+            return false;
+
+        _db.LessonCodeExamples.Remove(example);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+    public async Task<List<LessonTipDto>> GetPendingTipsAsync(CancellationToken cancellationToken)
+    {
+        var pendingTips = await _db.LessonTips
+            .AsNoTracking()
+            .Where(t => !t.IsApproved)
+            .Include(t => t.User)
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new LessonTipDto
+            {
+                Id = t.Id,
+                UserId = t.UserId,
+                UserName = t.User.Name,
+                TutorialSlug = t.TutorialSlug,
+                LessonSlug = t.LessonSlug,
+                Tip = t.Tip,
+                Upvotes = t.Upvotes,
+                Downvotes = t.Downvotes,
+                IsApproved = t.IsApproved,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt,
+                UserVote = null,
+                IsOwner = false
+            })
+            .ToListAsync(cancellationToken);
+
+        return pendingTips;
+    }
+
+    public async Task<bool> ApproveTipAsync(int tipId, CancellationToken cancellationToken)
+    {
+        var tip = await _db.LessonTips
+            .FirstOrDefaultAsync(t => t.Id == tipId, cancellationToken);
+
+        if (tip == null)
+            return false;
+
+        tip.IsApproved = true;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+    public async Task<bool> RejectTipAsync(int tipId, CancellationToken cancellationToken)
+    {
+        var tip = await _db.LessonTips
+            .FirstOrDefaultAsync(t => t.Id == tipId, cancellationToken);
+
+        if (tip == null)
+            return false;
+
+        _db.LessonTips.Remove(tip);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
 }

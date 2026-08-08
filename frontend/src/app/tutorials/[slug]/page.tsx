@@ -28,6 +28,9 @@ import TableOfContents from "@/components/tutorial/TableOfContents";
 import LessonFeedback from "@/components/tutorial/LessonFeedback";
 import Certificate from "@/components/tutorial/Certificate";
 import LessonComments from "@/components/tutorial/LessonComments";
+import LessonCodeExamples from "@/components/tutorial/LessonCodeExamples";
+import LessonTips from "@/components/tutorial/LessonTips";
+import AskAiButton from "@/components/tutorial/AskAiButton";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
 import StructuredData from "@/components/seo/StructuredData";
@@ -896,6 +899,31 @@ function TutorialPageContent({
               {/* ── Key takeaways ── */}
               {lesson?.keyTakeaways && lesson.keyTakeaways.length > 0 && (
                 <KeyTakeaways takeaways={lesson.keyTakeaways} />
+              )}
+
+              {/* ── Community code examples ── */}
+              {lesson && (
+                <LessonCodeExamples 
+                  tutorialSlug={tutorial.slug} 
+                  lessonSlug={lesson.slug} 
+                />
+              )}
+
+              {/* ── Community tips ── */}
+              {lesson && (
+                <LessonTips 
+                  tutorialSlug={tutorial.slug} 
+                  lessonSlug={lesson.slug} 
+                />
+              )}
+
+              {/* ── Ask AI Button ── */}
+              {lesson && (
+                <AskAiButton
+                  tutorialSlug={tutorial.slug}
+                  lessonSlug={lesson.slug}
+                  lessonContent={lesson.content || ""}
+                />
               )}
 
               {/* ── Practice exercises ── */}

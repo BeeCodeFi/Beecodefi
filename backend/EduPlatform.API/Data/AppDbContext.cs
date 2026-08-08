@@ -28,6 +28,10 @@ public class AppDbContext : DbContext
     public DbSet<LessonComment> LessonComments => Set<LessonComment>();
     public DbSet<CommentVote> CommentVotes => Set<CommentVote>();
     public DbSet<QuizQuestionBookmark> QuizQuestionBookmarks => Set<QuizQuestionBookmark>();
+    public DbSet<LessonCodeExample> LessonCodeExamples => Set<LessonCodeExample>();
+    public DbSet<LessonCodeExampleVote> LessonCodeExampleVotes => Set<LessonCodeExampleVote>();
+    public DbSet<LessonTip> LessonTips => Set<LessonTip>();
+    public DbSet<LessonTipVote> LessonTipVotes => Set<LessonTipVote>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -262,6 +266,66 @@ public class AppDbContext : DbContext
             entity.HasIndex(qqb => new { qqb.UserId, qqb.QuestionId, qqb.QuizTopic }).IsUnique();
             entity.Property(qqb => qqb.QuizTopic).HasMaxLength(100);
             entity.Property(qqb => qqb.QuestionText).HasMaxLength(1000);
+        });
+
+        modelBuilder.Entity<LessonCodeExample>(entity =>
+        {
+            entity.HasOne(lce => lce.User)
+                .WithMany()
+                .HasForeignKey(lce => lce.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(lce => new { lce.TutorialSlug, lce.LessonSlug });
+            entity.HasIndex(lce => lce.IsApproved);
+            entity.Property(lce => lce.TutorialSlug).HasMaxLength(100);
+            entity.Property(lce => lce.LessonSlug).HasMaxLength(150);
+            entity.Property(lce => lce.Title).HasMaxLength(200);
+            entity.Property(lce => lce.Description).HasMaxLength(1000);
+            entity.Property(lce => lce.Language).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<LessonCodeExampleVote>(entity =>
+        {
+            entity.HasOne(lcev => lcev.User)
+                .WithMany()
+                .HasForeignKey(lcev => lcev.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(lcev => lcev.CodeExample)
+                .WithMany(lce => lce.Votes)
+                .HasForeignKey(lcev => lcev.CodeExampleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(lcev => new { lcev.UserId, lcev.CodeExampleId }).IsUnique();
+        });
+
+        modelBuilder.Entity<LessonTip>(entity =>
+        {
+            entity.HasOne(lt => lt.User)
+                .WithMany()
+                .HasForeignKey(lt => lt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(lt => new { lt.TutorialSlug, lt.LessonSlug });
+            entity.HasIndex(lt => lt.IsApproved);
+            entity.Property(lt => lt.TutorialSlug).HasMaxLength(100);
+            entity.Property(lt => lt.LessonSlug).HasMaxLength(150);
+            entity.Property(lt => lt.Tip).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<LessonTipVote>(entity =>
+        {
+            entity.HasOne(ltv => ltv.User)
+                .WithMany()
+                .HasForeignKey(ltv => ltv.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(ltv => ltv.Tip)
+                .WithMany(lt => lt.Votes)
+                .HasForeignKey(ltv => ltv.TipId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ltv => new { ltv.UserId, ltv.TipId }).IsUnique();
         });
     }
 }

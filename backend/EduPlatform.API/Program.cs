@@ -65,6 +65,9 @@ builder.Services.AddScoped<IBookmarkService, BookmarkService>();
 builder.Services.AddScoped<ICodeSnippetService, CodeSnippetService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IQuizQuestionBookmarkService, QuizQuestionBookmarkService>();
+builder.Services.AddScoped<ILessonCodeExampleService, LessonCodeExampleService>();
+    builder.Services.AddScoped<ILessonTipService, LessonTipService>();
+builder.Services.AddScoped<IAiExplanationService, AiExplanationService>();
 builder.Services.AddHostedService<RefreshTokenCleanupService>();
 
 // Rate Limiting

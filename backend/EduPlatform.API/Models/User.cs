@@ -24,4 +24,8 @@ public class User
     public ICollection<LessonComment> Comments { get; set; } = new List<LessonComment>();
     public ICollection<CommentVote> CommentVotes { get; set; } = new List<CommentVote>();
     public ICollection<QuizQuestionBookmark> QuizQuestionBookmarks { get; set; } = new List<QuizQuestionBookmark>();
+    public ICollection<LessonCodeExample> LessonCodeExamples { get; set; } = new List<LessonCodeExample>();
+    public ICollection<LessonCodeExampleVote> LessonCodeExampleVotes { get; set; } = new List<LessonCodeExampleVote>();
+    public ICollection<LessonTip> LessonTips { get; set; } = new List<LessonTip>();
+    public ICollection<LessonTipVote> LessonTipVotes { get; set; } = new List<LessonTipVote>();
 }

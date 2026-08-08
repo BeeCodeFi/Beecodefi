@@ -15,8 +15,14 @@ import {
   ThumbsDown,
   ThumbsUp,
   Users,
+  Code,
+  X,
+  Check,
+  Eye,
+  Lightbulb,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import api from "@/lib/api";
 
 interface ActivityPoint {
@@ -53,6 +59,37 @@ interface LessonFeedbackInsight {
   lessonSlug: string;
   helpful: number;
   notHelpful: number;
+}
+
+interface PendingCodeExample {
+  id: number;
+  userId: number;
+  userName: string;
+  tutorialSlug: string;
+  lessonSlug: string;
+  title: string;
+  description: string;
+  code: string;
+  language: string;
+  upvotes: number;
+  downvotes: number;
+  isApproved: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+interface PendingTip {
+  id: number;
+  userId: number;
+  userName: string;
+  tutorialSlug: string;
+  lessonSlug: string;
+  tip: string;
+  upvotes: number;
+  downvotes: number;
+  isApproved: boolean;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 interface AdminAnalytics {
@@ -111,11 +148,17 @@ function StatCard({
 
 export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth();
+  const { success, error: toastError } = useToast();
   const router = useRouter();
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [forbidden, setForbidden] = useState(false);
   const [error, setError] = useState("");
+  const [pendingCodeExamples, setPendingCodeExamples] = useState<PendingCodeExample[]>([]);
+  const [loadingCodeExamples, setLoadingCodeExamples] = useState(false);
+  const [pendingTips, setPendingTips] = useState<PendingTip[]>([]);
+  const [loadingTips, setLoadingTips] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<'analytics' | 'code-examples' | 'tips'>('analytics');
 
   useEffect(() => {
     if (authLoading) return;
@@ -133,6 +176,83 @@ export default function AdminPage() {
       })
       .finally(() => setLoading(false));
   }, [authLoading, user, router]);
+
+  const fetchPendingCodeExamples = async () => {
+    setLoadingCodeExamples(true);
+    try {
+      const { data } = await api.get<PendingCodeExample[]>("/admin/code-examples/pending");
+      setPendingCodeExamples(data);
+    } catch (err: any) {
+      toastError("Failed to load pending code examples", err.message);
+    } finally {
+      setLoadingCodeExamples(false);
+    }
+  };
+
+  const fetchPendingTips = async () => {
+    setLoadingTips(true);
+    try {
+      const { data } = await api.get<PendingTip[]>("/admin/tips/pending");
+      setPendingTips(data);
+    } catch (err: any) {
+      toastError("Failed to load pending tips", err.message);
+    } finally {
+      setLoadingTips(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedTab === 'code-examples') {
+      fetchPendingCodeExamples();
+    }
+    if (selectedTab === 'tips') {
+      fetchPendingTips();
+    }
+  }, [selectedTab]);
+
+  const handleApproveExample = async (id: number) => {
+    try {
+      await api.post(`/admin/code-examples/${id}/approve`);
+      success("Example approved", "The code example has been approved and is now visible");
+      setPendingCodeExamples(prev => prev.filter(ex => ex.id !== id));
+    } catch (err: any) {
+      toastError("Failed to approve", err.message);
+    }
+  };
+
+  const handleRejectExample = async (id: number) => {
+    if (!confirm("Are you sure you want to reject and delete this code example?")) return;
+    
+    try {
+      await api.delete(`/admin/code-examples/${id}/reject`);
+      success("Example rejected", "The code example has been removed");
+      setPendingCodeExamples(prev => prev.filter(ex => ex.id !== id));
+    } catch (err: any) {
+      toastError("Failed to reject", err.message);
+    }
+  };
+
+  const handleApproveTip = async (id: number) => {
+    try {
+      await api.post(`/admin/tips/${id}/approve`);
+      success("Tip approved", "The tip has been approved and is now visible");
+      setPendingTips(prev => prev.filter(tip => tip.id !== id));
+    } catch (err: any) {
+      toastError("Failed to approve", err.message);
+    }
+  };
+
+  const handleRejectTip = async (id: number) => {
+    if (!confirm("Are you sure you want to reject and delete this tip?")) return;
+    
+    try {
+      await api.delete(`/admin/tips/${id}/reject`);
+      success("Tip rejected", "The tip has been removed");
+      setPendingTips(prev => prev.filter(tip => tip.id !== id));
+    } catch (err: any) {
+      toastError("Failed to reject", err.message);
+    }
+  };
 
   if (authLoading || loading) {
     return (
@@ -182,16 +302,75 @@ export default function AdminPage() {
               Private workspace
             </p>
             <h1 className="mt-2 text-4xl font-bold text-gray-900 dark:text-white">
-              Admin analytics
+              Admin dashboard
             </h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Track learning activity, engagement, and user feedback.
+              Manage platform analytics and community content.
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
             <Activity className="w-4 h-4 text-emerald-500" /> Updated just now
           </div>
         </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8">
+          <button
+            onClick={() => setSelectedTab('analytics')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              selectedTab === 'analytics'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+            }`}
+          >
+            Analytics
+          </button>
+          <button
+            onClick={() => setSelectedTab('code-examples')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+              selectedTab === 'code-examples'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+            }`}
+          >
+            <Code className="w-4 h-4" />
+            Code Examples
+            {pendingCodeExamples.length > 0 && (
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {pendingCodeExamples.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setSelectedTab('tips')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+              selectedTab === 'tips'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+            }`}
+          >
+            <Lightbulb className="w-4 h-4" />
+            Tips
+            {pendingTips.length > 0 && (
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {pendingTips.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {selectedTab === 'analytics' && (
+          <>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Platform Analytics
+                </h2>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  Track learning activity, engagement, and user feedback.
+                </p>
+              </div>
+            </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
           <StatCard
@@ -434,6 +613,185 @@ export default function AdminPage() {
             </table>
           </div>
         </section>
+          </>
+        )}
+
+        {selectedTab === 'code-examples' && (
+          <>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Pending Code Examples
+                </h2>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  Review and approve community-submitted code examples.
+                </p>
+              </div>
+              <button
+                onClick={fetchPendingCodeExamples}
+                disabled={loadingCodeExamples}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-2"
+              >
+                {loadingCodeExamples ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Activity className="w-4 h-4" />
+                )}
+                Refresh
+              </button>
+            </div>
+
+            <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
+              {loadingCodeExamples ? (
+                <div className="p-12 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                </div>
+              ) : pendingCodeExamples.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Code className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No pending code examples
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    All submitted code examples have been reviewed.
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200 dark:divide-gray-800">
+                  {pendingCodeExamples.map((example) => (
+                    <div key={example.id} className="p-6">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 text-xs font-medium rounded">
+                              {example.language}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {example.tutorialSlug} / {example.lessonSlug}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                            {example.title}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            {example.description}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Submitted by {example.userName} · {formatDate(example.createdAt)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => handleApproveExample(example.id)}
+                            className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors"
+                            title="Approve"
+                          >
+                            <Check className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleRejectExample(example.id)}
+                            className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                            title="Reject"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                        <pre className="text-sm text-gray-300">
+                          <code>{example.code}</code>
+                        </pre>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {selectedTab === 'tips' && (
+          <>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Pending Tips
+                </h2>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  Review and approve community-submitted tips.
+                </p>
+              </div>
+              <button
+                onClick={fetchPendingTips}
+                disabled={loadingTips}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-2"
+              >
+                {loadingTips ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Activity className="w-4 h-4" />
+                )}
+                Refresh
+              </button>
+            </div>
+
+            <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
+              {loadingTips ? (
+                <div className="p-12 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                </div>
+              ) : pendingTips.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Lightbulb className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No pending tips
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    All submitted tips have been reviewed.
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200 dark:divide-gray-800">
+                  {pendingTips.map((tip) => (
+                    <div key={tip.id} className="p-6">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs text-gray-500">
+                              {tip.tutorialSlug} / {tip.lessonSlug}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 dark:text-gray-300 mb-2">
+                            {tip.tip}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Submitted by {tip.userName} · {formatDate(tip.createdAt)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => handleApproveTip(tip.id)}
+                            className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors"
+                            title="Approve"
+                          >
+                            <Check className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleRejectTip(tip.id)}
+                            className="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                            title="Reject"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
     </div>
   );
