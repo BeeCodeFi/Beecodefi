@@ -1562,7 +1562,7 @@ Specifies the module system for the output.
 - Files that contain type definitions
 - Don't contain implementation, only types
 - Allow TypeScript to understand JavaScript libraries
-- Have the `.d.ts` extension
+- Have the \`.d.ts\` extension
 
 **Basic Example:**
 \`\`\`typescript
