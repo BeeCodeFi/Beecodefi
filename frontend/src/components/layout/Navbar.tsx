@@ -30,6 +30,7 @@ const navLinks = [
   { href: "/tutorials", label: "Tutorials" },
   { href: "/courses", label: "Courses" },
   { href: "/quiz", label: "Quiz" },
+  { href: "/interview-questions", label: "Interview Questions" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/roadmap", label: "Roadmap" },
   { href: "/about", label: "About" },
