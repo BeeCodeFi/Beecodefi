@@ -16,6 +16,11 @@ public class BadgeService : IBadgeService
 
     public async Task<List<BadgeDto>> GetAllBadgesAsync(int? userId)
     {
+        if (userId.HasValue)
+        {
+            await CheckAndUnlockBadgesAsync(userId.Value);
+        }
+
         var badges = await _db.Badges.ToListAsync();
         var userBadges = userId.HasValue 
             ? await _db.UserBadges.Where(ub => ub.UserId == userId.Value).ToListAsync()
