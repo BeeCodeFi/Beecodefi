@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Search, Filter, FileCode2, Star, StarOff, RotateCcw, TrendingUp, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronDown, ChevronUp, Search, Filter, FileCode2, Star, StarOff, RotateCcw, X } from "lucide-react";
 import Link from "next/link";
 import { htmlInterviewQuestions } from "@/data/interview-questions/html-questions";
 import { useRevisions } from "@/hooks/useRevisions";
@@ -14,7 +14,6 @@ export default function HTMLInterviewQuestionsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [showRevisionsOnly, setShowRevisionsOnly] = useState(false);
-  const [showStats, setShowStats] = useState(false);
   
   const { user } = useAuth();
   const { success, error: toastError, info } = useToast();
@@ -128,59 +127,39 @@ export default function HTMLInterviewQuestionsPage() {
                 {stats.total} questions covering fundamentals to advanced concepts
               </p>
             </div>
-            
-            {/* Stats Toggle Button */}
-            <button
-              onClick={() => setShowStats(!showStats)}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors text-sm font-medium"
-            >
-              <TrendingUp className="w-4 h-4" />
-              Stats
-            </button>
           </div>
 
-          {/* Stats Panel */}
-          <AnimatePresence>
-            {showStats && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{stats.total}</div>
-                    <div className="text-xs text-white/70">Total</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-300">{stats.beginner}</div>
-                    <div className="text-xs text-white/70">Beginner</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-300">{stats.intermediate}</div>
-                    <div className="text-xs text-white/70">Intermediate</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-300">{stats.advanced}</div>
-                    <div className="text-xs text-white/70">Advanced</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-200 flex items-center justify-center gap-1">
-                      <Star className="w-5 h-5 fill-current" />
-                      {stats.markedForRevision}
-                    </div>
-                    <div className="text-xs text-white/70">For Revision</div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Stats Panel - always visible */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-2 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold">{stats.total}</div>
+              <div className="text-xs text-white/70">Total</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-300">{stats.beginner}</div>
+              <div className="text-xs text-white/70">Beginner</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-300">{stats.intermediate}</div>
+              <div className="text-xs text-white/70">Intermediate</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-300">{stats.advanced}</div>
+              <div className="text-xs text-white/70">Advanced</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-200 flex items-center justify-center gap-1">
+                <Star className="w-5 h-5 fill-current" />
+                {stats.markedForRevision}
+              </div>
+              <div className="text-xs text-white/70">For Revision</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Sticky Filters */}
-      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-md">
+      <div className="sticky top-16 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col gap-4">
             {/* First Row: Search and Difficulty */}
@@ -205,50 +184,37 @@ export default function HTMLInterviewQuestionsPage() {
                 )}
               </div>
 
-              {/* Difficulty Filter */}
+              {/* Difficulty + Revisions Filter */}
               <div className="flex items-center gap-2">
                 <Filter className="w-5 h-5 text-gray-400" />
                 <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  value={showRevisionsOnly ? 'revisions' : selectedDifficulty}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === 'revisions') {
+                      setShowRevisionsOnly(true);
+                      setSelectedDifficulty('all');
+                    } else {
+                      setShowRevisionsOnly(false);
+                      setSelectedDifficulty(val);
+                    }
+                  }}
                   className="px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent cursor-pointer"
                 >
                   <option value="all">All Levels</option>
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
+                  {user && <option value="revisions">⭐ Revisions Only{count > 0 ? ` (${count})` : ''}</option>}
                 </select>
               </div>
             </div>
 
-            {/* Second Row: Filter Chips and Actions */}
+            {/* Second Row: Results Count and Actions */}
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-2 flex-wrap">
-                {/* Revisions Only Toggle */}
-                {user && (
-                  <button
-                    onClick={() => setShowRevisionsOnly(!showRevisionsOnly)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                      showRevisionsOnly
-                        ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 border-2 border-yellow-400 dark:border-yellow-600'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
-                  >
-                    <Star className={`w-4 h-4 ${showRevisionsOnly ? 'fill-current' : ''}`} />
-                    Revisions Only
-                    {count > 0 && (
-                      <span className="px-1.5 py-0.5 bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100 rounded-full text-xs font-bold">
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                )}
-
-                {/* Results Count */}
-                <span className="text-sm text-gray-500 dark:text-gray-400 px-2">
-                  Showing {stats.filtered} of {stats.total} questions
-                </span>
-              </div>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Showing {stats.filtered} of {stats.total} questions
+              </span>
 
               {/* Clear All Revisions */}
               {user && count > 0 && (
