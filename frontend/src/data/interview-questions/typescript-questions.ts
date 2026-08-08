@@ -1556,7 +1556,7 @@ Specifies the module system for the output.
   {
     id: 'ts-15',
     question: 'What are declaration files (.d.ts) in TypeScript?',
-    answer: `**Declaration files** (`.d.ts`) provide type information for JavaScript libraries that don't have built-in TypeScript types.
+    answer: `**Declaration files** ('.d.ts') provide type information for JavaScript libraries that don't have built-in TypeScript types.
 
 **What are .d.ts files?**
 - Files that contain type definitions

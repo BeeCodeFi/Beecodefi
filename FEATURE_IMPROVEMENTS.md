@@ -65,9 +65,18 @@
 - [x] Comments/discussions on each lesson (Database-backed)
 - [x] Upvote/downvote system for comments (Database-backed)
 - [x] Backend models: CodeSnippet, LessonComment, CommentVote
-- [x] API endpoints: CodeSnippetController, CommentController
+- [x] API endpoints: CodeSnippetController, CommentController, SharedSnippetController
 - [x] Frontend hooks: useCodeSnippets, useComments
 - [x] UI components: LessonComments
+- [x] Database migration: AddCodeSnippetsAndComments (SQL query provided)
+- [x] Build error fixed: react-questions.ts template literal syntax error
+
+### Database & Infrastructure
+- [x] Database migration created: AddCodeSnippetsAndComments
+- [x] SQL query provided for Neon PostgreSQL deployment
+- [x] Updated User model with navigation properties for new tables
+- [x] Backend services registered in Program.cs
+- [x] Frontend build error resolved
 
 ---
 
@@ -113,18 +122,11 @@
 - [ ] "Ask AI" button for instant explanations
 - [ ] Community-contributed tips section
 
-#### C. Video Tutorials Integration
+#### D. Video Tutorials Integration (SKIPPED - Per user request)
 - [ ] Embed short video explanations for complex topics
 - [ ] YouTube integration
 - [ ] Video progress tracking
 - [ ] Video notes/timestamps
-
-#### D. Community Features
-- [ ] Comments/discussions on each lesson
-- [ ] Upvote/downvote system
-- [ ] User-submitted code examples
-- [ ] "Ask AI" button for instant explanations
-- [ ] Community-contributed tips section
 
 ---
 
