@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, Search, Filter, Braces, Star, StarOff, RotateCc
 import Link from "next/link";
 import { jsInterviewQuestions } from "@/data/interview-questions/js-questions";
 import { useRevisions } from "@/hooks/useRevisions";
+import { useInterviewProgress } from "@/hooks/useInterviewProgress";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
@@ -18,6 +19,7 @@ export default function JSInterviewQuestionsPage() {
   const { user } = useAuth();
   const { success, error: toastError, info } = useToast();
   const { loading, toggleRevision, clearAllRevisions, isMarked, count } = useRevisions('javascript');
+  const { isRead, markAsRead, readCount } = useInterviewProgress('javascript');
 
   const filteredQuestions = jsInterviewQuestions.filter((q) => {
     const matchesSearch =
@@ -30,7 +32,9 @@ export default function JSInterviewQuestionsPage() {
   });
 
   const toggleQuestion = (id: string) => {
+    const isOpening = expandedId !== id;
     setExpandedId(expandedId === id ? null : id);
+    if (isOpening && user) markAsRead(id);
   };
 
   const handleToggleRevision = async (questionId: string, e: React.MouseEvent) => {
@@ -105,12 +109,20 @@ export default function JSInterviewQuestionsPage() {
     }).join('');
   };
 
+  const beginnerQs = jsInterviewQuestions.filter(q => q.difficulty === 'beginner');
+  const intermediateQs = jsInterviewQuestions.filter(q => q.difficulty === 'intermediate');
+  const advancedQs = jsInterviewQuestions.filter(q => q.difficulty === 'advanced');
+
   const stats = {
     total: jsInterviewQuestions.length,
-    beginner: jsInterviewQuestions.filter(q => q.difficulty === 'beginner').length,
-    intermediate: jsInterviewQuestions.filter(q => q.difficulty === 'intermediate').length,
-    advanced: jsInterviewQuestions.filter(q => q.difficulty === 'advanced').length,
+    beginner: beginnerQs.length,
+    intermediate: intermediateQs.length,
+    advanced: advancedQs.length,
+    beginnerRead: beginnerQs.filter(q => isRead(q.id)).length,
+    intermediateRead: intermediateQs.filter(q => isRead(q.id)).length,
+    advancedRead: advancedQs.filter(q => isRead(q.id)).length,
     markedForRevision: count,
+    totalRead: readCount,
     filtered: filteredQuestions.length,
   };
 
@@ -138,29 +150,36 @@ export default function JSInterviewQuestionsPage() {
           </div>
 
           {/* Stats Panel — always visible */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-2 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-xs text-white/70">Total</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-200">{stats.beginner}</div>
-              <div className="text-xs text-white/70">Beginner</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-200">{stats.intermediate}</div>
-              <div className="text-xs text-white/70">Intermediate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-200">{stats.advanced}</div>
-              <div className="text-xs text-white/70">Advanced</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white flex items-center justify-center gap-1">
-                <Star className="w-5 h-5 fill-current" />
-                {stats.markedForRevision}
+          <div className="mt-2 p-4 bg-white/10 rounded-lg backdrop-blur-sm space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="text-center">
+                <div className="text-2xl font-bold">{stats.totalRead}/{stats.total}</div>
+                <div className="text-xs text-white/70">Read</div>
               </div>
-              <div className="text-xs text-white/70">For Revision</div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-200">{stats.beginnerRead}/{stats.beginner}</div>
+                <div className="text-xs text-white/70">Beginner</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-200">{stats.intermediateRead}/{stats.intermediate}</div>
+                <div className="text-xs text-white/70">Intermediate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-200">{stats.advancedRead}/{stats.advanced}</div>
+                <div className="text-xs text-white/70">Advanced</div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs text-white/60 mb-1">
+                <span>Overall Progress</span>
+                <span>{stats.total > 0 ? Math.round((stats.totalRead / stats.total) * 100) : 0}%</span>
+              </div>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-white rounded-full transition-all duration-500"
+                  style={{ width: `${stats.total > 0 ? (stats.totalRead / stats.total) * 100 : 0}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -261,7 +280,11 @@ export default function JSInterviewQuestionsPage() {
                   className="flex-1 flex items-center gap-4 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-amber-50 dark:hover:from-yellow-950/20 dark:hover:to-amber-950/20 transition-all text-left group -m-5 p-5 rounded-xl"
                 >
                   {/* Question Number */}
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md transition-all ${
+                    isRead(question.id)
+                      ? 'bg-gradient-to-br from-green-500 to-emerald-500'
+                      : 'bg-gradient-to-br from-yellow-500 to-amber-500'
+                  }`}>
                     {jsInterviewQuestions.findIndex(q => q.id === question.id) + 1}
                   </div>
 

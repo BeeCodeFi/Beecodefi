@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Search, Filter, FileCode2, Star, StarOff, RotateCcw, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, Filter, FileCode2, Star, StarOff, RotateCcw, X, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { htmlInterviewQuestions } from "@/data/interview-questions/html-questions";
 import { useRevisions } from "@/hooks/useRevisions";
+import { useInterviewProgress } from "@/hooks/useInterviewProgress";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
@@ -18,6 +19,7 @@ export default function HTMLInterviewQuestionsPage() {
   const { user } = useAuth();
   const { success, error: toastError, info } = useToast();
   const { loading, toggleRevision, clearAllRevisions, isMarked, count } = useRevisions('html');
+  const { isRead, markAsRead, readCount } = useInterviewProgress('html');
 
   const filteredQuestions = htmlInterviewQuestions.filter((q) => {
     const matchesSearch = q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -29,7 +31,9 @@ export default function HTMLInterviewQuestionsPage() {
   });
 
   const toggleQuestion = (id: string) => {
+    const isOpening = expandedId !== id;
     setExpandedId(expandedId === id ? null : id);
+    if (isOpening && user) markAsRead(id);
   };
 
   const handleToggleRevision = async (questionId: string, e: React.MouseEvent) => {
@@ -97,12 +101,20 @@ export default function HTMLInterviewQuestionsPage() {
   };
 
   // Calculate stats
+  const beginnerQs = htmlInterviewQuestions.filter(q => q.difficulty === 'beginner');
+  const intermediateQs = htmlInterviewQuestions.filter(q => q.difficulty === 'intermediate');
+  const advancedQs = htmlInterviewQuestions.filter(q => q.difficulty === 'advanced');
+
   const stats = {
     total: htmlInterviewQuestions.length,
-    beginner: htmlInterviewQuestions.filter(q => q.difficulty === 'beginner').length,
-    intermediate: htmlInterviewQuestions.filter(q => q.difficulty === 'intermediate').length,
-    advanced: htmlInterviewQuestions.filter(q => q.difficulty === 'advanced').length,
+    beginner: beginnerQs.length,
+    intermediate: intermediateQs.length,
+    advanced: advancedQs.length,
+    beginnerRead: beginnerQs.filter(q => isRead(q.id)).length,
+    intermediateRead: intermediateQs.filter(q => isRead(q.id)).length,
+    advancedRead: advancedQs.filter(q => isRead(q.id)).length,
     markedForRevision: count,
+    totalRead: readCount,
     filtered: filteredQuestions.length,
   };
 
@@ -130,29 +142,38 @@ export default function HTMLInterviewQuestionsPage() {
           </div>
 
           {/* Stats Panel - always visible */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-2 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-xs text-white/70">Total</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-300">{stats.beginner}</div>
-              <div className="text-xs text-white/70">Beginner</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-300">{stats.intermediate}</div>
-              <div className="text-xs text-white/70">Intermediate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-300">{stats.advanced}</div>
-              <div className="text-xs text-white/70">Advanced</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-200 flex items-center justify-center gap-1">
-                <Star className="w-5 h-5 fill-current" />
-                {stats.markedForRevision}
+          <div className="mt-2 p-4 bg-white/10 rounded-lg backdrop-blur-sm space-y-3">
+            {/* Top row: counts */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="text-center">
+                <div className="text-2xl font-bold">{stats.totalRead}/{stats.total}</div>
+                <div className="text-xs text-white/70">Read</div>
               </div>
-              <div className="text-xs text-white/70">For Revision</div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-300">{stats.beginnerRead}/{stats.beginner}</div>
+                <div className="text-xs text-white/70">Beginner</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-300">{stats.intermediateRead}/{stats.intermediate}</div>
+                <div className="text-xs text-white/70">Intermediate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-300">{stats.advancedRead}/{stats.advanced}</div>
+                <div className="text-xs text-white/70">Advanced</div>
+              </div>
+            </div>
+            {/* Progress bar */}
+            <div>
+              <div className="flex justify-between text-xs text-white/60 mb-1">
+                <span>Overall Progress</span>
+                <span>{stats.total > 0 ? Math.round((stats.totalRead / stats.total) * 100) : 0}%</span>
+              </div>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-white rounded-full transition-all duration-500"
+                  style={{ width: `${stats.total > 0 ? (stats.totalRead / stats.total) * 100 : 0}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -256,8 +277,12 @@ export default function HTMLInterviewQuestionsPage() {
                   onClick={() => toggleQuestion(question.id)}
                   className="flex-1 flex items-center gap-4 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 dark:hover:from-orange-950/20 dark:hover:to-red-950/20 transition-all text-left group -m-5 p-5 rounded-xl"
                 >
-                  {/* Question Number */}
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                  {/* Question Number / Read indicator */}
+                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md transition-all ${
+                    isRead(question.id)
+                      ? 'bg-gradient-to-br from-green-500 to-emerald-500'
+                      : 'bg-gradient-to-br from-orange-500 to-red-500'
+                  }`}>
                     {htmlInterviewQuestions.findIndex(q => q.id === question.id) + 1}
                   </div>
                   
