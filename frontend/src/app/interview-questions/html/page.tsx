@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Search, Filter, FileCode2, Star, StarOff, RotateCcw, X } from "lucide-react";
 import Link from "next/link";
 import { htmlInterviewQuestions } from "@/data/interview-questions/html-questions";
