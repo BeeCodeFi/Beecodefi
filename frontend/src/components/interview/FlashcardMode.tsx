@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -46,21 +47,22 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-// Strip markdown — renders the FULL answer as readable plain text (no truncation)
+/** Strip markdown → readable plain text. No truncation. */
 function stripMarkdown(text: string): string {
   return text
-    .replace(/```[\w]*\n?/g, "")         // remove code fence openers (```js, ``` etc.)
-    .replace(/```/g, "")                 // remove remaining code fence closers
-    .replace(/`([^`]+)`/g, "$1")         // inline code → plain text
-    .replace(/\*\*(.*?)\*\*/g, "$1")     // bold
-    .replace(/\*(.*?)\*/g, "$1")         // italic
-    .replace(/^#{1,6}\s+/gm, "")         // headings
-    .replace(/^[-*]\s+/gm, "• ")         // bullet lists
-    .replace(/\n{3,}/g, "\n\n")          // collapse triple+ blank lines
+    .replace(/```[\w]*\n?/g, "")
+    .replace(/```/g, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[-*]\s+/gm, "• ")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
 export default function FlashcardMode({ questions, onClose, accentColor = "from-indigo-500 to-purple-500" }: Props) {
+  // ALL hooks must be declared before any conditional return
   const [deck, setDeck] = useState<FlashcardQuestion[]>(questions);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -68,12 +70,11 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
   const [unknown, setUnknown] = useState<Set<string>>(new Set());
   const [completed, setCompleted] = useState(false);
   const [direction, setDirection] = useState(1);
+  // mounted guard for SSR safety (createPortal needs document)
+  const [mounted, setMounted] = useState(false);
 
-  const card = deck[index];
-  const progress = ((index) / deck.length) * 100;
-
-  // Lock body scroll while modal is open
   useEffect(() => {
+    setMounted(true);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
@@ -94,12 +95,14 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
   }, [index]);
 
   const markKnown = () => {
+    const card = deck[index];
     setKnown(prev => new Set([...prev, card.id]));
     setUnknown(prev => { const n = new Set(prev); n.delete(card.id); return n; });
     goNext();
   };
 
   const markUnknown = () => {
+    const card = deck[index];
     setUnknown(prev => new Set([...prev, card.id]));
     setKnown(prev => { const n = new Set(prev); n.delete(card.id); return n; });
     goNext();
@@ -125,8 +128,13 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
     setKnown(new Set()); setUnknown(new Set());
   };
 
-  return (
-    // Backdrop — fixed to viewport, always centered regardless of page scroll
+  // Don't render until client-side (portal needs document.body)
+  if (!mounted) return null;
+
+  const card = deck[index];
+  const progress = (index / deck.length) * 100;
+
+  const modal = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -173,7 +181,6 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
         {/* ── Scrollable Content ── */}
         <div className="flex-1 overflow-y-auto p-6">
           {completed ? (
-            /* Completion screen */
             <div className="text-center py-6">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/40 mb-4">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500" />
@@ -207,7 +214,6 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
               </div>
             </div>
           ) : (
-            /* Card face */
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${card.id}-${flipped}`}
@@ -229,7 +235,7 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
                   </span>
                 </div>
 
-                {/* Clickable card */}
+                {/* Clickable card face */}
                 <button
                   onClick={() => setFlipped(f => !f)}
                   className={cn(
@@ -242,11 +248,13 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
                   <div className="flex items-start gap-3">
                     <div className={cn(
                       "shrink-0 mt-0.5 p-1.5 rounded-lg",
-                      flipped ? "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400" : "bg-gray-200 dark:bg-gray-700 text-gray-500"
+                      flipped
+                        ? "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-500"
                     )}>
                       {flipped ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </div>
-                    {/* Full answer, no truncation, wraps naturally */}
+                    {/* Full answer — no truncation, whitespace-pre-wrap preserves line breaks */}
                     <p className={cn(
                       "text-base leading-relaxed whitespace-pre-wrap break-words",
                       flipped
@@ -262,11 +270,10 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
           )}
         </div>
 
-        {/* ── Sticky Bottom Navigation (hidden on completion screen) ── */}
+        {/* ── Sticky Bottom Navigation ── */}
         {!completed && (
           <div className="shrink-0 px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="flex items-center justify-between gap-3">
-              {/* Prev */}
               <button
                 onClick={goPrev}
                 disabled={index === 0}
@@ -275,7 +282,6 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              {/* Centre action: Reveal / Still Learning + Got It */}
               {flipped ? (
                 <div className="flex gap-3 flex-1 justify-center">
                   <button onClick={markUnknown} className="flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors">
@@ -296,7 +302,6 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
                 </div>
               )}
 
-              {/* Next */}
               <button
                 onClick={goNext}
                 className="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -309,4 +314,7 @@ export default function FlashcardMode({ questions, onClose, accentColor = "from-
       </motion.div>
     </div>
   );
+
+  // Portal renders into document.body — completely escapes parent transforms/overflow
+  return createPortal(modal, document.body);
 }
