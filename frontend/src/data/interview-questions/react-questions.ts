@@ -2522,12 +2522,7 @@ function StyledComponent() {
   useInsertionEffect(() => {
     // Inject styles before browser paints
     const style = document.createElement('style');
-    style.textContent = `
-      .styled {
-        color: red;
-        background: blue;
-      }
-    `;
+    style.textContent = '.styled { color: red; background: blue; }';
     document.head.appendChild(style);
 
     return () => {
