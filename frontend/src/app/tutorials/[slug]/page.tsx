@@ -230,8 +230,12 @@ function TutorialPageContent({
     return () => window.removeEventListener("scroll", update);
   }, [slug, currentLessonIndex]);
 
-  // Restore scroll position on lesson load
+  // Restore scroll position on lesson load (only for page reloads, not navigation)
   useEffect(() => {
+    // Only restore scroll if we're hydrating the same lesson (page reload scenario)
+    // Not when navigating between lessons
+    if (!hydrated) return;
+    
     const savedScroll = sessionStorage.getItem(
       `scroll-${slug}-${currentLessonIndex}`
     );
@@ -241,19 +245,23 @@ function TutorialPageContent({
       setTimeout(() => {
         window.scrollTo({ top: scrollPos, behavior: 'instant' as ScrollBehavior });
       }, 0);
+    } else {
+      // No saved scroll = this is a fresh navigation, start at top
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     }
-  }, [slug, currentLessonIndex]);
+  }, [slug, currentLessonIndex, hydrated]);
 
   // Reset scroll progress when lesson changes
   useEffect(() => {
-    // Only reset to top when manually navigating between lessons
-    // Don't reset when component first mounts
+    // When navigating to a new lesson, clear its saved scroll position
+    // and scroll to top
     if (hydrated) {
+      // Clear the saved scroll position for the NEW lesson we're navigating to
+      sessionStorage.removeItem(`scroll-${slug}-${currentLessonIndex}`);
+      
       queueMicrotask(() => {
         setScrollProgress(0);
-        // Clear saved scroll for this lesson since we're navigating away
-        sessionStorage.removeItem(`scroll-${slug}-${currentLessonIndex}`);
-        window.scrollTo({ top: 0 });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     }
   }, [currentLessonIndex, hydrated, slug]);
@@ -439,6 +447,9 @@ function TutorialPageContent({
     : false;
 
   const goToLesson = (index: number) => {
+    // Clear saved scroll for the target lesson before navigating
+    sessionStorage.removeItem(`scroll-${slug}-${index}`);
+    
     setCurrentLessonIndex(index);
     localStorage.setItem(
       getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
