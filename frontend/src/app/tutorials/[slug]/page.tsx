@@ -68,7 +68,9 @@ function renderInlineMarkdown(text: string): string {
 
 // Renders the full lesson body: ## headings get anchor IDs, lists, paragraphs
 function LessonContent({ content }: { content: string }) {
-  const blocks = content.split("\n\n");
+  // Ensure headings have an empty line after them so split("\n\n") works correctly
+  const normalizedContent = (content || "").replace(/^(## [^\n]+)\n(?!$|\n)/gm, "$1\n\n");
+  const blocks = normalizedContent.split("\n\n");
 
   return (
     <div className="lesson-content-wrapper space-y-0 text-gray-700 dark:text-gray-300">

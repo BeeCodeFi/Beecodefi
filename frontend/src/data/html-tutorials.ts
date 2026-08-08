@@ -1225,6 +1225,7 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
     content: `Accessibility and SEO are part of building professional web pages. Good accessibility helps people using screen readers, keyboards, and assistive tools. Good SEO helps search engines understand your content.
 
 ## Accessibility Basics
+
 - Use meaningful heading structure with \`<h1>\` to \`<h6>\`
 - Always pair form controls with \`<label>\`
 - Provide descriptive \`alt\` text for images
@@ -1232,12 +1233,14 @@ Use \`<fieldset>\` to group related controls and \`<legend>\` to label the group
 - Use semantic landmarks like \`<header>\`, \`<main>\`, \`<nav>\`, and \`<footer>\`
 
 ## ARIA and Screen Readers
+
 ARIA attributes can improve accessibility when native HTML is not enough. Common examples:
 - \`aria-label\` — gives an element a clear accessible name
 - \`aria-describedby\` — points to helper text
 - \`aria-hidden\` — hides decorative content from assistive tech
 
 ## SEO Basics
+
 Search engines rely on clear structure and good metadata:
 - Use a descriptive \`<title>\`
 - Add a meta description
