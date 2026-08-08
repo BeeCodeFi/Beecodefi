@@ -7,7 +7,7 @@ import Link from "next/link";
 import { htmlInterviewQuestions } from "@/data/interview-questions/html-questions";
 
 export default function HTMLInterviewQuestionsPage() {
-  const [expandedId, setExpanded Id] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
 
