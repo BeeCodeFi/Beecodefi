@@ -22,6 +22,15 @@ public class QuizController : BaseController
         return Ok(topics);
     }
 
+    [Authorize]
+    [HttpGet("scores")]
+    public async Task<ActionResult<Dictionary<string, int>>> GetScores()
+    {
+        int userId = GetUserId();
+        var scores = await _quizService.GetBestScoresAsync(userId);
+        return Ok(scores);
+    }
+
     [HttpGet("{topic}")]
     public async Task<ActionResult<List<QuizQuestionDto>>> GetQuestions(string topic)
     {

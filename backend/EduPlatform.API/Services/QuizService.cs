@@ -429,4 +429,44 @@ public class QuizService : IQuizService
             throw;
         }
     }
+
+    public async Task<Dictionary<string, int>> GetBestScoresAsync(int userId)
+    {
+        var scores = new Dictionary<string, int>();
+
+        // Get regular quiz scores
+        var regularScores = await _db.QuizAttempts
+            .Where(a => a.UserId == userId)
+            .Include(a => a.Quiz)
+            .GroupBy(a => a.Quiz.Topic)
+            .Select(g => new { Topic = g.Key, BestScore = g.Max(a => a.Score) })
+            .ToListAsync();
+
+        foreach (var rs in regularScores)
+        {
+            scores[rs.Topic] = rs.BestScore;
+        }
+
+        // Get lesson quiz scores
+        var lessonScores = await _db.LessonQuizAttempts
+            .Where(a => a.UserId == userId)
+            .GroupBy(a => a.QuizTopic)
+            .Select(g => new { Topic = g.Key, BestScore = g.Max(a => a.Score) })
+            .ToListAsync();
+
+        foreach (var ls in lessonScores)
+        {
+            // If there's overlap, keep the highest (shouldn't be overlap in practice)
+            if (scores.TryGetValue(ls.Topic, out var existingScore))
+            {
+                scores[ls.Topic] = Math.Max(existingScore, ls.BestScore);
+            }
+            else
+            {
+                scores[ls.Topic] = ls.BestScore;
+            }
+        }
+
+        return scores;
+    }
 }

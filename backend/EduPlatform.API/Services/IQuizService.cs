@@ -11,4 +11,5 @@ public interface IQuizService
     Task<PaginatedQuizHistoryDto> GetHistoryAsync(int userId, int page = 1, int pageSize = 10);
     Task<bool> CheckLessonQuizTableExistsAsync();
     Task<int> GetLessonQuizCountAsync(int? userId);
+    Task<Dictionary<string, int>> GetBestScoresAsync(int userId);
 }
