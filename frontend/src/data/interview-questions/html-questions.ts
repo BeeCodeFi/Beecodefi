@@ -756,4 +756,814 @@ document.cookie = "user=John; expires=Fri, 31 Dec 2024 12:00:00 UTC; path=/";
     category: 'Forms',
     tags: ['forms', 'http', 'methods'],
   },
+  {
+    id: 'html-17',
+    question: 'What is the difference between HTML and HTML5?',
+    answer: `**HTML5** is the latest version of HTML with many new features and improvements.
+
+**Key Differences:**
+
+**1. DOCTYPE Declaration:**
+\`\`\`html
+<!-- HTML4 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<!-- HTML5 -->
+<!DOCTYPE html>
+\`\`\`
+
+**2. Multimedia Support:**
+\`\`\`html
+<!-- HTML5 has native support -->
+<video src="movie.mp4" controls></video>
+<audio src="music.mp3" controls></audio>
+
+<!-- HTML4 required plugins like Flash -->
+<object data="movie.swf"></object>
+\`\`\`
+
+**3. New Semantic Elements:**
+- HTML5: \`<header>\`, \`<footer>\`, \`<nav>\`, \`<article>\`, \`<section>\`, \`<aside>\`
+- HTML4: Only \`<div>\` and \`<span>\` for structure
+
+**4. Graphics:**
+\`\`\`html
+<!-- HTML5 Canvas and SVG -->
+<canvas id="myCanvas"></canvas>
+<svg><circle cx="50" cy="50" r="40"/></svg>
+\`\`\`
+
+**5. Storage:**
+- HTML5: localStorage, sessionStorage, IndexedDB
+- HTML4: Only cookies
+
+**6. Form Enhancements:**
+\`\`\`html
+<!-- HTML5 new input types -->
+<input type="email">
+<input type="date">
+<input type="range">
+<input type="color">
+\`\`\`
+
+**7. APIs:**
+- Geolocation API
+- Drag and Drop API
+- Web Workers
+- WebSockets
+- History API
+
+**8. Character Encoding:**
+\`\`\`html
+<!-- HTML5 -->
+<meta charset="UTF-8">
+
+<!-- HTML4 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+\`\`\`
+
+**Benefits of HTML5:**
+- Better semantic structure
+- Improved accessibility
+- Mobile-friendly
+- Faster performance
+- No plugin dependencies`,
+    difficulty: 'intermediate',
+    category: 'HTML5 Features',
+    tags: ['html5', 'comparison', 'features'],
+  },
+  {
+    id: 'html-18',
+    question: 'What are Web Workers in HTML5?',
+    answer: `**Web Workers** allow JavaScript to run in background threads without blocking the UI.
+
+**Why Use Web Workers:**
+- Perform heavy computations
+- Process large data sets
+- Keep UI responsive
+- Parallel processing
+
+**Creating a Web Worker:**
+
+**Main Script:**
+\`\`\`javascript
+// Create worker
+const worker = new Worker('worker.js');
+
+// Send data to worker
+worker.postMessage({ data: [1, 2, 3, 4, 5] });
+
+// Receive data from worker
+worker.onmessage = function(event) {
+  console.log('Result from worker:', event.data);
+};
+
+// Handle errors
+worker.onerror = function(error) {
+  console.error('Worker error:', error);
+};
+
+// Terminate worker when done
+worker.terminate();
+\`\`\`
+
+**Worker Script (worker.js):**
+\`\`\`javascript
+// Listen for messages
+onmessage = function(event) {
+  const data = event.data.data;
+  
+  // Perform heavy computation
+  const result = data.reduce((sum, num) => sum + num, 0);
+  
+  // Send result back to main thread
+  postMessage(result);
+};
+\`\`\`
+
+**Types of Workers:**
+1. **Dedicated Workers**: Single script access
+2. **Shared Workers**: Multiple scripts can access
+3. **Service Workers**: Handle network requests, caching
+
+**Limitations:**
+- No DOM access
+- No window object
+- No document object
+- Limited API access
+
+**Use Cases:**
+- Image processing
+- Data encryption
+- Complex calculations
+- Real-time data processing
+- Background sync`,
+    difficulty: 'advanced',
+    category: 'HTML5 APIs',
+    tags: ['web-workers', 'javascript', 'performance', 'html5'],
+  },
+  {
+    id: 'html-19',
+    question: 'What is the Canvas API and how do you use it?',
+    answer: `The **Canvas API** allows you to draw graphics dynamically using JavaScript.
+
+**Basic Setup:**
+\`\`\`html
+<canvas id="myCanvas" width="500" height="300"></canvas>
+\`\`\`
+
+**Drawing with JavaScript:**
+\`\`\`javascript
+const canvas = document.getElementById('myCanvas');
+const ctx = canvas.getContext('2d');
+
+// Draw rectangle
+ctx.fillStyle = 'blue';
+ctx.fillRect(10, 10, 150, 100);
+
+// Draw circle
+ctx.beginPath();
+ctx.arc(200, 75, 50, 0, 2 * Math.PI);
+ctx.fillStyle = 'red';
+ctx.fill();
+
+// Draw line
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(300, 150);
+ctx.strokeStyle = 'green';
+ctx.lineWidth = 5;
+ctx.stroke();
+
+// Draw text
+ctx.font = '30px Arial';
+ctx.fillStyle = 'black';
+ctx.fillText('Hello Canvas', 50, 200);
+
+// Draw image
+const img = new Image();
+img.onload = function() {
+  ctx.drawImage(img, 0, 0);
+};
+img.src = 'image.jpg';
+\`\`\`
+
+**Common Methods:**
+- \`fillRect(x, y, width, height)\` - Draw filled rectangle
+- \`strokeRect(x, y, width, height)\` - Draw rectangle outline
+- \`arc(x, y, radius, startAngle, endAngle)\` - Draw circle/arc
+- \`lineTo(x, y)\` - Draw line
+- \`fillText(text, x, y)\` - Draw text
+- \`drawImage(img, x, y)\` - Draw image
+
+**Use Cases:**
+- Games
+- Charts and graphs
+- Image editing
+- Data visualization
+- Animations
+- Drawing applications
+
+**Canvas vs SVG:**
+- Canvas: Pixel-based (raster), better for complex scenes
+- SVG: Vector-based, better for simple shapes that scale`,
+    difficulty: 'advanced',
+    category: 'HTML5 APIs',
+    tags: ['canvas', 'graphics', 'javascript', 'html5'],
+  },
+  {
+    id: 'html-20',
+    question: 'What is the Geolocation API in HTML5?',
+    answer: `The **Geolocation API** allows web applications to access the user's geographical location.
+
+**Getting Current Position:**
+\`\`\`javascript
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    // Success callback
+    function(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+      
+      console.log(\`Lat: \${latitude}, Lng: \${longitude}\`);
+      console.log(\`Accuracy: \${accuracy} meters\`);
+    },
+    // Error callback
+    function(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          console.log("User denied location");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          console.log("Location unavailable");
+          break;
+        case error.TIMEOUT:
+          console.log("Request timeout");
+          break;
+      }
+    },
+    // Options
+    {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    }
+  );
+} else {
+  console.log("Geolocation not supported");
+}
+\`\`\`
+
+**Watching Position (Real-time):**
+\`\`\`javascript
+const watchId = navigator.geolocation.watchPosition(
+  function(position) {
+    console.log('Position updated:', position.coords);
+  },
+  function(error) {
+    console.error('Error:', error);
+  }
+);
+
+// Stop watching
+navigator.geolocation.clearWatch(watchId);
+\`\`\`
+
+**Position Object Properties:**
+- \`coords.latitude\` - Latitude in decimal degrees
+- \`coords.longitude\` - Longitude in decimal degrees
+- \`coords.accuracy\` - Accuracy in meters
+- \`coords.altitude\` - Height in meters (if available)
+- \`coords.speed\` - Speed in m/s (if available)
+- \`coords.heading\` - Direction in degrees (if available)
+- \`timestamp\` - Time when position was acquired
+
+**Use Cases:**
+- Location-based services
+- Store locators
+- Weather apps
+- Navigation apps
+- Check-in features
+- Delivery tracking
+
+**Privacy Note:** Always requires user permission!`,
+    difficulty: 'intermediate',
+    category: 'HTML5 APIs',
+    tags: ['geolocation', 'api', 'location', 'html5'],
+  },
+  {
+    id: 'html-21',
+    question: 'What is SVG and how is it different from Canvas?',
+    answer: `**SVG (Scalable Vector Graphics)** is an XML-based format for creating vector graphics.
+
+**SVG Example:**
+\`\`\`html
+<svg width="200" height="200">
+  <!-- Circle -->
+  <circle cx="100" cy="100" r="50" fill="blue" />
+  
+  <!-- Rectangle -->
+  <rect x="10" y="10" width="80" height="60" fill="red" />
+  
+  <!-- Line -->
+  <line x1="0" y1="0" x2="200" y2="200" stroke="green" stroke-width="3" />
+  
+  <!-- Text -->
+  <text x="50" y="150" font-size="20" fill="black">Hello SVG</text>
+  
+  <!-- Path (complex shape) -->
+  <path d="M150 0 L75 200 L225 200 Z" fill="yellow" />
+</svg>
+\`\`\`
+
+**SVG vs Canvas Comparison:**
+
+**SVG:**
+- **Vector-based** (resolution independent)
+- **DOM-based** (each element is a DOM node)
+- Can attach event listeners to individual shapes
+- Better for **small number of objects**
+- Better for **static content**
+- Scales without quality loss
+- Better **accessibility**
+- Can be styled with CSS
+- Larger file size for complex scenes
+
+**Canvas:**
+- **Pixel-based** (raster graphics)
+- **Single HTML element**
+- Events only on canvas element
+- Better for **large number of objects**
+- Better for **animations**
+- Quality degrades when scaled
+- Limited accessibility
+- Requires JavaScript for everything
+- Better performance for complex scenes
+
+**When to Use SVG:**
+- Icons and logos
+- Charts and graphs
+- Maps
+- UI elements
+- Interactive diagrams
+- Content that needs to scale
+
+**When to Use Canvas:**
+- Games
+- Real-time animations
+- Image manipulation
+- Complex visualizations
+- Photo editing
+- Performance-critical applications
+
+**Hybrid Approach:**
+You can use both! SVG for UI elements and Canvas for complex animations.`,
+    difficulty: 'advanced',
+    category: 'Graphics',
+    tags: ['svg', 'canvas', 'graphics', 'comparison'],
+  },
+  {
+    id: 'html-22',
+    question: 'What are HTML entities and why are they used?',
+    answer: `**HTML entities** are special codes that represent characters that have special meaning in HTML or can't be typed easily.
+
+**Common HTML Entities:**
+
+**Reserved Characters:**
+\`\`\`html
+&lt;     <!-- < (less than) -->
+&gt;     <!-- > (greater than) -->
+&amp;    <!-- & (ampersand) -->
+&quot;   <!-- " (double quote) -->
+&apos;   <!-- ' (single quote) -->
+\`\`\`
+
+**Special Characters:**
+\`\`\`html
+&nbsp;   <!-- Non-breaking space -->
+&copy;   <!-- © Copyright -->
+&reg;    <!-- ® Registered trademark -->
+&trade;  <!-- ™ Trademark -->
+&euro;   <!-- € Euro -->
+&pound;  <!-- £ Pound -->
+&yen;    <!-- ¥ Yen -->
+&cent;   <!-- ¢ Cent -->
+\`\`\`
+
+**Math Symbols:**
+\`\`\`html
+&times;  <!-- × Multiplication -->
+&divide; <!-- ÷ Division -->
+&plusmn; <!-- ± Plus-minus -->
+&ne;     <!-- ≠ Not equal -->
+&le;     <!-- ≤ Less than or equal -->
+&ge;     <!-- ≥ Greater than or equal -->
+\`\`\`
+
+**Arrows:**
+\`\`\`html
+&larr;   <!-- ← Left arrow -->
+&rarr;   <!-- → Right arrow -->
+&uarr;   <!-- ↑ Up arrow -->
+&darr;   <!-- ↓ Down arrow -->
+\`\`\`
+
+**Numeric Character References:**
+\`\`\`html
+&#169;   <!-- © (decimal) -->
+&#xA9;   <!-- © (hexadecimal) -->
+\`\`\`
+
+**Why Use Entities:**
+
+**1. Display Reserved Characters:**
+\`\`\`html
+<p>To display &lt;div&gt; tag, use entities</p>
+<!-- Displays: To display <div> tag, use entities -->
+\`\`\`
+
+**2. Special Symbols:**
+\`\`\`html
+<p>Price: &euro;100 &plusmn; &euro;5</p>
+<!-- Displays: Price: €100 ± €5 -->
+\`\`\`
+
+**3. Non-breaking Space:**
+\`\`\`html
+<p>10&nbsp;PM</p>
+<!-- Keeps "10" and "PM" together, prevents line break between them -->
+\`\`\`
+
+**4. Accessibility:**
+Using proper entities improves screen reader compatibility.
+
+**Example:**
+\`\`\`html
+<p>
+  &copy; 2024 Company Name. All rights reserved&trade;
+  <br>
+  Contact: email@example.com
+  <br>
+  Price: &euro;50 &ndash; &euro;100
+</p>
+\`\`\``,
+    difficulty: 'beginner',
+    category: 'Text Content',
+    tags: ['entities', 'special-characters', 'encoding'],
+  },
+  {
+    id: 'html-23',
+    question: 'What is the purpose of the <iframe> tag and what are its security concerns?',
+    answer: `The **\`<iframe>\`** (inline frame) embeds another HTML document within the current page.
+
+**Basic Usage:**
+\`\`\`html
+<iframe 
+  src="https://example.com" 
+  width="800" 
+  height="600"
+  title="Example Website">
+</iframe>
+\`\`\`
+
+**Common Attributes:**
+\`\`\`html
+<iframe
+  src="page.html"
+  width="100%"
+  height="400"
+  frameborder="0"
+  scrolling="auto"
+  loading="lazy"
+  sandbox="allow-scripts allow-same-origin"
+  allow="camera; microphone; geolocation"
+  title="Embedded Content">
+</iframe>
+\`\`\`
+
+**Use Cases:**
+- Embed videos (YouTube, Vimeo)
+- Embed maps (Google Maps)
+- Third-party widgets
+- Payment gateways
+- Social media feeds
+- Advertisements
+
+**Security Concerns:**
+
+**1. Clickjacking:**
+Attacker overlays transparent iframe to trick users into clicking
+
+**Prevention:**
+\`\`\`html
+<!-- In parent page -->
+<meta http-equiv="X-Frame-Options" content="DENY">
+\`\`\`
+
+**2. XSS (Cross-Site Scripting):**
+Malicious content from untrusted sources
+
+**Prevention with sandbox:**
+\`\`\`html
+<iframe 
+  src="untrusted.html" 
+  sandbox="allow-scripts">
+</iframe>
+\`\`\`
+
+**Sandbox Options:**
+- \`allow-forms\` - Allow form submission
+- \`allow-scripts\` - Allow JavaScript
+- \`allow-same-origin\` - Allow same-origin access
+- \`allow-popups\` - Allow popups
+- \`allow-modals\` - Allow modal dialogs
+
+**3. Cross-Origin Issues:**
+By default, iframes from different origins can't access each other
+
+**4. Performance Impact:**
+Each iframe loads a separate document
+
+**Best Practices:**
+\`\`\`html
+<!-- 1. Use sandbox -->
+<iframe sandbox="allow-scripts allow-same-origin" src="..."></iframe>
+
+<!-- 2. Use CSP (Content Security Policy) -->
+<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self'">
+
+<!-- 3. Lazy loading -->
+<iframe loading="lazy" src="..."></iframe>
+
+<!-- 4. Always include title for accessibility -->
+<iframe title="Video Player" src="..."></iframe>
+\`\`\`
+
+**Modern Alternatives:**
+- Use APIs when available (instead of embedding)
+- Server-side includes
+- Web Components
+- AJAX/Fetch for loading content`,
+    difficulty: 'advanced',
+    category: 'Embedded Content',
+    tags: ['iframe', 'security', 'embedding', 'sandbox'],
+  },
+  {
+    id: 'html-24',
+    question: 'What is the difference between <script>, <script async>, and <script defer>?',
+    answer: `These attributes control **how and when** JavaScript files are loaded and executed.
+
+**1. Normal \`<script>\` (Blocking):**
+\`\`\`html
+<script src="script.js"></script>
+\`\`\`
+- **Stops HTML parsing**
+- Downloads script
+- Executes immediately
+- Blocks page rendering
+- **Execution order**: Sequential
+
+**2. \`<script async>\`:**
+\`\`\`html
+<script async src="script.js"></script>
+\`\`\`
+- Downloads **in parallel** with HTML parsing
+- Executes **as soon as downloaded**
+- May interrupt HTML parsing
+- **Execution order**: Unpredictable (first downloaded, first executed)
+- Best for: Independent scripts (analytics, ads)
+
+**3. \`<script defer>\`:**
+\`\`\`html
+<script defer src="script.js"></script>
+\`\`\`
+- Downloads **in parallel** with HTML parsing
+- Executes **after HTML parsing complete**
+- Does not block rendering
+- **Execution order**: Preserved (order in HTML)
+- Best for: Scripts that need DOM or depend on each other
+
+**Visual Timeline:**
+
+**Normal:**
+\`\`\`
+HTML parsing → STOP → Download → Execute → Continue parsing
+\`\`\`
+
+**Async:**
+\`\`\`
+HTML parsing ─────────────────→
+Download script ───→ Execute (pause parsing)
+\`\`\`
+
+**Defer:**
+\`\`\`
+HTML parsing ─────────────────→ Done
+Download script ───────→ Execute (after parsing)
+\`\`\`
+
+**Complete Example:**
+\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Analytics - independent, use async -->
+  <script async src="analytics.js"></script>
+  
+  <!-- Main app - needs DOM, use defer -->
+  <script defer src="app.js"></script>
+  <script defer src="utils.js"></script>
+</head>
+<body>
+  <h1>My Page</h1>
+  
+  <!-- Inline script - runs immediately -->
+  <script>
+    console.log('Inline script');
+  </script>
+  
+  <!-- Blocking script - rarely needed -->
+  <script src="critical.js"></script>
+</body>
+</html>
+\`\`\`
+
+**When to Use What:**
+
+**Use Regular (no attribute):**
+- Critical scripts needed immediately
+- Small inline scripts
+- Scripts in body (already at end)
+
+**Use async:**
+- Independent scripts
+- Third-party analytics
+- Ads
+- Social media widgets
+
+**Use defer:**
+- Scripts that manipulate DOM
+- Scripts that depend on each other
+- Main application code
+- Most scripts should use this!
+
+**Best Practice:**
+\`\`\`html
+<!-- Put scripts in <head> with defer -->
+<head>
+  <script defer src="main.js"></script>
+</head>
+\`\`\``,
+    difficulty: 'advanced',
+    category: 'Performance',
+    tags: ['script', 'async', 'defer', 'performance', 'loading'],
+  },
+  {
+    id: 'html-25',
+    question: 'What is ARIA and why is it important?',
+    answer: `**ARIA (Accessible Rich Internet Applications)** makes web content more accessible to people with disabilities.
+
+**Why ARIA:**
+- Screen readers need semantic meaning
+- Dynamic content updates
+- Custom widgets/controls
+- Complex interactions
+
+**Core ARIA Attributes:**
+
+**1. Roles:**
+\`\`\`html
+<div role="button">Click Me</div>
+<div role="navigation">Menu</div>
+<div role="alert">Error message</div>
+<div role="dialog">Modal</div>
+<div role="progressbar">Loading...</div>
+\`\`\`
+
+**2. States:**
+\`\`\`html
+<button aria-pressed="true">Toggle</button>
+<input aria-invalid="true" aria-required="true">
+<div aria-expanded="false">Collapsed content</div>
+<div aria-hidden="true">Hidden from screen readers</div>
+<button aria-disabled="true">Disabled</button>
+\`\`\`
+
+**3. Properties:**
+\`\`\`html
+<button aria-label="Close dialog">×</button>
+<input aria-labelledby="username-label">
+<div aria-describedby="help-text">Input</div>
+<div aria-live="polite">Status updates</div>
+<input aria-placeholder="Enter email">
+\`\`\`
+
+**Common Patterns:**
+
+**Modal Dialog:**
+\`\`\`html
+<div role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+  <h2 id="dialog-title">Confirm Action</h2>
+  <p>Are you sure?</p>
+  <button>Yes</button>
+  <button>No</button>
+</div>
+\`\`\`
+
+**Dropdown Menu:**
+\`\`\`html
+<button 
+  aria-haspopup="true" 
+  aria-expanded="false" 
+  aria-controls="menu">
+  Menu
+</button>
+<ul id="menu" role="menu" hidden>
+  <li role="menuitem">Item 1</li>
+  <li role="menuitem">Item 2</li>
+</ul>
+\`\`\`
+
+**Tab Interface:**
+\`\`\`html
+<div role="tablist">
+  <button role="tab" aria-selected="true" aria-controls="panel1">
+    Tab 1
+  </button>
+  <button role="tab" aria-selected="false" aria-controls="panel2">
+    Tab 2
+  </button>
+</div>
+<div id="panel1" role="tabpanel">Content 1</div>
+<div id="panel2" role="tabpanel" hidden>Content 2</div>
+\`\`\`
+
+**Live Regions:**
+\`\`\`html
+<!-- Polite - waits for user to finish -->
+<div aria-live="polite">Status: Loading...</div>
+
+<!-- Assertive - interrupts immediately -->
+<div aria-live="assertive" role="alert">Error occurred!</div>
+
+<!-- Off - no announcements -->
+<div aria-live="off">Silent updates</div>
+\`\`\`
+
+**Form Validation:**
+\`\`\`html
+<label for="email">Email:</label>
+<input 
+  id="email" 
+  type="email"
+  aria-required="true"
+  aria-invalid="true"
+  aria-describedby="email-error">
+<span id="email-error" role="alert">
+  Please enter a valid email
+</span>
+\`\`\`
+
+**Important Rules:**
+
+**1. Use Semantic HTML First:**
+\`\`\`html
+<!-- Bad -->
+<div role="button">Click</div>
+
+<!-- Good -->
+<button>Click</button>
+\`\`\`
+
+**2. Don't Override Semantics:**
+\`\`\`html
+<!-- Bad -->
+<h1 role="button">Title</h1>
+
+<!-- Good -->
+<h1>Title</h1>
+<button>Action</button>
+\`\`\`
+
+**3. Keyboard Accessibility:**
+ARIA doesn't add keyboard functionality - you must add it with JavaScript
+
+**4. Test with Screen Readers:**
+- NVDA (Windows, free)
+- JAWS (Windows)
+- VoiceOver (Mac/iOS)
+- TalkBack (Android)
+
+**Benefits:**
+- Improves accessibility for disabled users
+- Better user experience for everyone
+- Legal compliance (ADA, WCAG)
+- Improved SEO
+- Better semantic structure`,
+    difficulty: 'advanced',
+    category: 'Accessibility',
+    tags: ['aria', 'accessibility', 'a11y', 'screen-readers'],
+  },
 ];
