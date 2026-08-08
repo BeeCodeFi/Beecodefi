@@ -17,4 +17,7 @@ public class User
     public ICollection<TutorialProgress> TutorialProgress { get; set; } = new List<TutorialProgress>();
     public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
     public ICollection<RecentActivity> RecentActivities { get; set; } = new List<RecentActivity>();
+    public ICollection<CodeSnippet> CodeSnippets { get; set; } = new List<CodeSnippet>();
+    public ICollection<LessonComment> Comments { get; set; } = new List<LessonComment>();
+    public ICollection<CommentVote> CommentVotes { get; set; } = new List<CommentVote>();
 }

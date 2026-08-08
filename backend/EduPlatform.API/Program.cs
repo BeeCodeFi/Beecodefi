@@ -60,6 +60,8 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IStatsService, StatsService>();
 builder.Services.AddScoped<IStreakService, StreakService>();
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();
+builder.Services.AddScoped<ICodeSnippetService, CodeSnippetService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddHostedService<RefreshTokenCleanupService>();
 
 // Rate Limiting

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FileCode2, Palette, Braces, ArrowRight } from "lucide-react";
+import { FileCode2, Palette, Braces, Atom, Code2, Server, Database, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type Category = {
@@ -49,6 +49,46 @@ const categories: Category[] = [
     href: "/interview-questions/javascript",
     count: 30,
   },
+  {
+    id: "react",
+    name: "React",
+    icon: Atom,
+    color: "from-blue-500 to-cyan-500",
+    shadowColor: "shadow-blue-200 dark:shadow-blue-900/40",
+    description: "Components, hooks, state management, and React best practices",
+    href: "/interview-questions/react",
+    count: 30,
+  },
+  {
+    id: "typescript",
+    name: "TypeScript",
+    icon: Code2,
+    color: "from-blue-600 to-blue-800",
+    shadowColor: "shadow-blue-200 dark:shadow-blue-900/40",
+    description: "Type safety, generics, utility types, and TypeScript best practices",
+    href: "/interview-questions/typescript",
+    count: 20,
+  },
+  {
+    id: "nodejs",
+    name: "Node.js",
+    icon: Server,
+    color: "from-green-500 to-emerald-500",
+    shadowColor: "shadow-green-200 dark:shadow-green-900/40",
+    description: "Server-side JavaScript, async programming, and Node.js internals",
+    href: "/interview-questions/nodejs",
+    count: 20,
+  },
+  {
+    id: "sql",
+    name: "SQL",
+    icon: Database,
+    color: "from-purple-500 to-pink-500",
+    shadowColor: "shadow-purple-200 dark:shadow-purple-900/40",
+    description: "Database design, querying, transactions, and SQL optimization",
+    href: "/interview-questions/sql",
+    count: 20,
+  },
 ];
 
 export default function InterviewQuestionsPage() {
@@ -71,7 +111,7 @@ export default function InterviewQuestionsPage() {
             <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-                80+ questions available
+                170+ questions available
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" />

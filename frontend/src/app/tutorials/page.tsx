@@ -134,6 +134,126 @@ function ContinueLearningCard() {
   );
 }
 
+// Recommended Tutorials Component
+function RecommendedTutorials() {
+  const [recommendations, setRecommendations] = useState<Array<{
+    slug: string;
+    title: string;
+    reason: string;
+    color: string;
+    icon: string;
+  }>>([]);
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const calculateRecommendations = () => {
+      // Get completed lessons from localStorage
+      const completedLessonsKey = getUserStorageKey(user?.id, "completedLessons");
+      const completedLessons = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
+      
+      // Get last visited lesson
+      const lastLessonKey = getUserStorageKey(user?.id, "lastVisitedLesson");
+      const lastLesson = JSON.parse(localStorage.getItem(lastLessonKey) || "null");
+
+      const recs: Array<{
+        slug: string;
+        title: string;
+        reason: string;
+        color: string;
+        icon: string;
+      }> = [];
+
+      // Recommendation logic
+      tutorials.forEach(tutorial => {
+        const tutorialProgress = tutorial.lessons.filter(l => 
+          completedLessons.includes(`${tutorial.slug}-${l.slug}`)
+        ).length;
+        
+        const progressPercent = (tutorialProgress / tutorial.lessons.length) * 100;
+
+        // Recommend if:
+        // 1. Started but not completed (30-90% progress)
+        if (progressPercent >= 30 && progressPercent < 100) {
+          recs.push({
+            slug: tutorial.slug,
+            title: tutorial.title,
+            reason: `${Math.round(progressPercent)}% complete - finish it!`,
+            color: tutorial.color,
+            icon: tutorial.icon,
+          });
+        }
+        // 2. Not started but similar to current learning
+        else if (progressPercent === 0 && lastLesson) {
+          const currentTutorial = tutorials.find(t => t.slug === lastLesson.tutorialSlug);
+          if (currentTutorial && currentTutorial.slug !== tutorial.slug) {
+            recs.push({
+              slug: tutorial.slug,
+              title: tutorial.title,
+              reason: `Next topic after ${currentTutorial.title}`,
+              color: tutorial.color,
+              icon: tutorial.icon,
+            });
+          }
+        }
+      });
+
+      // Sort by relevance and limit to 2
+      setRecommendations(recs.slice(0, 2));
+    };
+
+    queueMicrotask(calculateRecommendations);
+  }, [isLoading, user?.id]);
+
+  if (recommendations.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6 }}
+      className="mt-8 max-w-2xl mx-auto"
+    >
+      <div className="flex items-center gap-2 mb-4">
+        <Brain className="w-5 h-5 text-indigo-500" />
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">
+          Recommended for You
+        </h3>
+      </div>
+      <div className="space-y-3">
+        {recommendations.map((rec) => {
+          const Icon = iconMap[rec.icon] || FileCode2;
+          return (
+            <Link
+              key={rec.slug}
+              href={`/tutorials/${rec.slug}`}
+              className="group block bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 hover:shadow-lg hover:border-indigo-300 dark:hover:border-indigo-700 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-10 h-10 rounded-lg bg-gradient-to-br ${rec.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
+                >
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                    {rec.title}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {rec.reason}
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function TutorialsPage() {
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -207,6 +327,9 @@ export default function TutorialsPage() {
 
           {/* Continue Learning */}
           <ContinueLearningCard />
+          
+          {/* Recommended Tutorials */}
+          <RecommendedTutorials />
         </div>
       </section>
 

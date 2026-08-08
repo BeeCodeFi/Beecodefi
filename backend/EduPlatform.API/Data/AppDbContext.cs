@@ -24,6 +24,9 @@ public class AppDbContext : DbContext
     public DbSet<InterviewRevision> InterviewRevisions => Set<InterviewRevision>();
     public DbSet<InterviewProgress> InterviewProgress => Set<InterviewProgress>();
     public DbSet<InterviewNote> InterviewNotes => Set<InterviewNote>();
+    public DbSet<CodeSnippet> CodeSnippets => Set<CodeSnippet>();
+    public DbSet<LessonComment> LessonComments => Set<LessonComment>();
+    public DbSet<CommentVote> CommentVotes => Set<CommentVote>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -205,6 +208,47 @@ public class AppDbContext : DbContext
             entity.HasIndex(n => new { n.UserId, n.Category, n.QuestionId }).IsUnique();
             entity.Property(n => n.Category).HasMaxLength(50);
             entity.Property(n => n.QuestionId).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<CodeSnippet>(entity =>
+        {
+            entity.HasOne(cs => cs.User)
+                .WithMany()
+                .HasForeignKey(cs => cs.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(cs => cs.ShareId).IsUnique();
+            entity.Property(cs => cs.Name).HasMaxLength(200);
+            entity.Property(cs => cs.Language).HasMaxLength(50);
+            entity.Property(cs => cs.ShareId).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<LessonComment>(entity =>
+        {
+            entity.HasOne(lc => lc.User)
+                .WithMany()
+                .HasForeignKey(lc => lc.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(lc => new { lc.TutorialSlug, lc.LessonSlug });
+            entity.Property(lc => lc.TutorialSlug).HasMaxLength(100);
+            entity.Property(lc => lc.LessonSlug).HasMaxLength(150);
+            entity.Property(lc => lc.Content).HasMaxLength(2000);
+        });
+
+        modelBuilder.Entity<CommentVote>(entity =>
+        {
+            entity.HasOne(cv => cv.User)
+                .WithMany()
+                .HasForeignKey(cv => cv.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cv => cv.Comment)
+                .WithMany(c => c.Votes)
+                .HasForeignKey(cv => cv.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(cv => new { cv.UserId, cv.CommentId }).IsUnique();
         });
     }
 }
