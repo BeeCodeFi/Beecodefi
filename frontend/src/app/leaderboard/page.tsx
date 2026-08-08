@@ -49,6 +49,7 @@ export default function LeaderboardPage() {
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
   const [timeframe, setTimeframe] = useState<"all" | "monthly">("all");
   const [track, setTrack] = useState<"all" | "html" | "css" | "javascript">("all");
+  const [leaderboardType, setLeaderboardType] = useState<"points" | "xp">("points");
   const { user } = useAuth();
   const pageSize = 20;
 
@@ -56,9 +57,11 @@ export default function LeaderboardPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const { data: leaderboardData } = await api.get<PaginatedLeaderboard>(
-          `/leaderboard?page=${page}&pageSize=${pageSize}&timeframe=${timeframe}&track=${track}`
-        );
+        const endpoint = leaderboardType === "xp" 
+          ? `/leaderboard/xp?page=${page}&pageSize=${pageSize}`
+          : `/leaderboard?page=${page}&pageSize=${pageSize}&timeframe=${timeframe}&track=${track}`;
+        
+        const { data: leaderboardData } = await api.get<PaginatedLeaderboard>(endpoint);
         setLeaderboard(leaderboardData.items);
         setTotalPages(leaderboardData.totalPages);
         setTotalCount(leaderboardData.totalCount);
@@ -77,7 +80,7 @@ export default function LeaderboardPage() {
     };
 
     fetchData();
-  }, [user, page, timeframe, track]);
+  }, [user, page, timeframe, track, leaderboardType]);
 
   const goToPage = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -114,10 +117,13 @@ export default function LeaderboardPage() {
             Top Learners
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-            <span className="text-gradient">Leaderboard</span>
+            <span className="text-gradient">{leaderboardType === "xp" ? "XP Leaderboard" : "Leaderboard"}</span>
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            See how you rank against other learners. Earn points by completing quizzes and lessons!
+            {leaderboardType === "xp" 
+              ? "See how you rank based on total XP earned. Complete lessons, quizzes, and maintain streaks to earn more XP!"
+              : "See how you rank against other learners. Earn points by completing quizzes and lessons!"
+            }
           </p>
         </motion.div>
 
@@ -142,7 +148,7 @@ export default function LeaderboardPage() {
               <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 mb-1">
                   <Target className="w-4 h-4" />
-                  <span className="text-xs font-semibold">Points</span>
+                  <span className="text-xs font-semibold">{leaderboardType === "xp" ? "Total XP" : "Points"}</span>
                 </div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{userStats.totalPoints}</p>
               </div>
@@ -172,6 +178,7 @@ export default function LeaderboardPage() {
         )}
 
         {/* Points System Info */}
+        {leaderboardType === "points" && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -220,49 +227,51 @@ export default function LeaderboardPage() {
           transition={{ delay: 0.25 }}
           className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
         >
-          {/* Timeframe Tabs */}
+          {/* Leaderboard Type Tabs */}
           <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
             <button
-              onClick={() => setTimeframe("all")}
+              onClick={() => setLeaderboardType("points")}
               className={cn(
                 "px-6 py-2 rounded-lg text-sm font-medium transition-all",
-                timeframe === "all"
+                leaderboardType === "points"
                   ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
                   : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               )}
             >
-              All Time
+              Points
             </button>
             <button
-              onClick={() => setTimeframe("monthly")}
+              onClick={() => setLeaderboardType("xp")}
               className={cn(
                 "px-6 py-2 rounded-lg text-sm font-medium transition-all",
-                timeframe === "monthly"
+                leaderboardType === "xp"
                   ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
                   : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               )}
             >
-              This Month
+              XP
             </button>
-          </div>
+          )}
 
-          {/* Track Filters */}
-          <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto w-full sm:w-auto">
-            {(["all", "html", "css", "javascript"] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTrack(t)}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize whitespace-nowrap",
-                  track === t
-                    ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                )}
-              >
-                {t === "all" ? "Global" : t}
-              </button>
-            ))}
-          </div>
+          {/* Track Filters - Only show for Points leaderboard */}
+          {leaderboardType === "points" && (
+            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto w-full sm:w-auto">
+              {(["all", "html", "css", "javascript"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTrack(t)}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize whitespace-nowrap",
+                    track === t
+                      ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  )}
+                >
+                  {t === "all" ? "Global" : t}
+                </button>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Leaderboard Table */}
@@ -289,7 +298,7 @@ export default function LeaderboardPage() {
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Rank</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Points</th>
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">{leaderboardType === "xp" ? "XP" : "Points"}</th>
                     <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider hidden sm:table-cell">Quizzes</th>
                     <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider hidden sm:table-cell">Lessons</th>
                     <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Avg Score</th>
@@ -336,7 +345,7 @@ export default function LeaderboardPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className="font-bold text-indigo-600 dark:text-indigo-400">{entry.totalPoints}</span>
+                        <span className="font-bold text-indigo-600 dark:text-indigo-400">{leaderboardType === "xp" ? `${entry.totalPoints} XP` : entry.totalPoints}</span>
                       </td>
                       <td className="px-6 py-4 text-center hidden sm:table-cell">
                         <span className="text-gray-600 dark:text-gray-400">{entry.quizzesCompleted}</span>

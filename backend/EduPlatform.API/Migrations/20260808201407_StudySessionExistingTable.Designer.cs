@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduPlatform.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260808195628_AddStudySession")]
-    partial class AddStudySession
+    [Migration("20260808201407_StudySessionExistingTable")]
+    partial class StudySessionExistingTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
