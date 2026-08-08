@@ -230,41 +230,29 @@ function TutorialPageContent({
     return () => window.removeEventListener("scroll", update);
   }, [slug, currentLessonIndex]);
 
-  // Restore scroll position on lesson load (only for page reloads, not navigation)
+  // Scroll management: restore on reload, reset on navigation
   useEffect(() => {
-    // Only restore scroll if we're hydrating the same lesson (page reload scenario)
-    // Not when navigating between lessons
     if (!hydrated) return;
     
     const savedScroll = sessionStorage.getItem(
       `scroll-${slug}-${currentLessonIndex}`
     );
+    
+    // Check if this is a page reload (savedScroll exists) or a navigation (no savedScroll)
     if (savedScroll) {
+      // Page reload - restore scroll position
       const scrollPos = parseInt(savedScroll, 10);
-      // Use setTimeout to ensure content is rendered
       setTimeout(() => {
         window.scrollTo({ top: scrollPos, behavior: 'instant' as ScrollBehavior });
       }, 0);
     } else {
-      // No saved scroll = this is a fresh navigation, start at top
-      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      // Navigation between lessons - scroll to top
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+        setScrollProgress(0);
+      }, 0);
     }
   }, [slug, currentLessonIndex, hydrated]);
-
-  // Reset scroll progress when lesson changes
-  useEffect(() => {
-    // When navigating to a new lesson, clear its saved scroll position
-    // and scroll to top
-    if (hydrated) {
-      // Clear the saved scroll position for the NEW lesson we're navigating to
-      sessionStorage.removeItem(`scroll-${slug}-${currentLessonIndex}`);
-      
-      queueMicrotask(() => {
-        setScrollProgress(0);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-  }, [currentLessonIndex, hydrated, slug]);
 
   // Save current lesson to localStorage whenever it changes
   useEffect(() => {
@@ -447,7 +435,7 @@ function TutorialPageContent({
     : false;
 
   const goToLesson = (index: number) => {
-    // Clear saved scroll for the target lesson before navigating
+    // Clear saved scroll for the target lesson to force scroll to top
     sessionStorage.removeItem(`scroll-${slug}-${index}`);
     
     setCurrentLessonIndex(index);
@@ -456,7 +444,10 @@ function TutorialPageContent({
       String(index),
     );
     setSidebarOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    
+    // Immediately scroll to top
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    
     // Update URL so the lesson is shareable / bookmarkable
     const lessonSlug = tutorial?.lessons[index]?.slug;
     if (lessonSlug) {
