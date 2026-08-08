@@ -175,8 +175,43 @@ export default function Navbar() {
               </span>
             </Link>
 
-            {/* Desktop Navigation - Primary Links */}
-            <div className="hidden lg:flex items-center gap-1">
+            {/* Desktop Navigation - Full Links on Large Screens */}
+            <div className="hidden xl:flex items-center gap-1">
+              {[...primaryNavLinks, ...secondaryNavLinks].map((link) => {
+                const active = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    data-cursor-grow
+                    className={cn(
+                      "relative px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-200",
+                      active
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white",
+                    )}
+                  >
+                    {link.label}
+                    {/* Active underline pill */}
+                    {active && (
+                      <motion.div
+                        layoutId="nav-active-pill"
+                        className="absolute inset-0 rounded-lg bg-indigo-50 dark:bg-indigo-950/60"
+                        style={{ zIndex: -1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 34,
+                        }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Desktop Navigation - Primary + Dropdown on Medium Screens */}
+            <div className="hidden lg:flex xl:hidden items-center gap-1">
               {primaryNavLinks.map((link) => {
                 const active = pathname === link.href;
                 return (

@@ -62,7 +62,7 @@ public class QuizAnalyticsService : IQuizAnalyticsService
         var attempts = await _db.QuizAttempts
             .Where(qa => qa.UserId == userId)
             .Include(qa => qa.Quiz)
-            .OrderByDescending(qa => qa.AttemptDate)
+            .OrderByDescending(qa => qa.CompletedAt)
             .Take(limit)
             .ToListAsync();
 
@@ -73,9 +73,9 @@ public class QuizAnalyticsService : IQuizAnalyticsService
             QuizTitle = a.Quiz.Title,
             Score = a.Score,
             TotalQuestions = a.TotalQuestions,
-            TimeTaken = a.TimeTaken,
-            AttemptDate = a.AttemptDate,
-            Mode = a.Mode,
+            TimeTaken = TimeSpan.Zero, // TimeTaken not available in current model
+            AttemptDate = a.CompletedAt,
+            Mode = "Practice", // Mode not available in current model
             QuestionPerformance = new List<QuestionPerformanceDto>() // Would need detailed question tracking
         }).ToList();
     }
@@ -127,7 +127,7 @@ public class QuizAnalyticsService : IQuizAnalyticsService
     public async Task<List<WeeklyPerformanceDto>> GetWeeklyPerformanceAsync(int userId, int weeks = 12)
     {
         var attempts = await _db.QuizAttempts
-            .Where(qa => qa.UserId == userId && qa.AttemptDate >= DateTime.UtcNow.AddDays(-weeks * 7))
+            .Where(qa => qa.UserId == userId && qa.CompletedAt >= DateTime.UtcNow.AddDays(-weeks * 7))
             .ToListAsync();
 
         var weeklyData = new List<WeeklyPerformanceDto>();
@@ -136,17 +136,17 @@ public class QuizAnalyticsService : IQuizAnalyticsService
         {
             var weekStart = DateTime.UtcNow.AddDays(-i * 7);
             var weekEnd = weekStart.AddDays(7);
-            
+
             var weekAttempts = attempts
-                .Where(a => a.AttemptDate >= weekStart && a.AttemptDate < weekEnd)
+                .Where(a => a.CompletedAt >= weekStart && a.CompletedAt < weekEnd)
                 .ToList();
 
             weeklyData.Add(new WeeklyPerformanceDto
             {
                 WeekStart = weekStart.ToString("yyyy-MM-dd"),
-                Attempts = weekAttempts.Count,
+                Attempts = weekAttempts.Count(),
                 AverageScore = weekAttempts.Any() ? weekAttempts.Average(a => a.Score) : 0,
-                TotalTimeMinutes = (int)weekAttempts.Sum(a => a.TimeTaken.TotalMinutes)
+                TotalTimeMinutes = 0 // TimeTaken not available in current model
             });
         }
 

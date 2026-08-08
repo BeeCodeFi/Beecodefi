@@ -155,9 +155,9 @@ public class SkillsController : BaseController
 
         foreach (var skills in usersWithSkills)
         {
-            var skillList = skills.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            var skillList = skills?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim().ToLowerInvariant())
-                .Where(s => !string.IsNullOrWhiteSpace(s));
+                .Where(s => !string.IsNullOrWhiteSpace(s)) ?? Enumerable.Empty<string>();
 
             foreach (var skill in skillList)
             {
