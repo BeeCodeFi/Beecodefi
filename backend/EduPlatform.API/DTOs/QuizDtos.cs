@@ -86,3 +86,24 @@ public class PaginatedQuizHistoryDto
     public bool HasNextPage { get; set; }
     public bool HasPreviousPage { get; set; }
 }
+
+public class QuizQuestionBookmarkDto
+{
+    public int Id { get; set; }
+    public int QuestionId { get; set; }
+    public string QuizTopic { get; set; } = string.Empty;
+    public string QuestionText { get; set; } = string.Empty;
+    public DateTime BookmarkedAt { get; set; }
+}
+
+public class CreateQuizQuestionBookmarkDto
+{
+    [Required]
+    public int QuestionId { get; set; }
+
+    [Required, MaxLength(100)]
+    public string QuizTopic { get; set; } = string.Empty;
+
+    [Required, MaxLength(1000)]
+    public string QuestionText { get; set; } = string.Empty;
+}

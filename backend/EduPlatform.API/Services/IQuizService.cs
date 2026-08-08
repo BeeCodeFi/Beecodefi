@@ -2,6 +2,11 @@ using EduPlatform.API.DTOs;
 
 namespace EduPlatform.API.Services;
 
+/// <summary>
+/// Service for managing quiz-related operations.
+/// Note: This service internally depends on IBadgeService to automatically check and unlock badges
+/// when quizzes are submitted (both regular quizzes and lesson quizzes).
+/// </summary>
 public interface IQuizService
 {
     Task<List<QuizTopicDto>> GetTopicsAsync(int? userId = null);

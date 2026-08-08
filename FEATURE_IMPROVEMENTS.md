@@ -44,7 +44,7 @@
 - [x] Global Search -- "/" shortcut, searches all content
 - [x] Bookmarks System -- bookmark lessons, BookmarksTab on dashboard
 - [x] Streak System -- daily streak tracking with flame indicator in navbar
-- [x] Badge System -- badges page with categories, progress tracking
+- [x] Badge System -- badges page with categories, progress tracking, automatic unlocking
 - [x] User Dashboard -- overview, bookmarks, quiz history, settings tabs
 - [x] Tutorial Progress -- progress bars per tutorial track, recent activity feed
 - [x] Quiz System -- multi-topic quizzes with best score tracking
@@ -53,11 +53,23 @@
 - [x] Admin Dashboard -- admin-only content management page
 - [x] Dark Mode -- full dark mode with glassmorphism navbar
 
+### Quiz & Assessment Enhancements
+- [x] Quiz Mode System: Practice, Timed, and Exam modes
+- [x] Timed Mode: Countdown timer with visual warning (30s per question)
+- [x] Practice Mode: Unlimited attempts, skip questions allowed
+- [x] Exam Mode: Single attempt, no retry option
+- [x] Review Mode: Review all answers with explanations after completion
+- [x] Quiz Question Bookmarks: Save difficult questions for later review
+- [x] Bookmark button on each question during quiz
+- [x] Mode selection UI with color-coded cards
+- [x] Enhanced timer display with warning indicators
+
 ### Tutorial Platform Enhancements
 - [x] Full-screen code editor mode with maximize/minimize
 - [x] Console output panel for JavaScript code execution
 - [x] Share code snippets with unique URLs (Database-backed with unique share IDs)
 - [x] Save personal code snippets (Database-backed with CRUD operations)
+- [x] Multi-file support for complex examples (VS Code-style file tabs)
 - [x] Estimated time to completion per tutorial
 - [x] Recommended next tutorials based on progress
 - [x] Certificates for completed tracks
@@ -71,12 +83,36 @@
 - [x] Database migration: AddCodeSnippetsAndComments (SQL query provided)
 - [x] Build error fixed: react-questions.ts template literal syntax error
 
+### Quiz & Assessment Features
+- [x] Quiz Mode System: Practice, Timed, and Exam modes
+- [x] Timed Mode: Countdown timer with visual warning (30s per question)
+- [x] Practice Mode: Unlimited attempts, skip questions allowed
+- [x] Exam Mode: Single attempt, no retry option
+- [x] Review Mode: Review all answers with explanations after completion
+- [x] Quiz Question Bookmarks: Save difficult questions for later review
+- [x] Bookmark button on each question during quiz
+- [x] Backend models: QuizQuestionBookmark
+- [x] API endpoints: QuizQuestionBookmarkController
+- [x] Frontend hooks: useQuizQuestionBookmarks
+- [x] Database migration: AddQuizQuestionBookmarks
+- [x] Database migration: AddFilesToCodeSnippet (for multi-file support)
+
 ### Database & Infrastructure
 - [x] Database migration created: AddCodeSnippetsAndComments
 - [x] SQL query provided for Neon PostgreSQL deployment
 - [x] Updated User model with navigation properties for new tables
 - [x] Backend services registered in Program.cs
 - [x] Frontend build error resolved
+- [x] Database migration: AddQuizQuestionBookmarks
+- [x] Database migration: AddFilesToCodeSnippet (for multi-file support)
+
+### Badge System Fixes
+- [x] Automatic badge unlocking after quiz submission (QuizService)
+- [x] Automatic badge unlocking after lesson completion (ProgressService)
+- [x] Automatic badge unlocking after streak updates (StreakService)
+- [x] Lesson quizzes now count toward quiz completion badges
+- [x] Perfect quiz badge includes lesson quizzes
+- [x] BadgeService integrated into QuizService, ProgressService, and StreakService
 
 ---
 
@@ -105,7 +141,7 @@
 
 #### A. Interactive Code Playground (HIGH PRIORITY)
 - [x] Full-screen code editor mode -- COMPLETE
-- [ ] Multi-file support for complex examples
+- [x] Multi-file support for complex examples -- COMPLETE
 - [x] Console output panel -- COMPLETE
 - [x] Share code snippets with unique URLs -- COMPLETE (Database-backed)
 - [x] Save personal code snippets -- COMPLETE (Database-backed)
@@ -133,11 +169,15 @@
 ### 3. Quiz & Assessment Features
 
 #### A. Enhanced Quiz Experience (HIGH PRIORITY)
-- [ ] Timed Mode: Optional countdown timer per quiz
-- [ ] Practice Mode: Unlimited attempts, instant feedback
-- [ ] Exam Mode: Single attempt, no hints
-- [ ] Review Mode: After completion, review all answers with explanations
-- [ ] Bookmark Questions: Save difficult questions for later review
+- [x] Timed Mode: Optional countdown timer per quiz -- COMPLETE
+- [x] Practice Mode: Unlimited attempts, instant feedback -- COMPLETE
+- [x] Exam Mode: Single attempt, no hints -- COMPLETE
+- [x] Review Mode: After completion, review all answers with explanations -- COMPLETE
+- [x] Bookmark Questions: Save difficult questions for later review -- COMPLETE
+- [x] Backend models: QuizQuestionBookmark
+- [x] API endpoints: QuizQuestionBookmarkController
+- [x] Frontend hooks: useQuizQuestionBookmarks
+- [x] Database migration: AddQuizQuestionBookmarks
 
 #### B. Advanced Analytics
 - [ ] Performance Graphs: Score trends over time

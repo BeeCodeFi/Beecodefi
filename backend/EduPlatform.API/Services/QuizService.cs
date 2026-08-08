@@ -9,11 +9,13 @@ public class QuizService : IQuizService
 {
     private readonly AppDbContext _db;
     private readonly IStreakService _streakService;
+    private readonly IBadgeService _badgeService;
 
-    public QuizService(AppDbContext db, IStreakService streakService)
+    public QuizService(AppDbContext db, IStreakService streakService, IBadgeService badgeService)
     {
         _db = db;
         _streakService = streakService;
+        _badgeService = badgeService;
     }
 
     public async Task<List<QuizTopicDto>> GetTopicsAsync(int? userId = null)
@@ -153,6 +155,9 @@ public class QuizService : IQuizService
             // Update streak when quiz is completed
             await _streakService.UpdateStreakAsync(userId.Value);
             
+            // Check and unlock badges
+            await _badgeService.CheckAndUnlockBadgesAsync(userId.Value);
+            
             // Track in Recent Activity
             var existingActivity = await _db.RecentActivities
                 .Where(ra => ra.UserId == userId.Value 
@@ -250,6 +255,9 @@ public class QuizService : IQuizService
                 
                 // Update streak when lesson quiz is completed
                 await _streakService.UpdateStreakAsync(userId.Value);
+                
+                // Check and unlock badges
+                await _badgeService.CheckAndUnlockBadgesAsync(userId.Value);
                 
                 // Track in Recent Activity
                 var existingActivity = await _db.RecentActivities

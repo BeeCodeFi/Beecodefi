@@ -25,7 +25,11 @@ import {
   Play,
   Trash2,
   X,
+  Plus,
+  FileText,
+  Layers,
 } from "lucide-react";
+import type { CodeFile } from "@/hooks/useCodeSnippets";
 
 interface LiveCodeEditorProps {
   initialCode: string;
@@ -52,33 +56,46 @@ export default function LiveCodeEditor({
   const [showSharePanel, setShowSharePanel] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [showSavePanel, setShowSavePanel] = useState(false);
+  const [isMultiFileMode, setIsMultiFileMode] = useState(false);
+  const [files, setFiles] = useState<CodeFile[]>([{ name: "main", content: initialCode, language }]);
+  const [activeFileIndex, setActiveFileIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const debounceRef = useRef<number | null>(null);
-  const isModified = code !== initialCode;
+  const isModified = isMultiFileMode ? files.some(f => f.content !== initialCode) : code !== initialCode;
   const isHtml = language === "html";
   const isJavaScript = language === "javascript";
+  const activeFile = files[activeFileIndex];
   
   const { user } = useAuth();
   const { success, error: toastError } = useToast();
-  const { snippets, loading: snippetsLoading, createSnippet, updateSnippet, deleteSnippet, getSharedSnippet } = useCodeSnippets();
+  const { snippets, loading: snippetsLoading, createSnippet, updateSnippet, deleteSnippet, getSharedSnippet, parseFiles, stringifyFiles } = useCodeSnippets();
+
+  const handleFileContentChange = useCallback((index: number, content: string) => {
+    setFiles(prev => prev.map((f, i) => i === index ? { ...f, content } : f));
+  }, []);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(code);
+    const contentToCopy = isMultiFileMode ? activeFile?.content || '' : code;
+    navigator.clipboard.writeText(contentToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [code]);
+  }, [code, isMultiFileMode, activeFile]);
 
   const handleCodeChange = useCallback(
     (nextCode: string) => {
-      setCode(nextCode);
+      if (isMultiFileMode) {
+        handleFileContentChange(activeFileIndex, nextCode);
+      } else {
+        setCode(nextCode);
+      }
       if (!isHtml) return;
 
       setIsUpdating(true);
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = window.setTimeout(() => setIsUpdating(false), 400);
     },
-    [isHtml],
+    [isHtml, isMultiFileMode, activeFileIndex, handleFileContentChange],
   );
 
   const handleReset = useCallback(() => {
@@ -120,7 +137,8 @@ export default function LiveCodeEditor({
       };
       
       // Execute the code
-      eval(code);
+      const codeToRun = isMultiFileMode ? (activeFile?.content || '') : code;
+      eval(codeToRun);
       
       setConsoleOutput(logs);
       
@@ -131,7 +149,7 @@ export default function LiveCodeEditor({
     } catch (error) {
       setConsoleOutput([`ERROR: ${error instanceof Error ? error.message : String(error)}`]);
     }
-  }, [code, isJavaScript]);
+  }, [code, isJavaScript, isMultiFileMode, activeFile]);
 
   const handleShare = useCallback(async () => {
     if (!user) {
@@ -141,11 +159,17 @@ export default function LiveCodeEditor({
 
     // First save the snippet
     try {
-      const saved = await createSnippet({
+      const snippetData: any = {
         name: `${title || language} snippet`,
-        code: code,
+        code: isMultiFileMode ? (activeFile?.content || '') : code,
         language: language
-      });
+      };
+      
+      if (isMultiFileMode) {
+        snippetData.files = stringifyFiles(files);
+      }
+      
+      const saved = await createSnippet(snippetData);
 
       if (saved && saved.shareId) {
         const url = `${window.location.origin}/share/${saved.shareId}`;
@@ -156,7 +180,7 @@ export default function LiveCodeEditor({
     } catch (err: any) {
       toastError('Failed to save', err.message);
     }
-  }, [user, title, language, code, createSnippet, success, toastError]);
+  }, [user, title, language, code, isMultiFileMode, activeFile, files, createSnippet, success, toastError, stringifyFiles]);
 
   const handleSaveSnippet = useCallback(async () => {
     if (!user) {
@@ -168,25 +192,47 @@ export default function LiveCodeEditor({
     if (!snippetName) return;
     
     try {
-      await createSnippet({
+      const snippetData: any = {
         name: snippetName,
-        code: code,
+        code: isMultiFileMode ? (activeFile?.content || '') : code,
         language: language
-      });
+      };
+      
+      if (isMultiFileMode) {
+        snippetData.files = stringifyFiles(files);
+      }
+      
+      await createSnippet(snippetData);
       success('Snippet saved!', 'Your code has been saved to your account');
       setShowSavePanel(false);
     } catch (err: any) {
       toastError('Failed to save', err.message);
     }
-  }, [user, code, language, createSnippet, success, toastError]);
+  }, [user, code, language, isMultiFileMode, activeFile, files, createSnippet, success, toastError, stringifyFiles]);
 
   const handleLoadSnippet = useCallback((snippetId: number) => {
     const snippet = snippets.find(s => s.id === snippetId);
     if (snippet) {
-      setCode(snippet.code);
+      if (snippet.files) {
+        // Load multi-file snippet
+        const parsedFiles = parseFiles(snippet.files);
+        if (parsedFiles.length > 0) {
+          setFiles(parsedFiles);
+          setActiveFileIndex(0);
+          setIsMultiFileMode(true);
+        } else {
+          // Fallback to single file if parsing fails
+          setCode(snippet.code);
+          setIsMultiFileMode(false);
+        }
+      } else {
+        // Load single-file snippet
+        setCode(snippet.code);
+        setIsMultiFileMode(false);
+      }
       setShowSavePanel(false);
     }
-  }, [snippets]);
+  }, [snippets, parseFiles]);
 
   const handleDeleteSnippet = useCallback(async (snippetId: number) => {
     try {
@@ -196,6 +242,77 @@ export default function LiveCodeEditor({
       toastError('Failed to delete', err.message);
     }
   }, [deleteSnippet, success, toastError]);
+
+  // Multi-file management functions
+  const handleAddFile = useCallback(() => {
+    const newFileName = prompt('Enter file name (e.g., script.js):');
+    if (!newFileName) return;
+    
+    const extension = newFileName.split('.').pop()?.toLowerCase() || 'txt';
+    const languageMap: Record<string, string> = {
+      'js': 'javascript',
+      'ts': 'typescript',
+      'html': 'html',
+      'css': 'css',
+      'json': 'json',
+      'md': 'markdown',
+    };
+    
+    const newFile: CodeFile = {
+      name: newFileName,
+      content: '',
+      language: languageMap[extension] || 'text'
+    };
+    
+    setFiles(prev => [...prev, newFile]);
+    setActiveFileIndex(files.length);
+  }, [files.length]);
+
+  const handleRemoveFile = useCallback((index: number) => {
+    if (files.length <= 1) {
+      toastError('Cannot remove last file', 'At least one file must remain');
+      return;
+    }
+    
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setActiveFileIndex(prev => prev >= index ? Math.max(0, prev - 1) : prev);
+  }, [files.length, toastError]);
+
+  const handleRenameFile = useCallback((index: number) => {
+    const file = files[index];
+    const newName = prompt('Enter new file name:', file.name);
+    if (!newName) return;
+    
+    const extension = newName.split('.').pop()?.toLowerCase() || 'txt';
+    const languageMap: Record<string, string> = {
+      'js': 'javascript',
+      'ts': 'typescript',
+      'html': 'html',
+      'css': 'css',
+      'json': 'json',
+      'md': 'markdown',
+    };
+    
+    setFiles(prev => prev.map((f, i) => 
+      i === index 
+        ? { ...f, name: newName, language: languageMap[extension] || 'text' }
+        : f
+    ));
+  }, [files]);
+
+  const toggleMultiFileMode = useCallback(() => {
+    if (isMultiFileMode) {
+      // Switch to single-file mode - use the active file's content
+      const activeFileContent = files[activeFileIndex]?.content || code;
+      setCode(activeFileContent);
+      setIsMultiFileMode(false);
+    } else {
+      // Switch to multi-file mode - convert current code to a file
+      setFiles([{ name: 'main', content: code, language }]);
+      setActiveFileIndex(0);
+      setIsMultiFileMode(true);
+    }
+  }, [isMultiFileMode, files, activeFileIndex, code, language]);
 
   // Support Tab key indentation and auto-close < >
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -207,7 +324,13 @@ export default function LiveCodeEditor({
       const indent = "  ";
       const newValue =
         value.slice(0, selectionStart) + indent + value.slice(selectionEnd);
-      setCode(newValue);
+      
+      if (isMultiFileMode) {
+        handleFileContentChange(activeFileIndex, newValue);
+      } else {
+        setCode(newValue);
+      }
+      
       // Move cursor after the indent
       requestAnimationFrame(() => {
         ta.selectionStart = ta.selectionEnd = selectionStart + indent.length;
@@ -230,20 +353,55 @@ export default function LiveCodeEditor({
         e.key +
         close +
         value.slice(selectionEnd);
-      setCode(newValue);
+      
+      if (isMultiFileMode) {
+        handleFileContentChange(activeFileIndex, newValue);
+      } else {
+        setCode(newValue);
+      }
+      
       requestAnimationFrame(() => {
         ta.selectionStart = ta.selectionEnd = selectionStart + 1;
       });
     }
-  }, []);
+  }, [isMultiFileMode, activeFileIndex, handleFileContentChange]);
 
   const getPreviewHtml = useCallback(() => {
     if (language !== "html") return "";
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    if (code.includes("<!DOCTYPE") || code.includes("<html")) {
-      // Inject base href so relative image paths resolve from the app root
-      return code.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}/">`);
+    
+    let htmlContent = code;
+    let cssContent = '';
+    let jsContent = '';
+    
+    if (isMultiFileMode) {
+      // Combine files for preview
+      files.forEach(file => {
+        if (file.language === 'html') {
+          htmlContent = file.content;
+        } else if (file.language === 'css') {
+          cssContent = file.content;
+        } else if (file.language === 'javascript') {
+          jsContent = file.content;
+        }
+      });
     }
+    
+    if (htmlContent.includes("<!DOCTYPE") || htmlContent.includes("<html")) {
+      // Inject base href and additional files
+      let modifiedHtml = htmlContent.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}/">`);
+      
+      if (cssContent) {
+        modifiedHtml = modifiedHtml.replace('</head>', `<style>${cssContent}</style></head>`);
+      }
+      
+      if (jsContent) {
+        modifiedHtml = modifiedHtml.replace('</body>', `<script>${jsContent}</script></body>`);
+      }
+      
+      return modifiedHtml;
+    }
+    
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -271,13 +429,14 @@ export default function LiveCodeEditor({
         pre { background: #1a1a2e; color: #e0e0e0; padding: 1rem; border-radius: 8px; overflow-x: auto; }
         pre code { background: none; padding: 0; color: inherit; }
         [contenteditable] { border: 2px dashed #6366f1; padding: 0.5rem; border-radius: 4px; }
+        ${cssContent}
     </style>
 </head>
-<body>${code}</body>
+<body>${htmlContent}<script>${jsContent}</script></body>
 </html>`;
-  }, [code, language]);
+  }, [code, language, isMultiFileMode, files]);
 
-  const lines = code.split("\n");
+  const lines = (isMultiFileMode ? activeFile?.content : code)?.split("\n") || [];
 
   return (
     <div
@@ -372,6 +531,20 @@ export default function LiveCodeEditor({
           >
             <Save className="w-3.5 h-3.5" />
           </button>
+          <button
+            onClick={toggleMultiFileMode}
+            className={`flex items-center gap-1 text-xs px-2 py-1.5 rounded-md transition-colors ${
+              isMultiFileMode
+                ? "text-indigo-400 bg-indigo-400/10"
+                : "text-gray-500 hover:text-indigo-400"
+            }`}
+            title={isMultiFileMode ? "Switch to single-file mode" : "Switch to multi-file mode"}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">
+              {isMultiFileMode ? "Multi" : "Single"}
+            </span>
+          </button>
           {isHtml && (
             <button
               onClick={() => setExpanded(!expanded)}
@@ -392,6 +565,47 @@ export default function LiveCodeEditor({
       <div className="flex flex-col md:flex-row h-[500px] md:h-[600px]">
         {/* Code editor */}
         <div className="flex-1 flex flex-col min-w-0">
+          {/* File tabs (multi-file mode) */}
+          {isMultiFileMode && (
+            <div className="flex items-center gap-1 px-2 py-1.5 bg-[#0d1117] border-b border-gray-700/60 overflow-x-auto">
+              {files.map((file, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-md text-xs font-medium cursor-pointer transition-colors whitespace-nowrap ${
+                    index === activeFileIndex
+                      ? 'bg-[#161b22] text-gray-100 border-t border-l border-r border-gray-700/60'
+                      : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
+                  }`}
+                  onClick={() => setActiveFileIndex(index)}
+                  onDoubleClick={() => handleRenameFile(index)}
+                  title={`${file.name} (double-click to rename)`}
+                >
+                  <FileText className="w-3 h-3" />
+                  <span>{file.name}</span>
+                  {files.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFile(index);
+                      }}
+                      className="ml-1 text-gray-500 hover:text-red-400 transition-colors"
+                      title="Remove file"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                onClick={handleAddFile}
+                className="flex items-center gap-1 px-2 py-1.5 text-xs text-gray-500 hover:text-indigo-400 hover:bg-gray-800/50 rounded-md transition-colors"
+                title="Add new file"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          
           <div className="flex-1 flex relative">
             {/* Line numbers */}
             {showLineNumbers && (
@@ -405,7 +619,7 @@ export default function LiveCodeEditor({
             {/* Textarea */}
             <textarea
               ref={textareaRef}
-              value={code}
+              value={isMultiFileMode ? (activeFile?.content || '') : code}
               onChange={(e) => handleCodeChange(e.target.value)}
               onKeyDown={handleKeyDown}
               className="flex-1 w-full h-full bg-[#0d1117] text-gray-100 p-4 font-mono text-sm resize-none focus:outline-none"
@@ -537,7 +751,15 @@ export default function LiveCodeEditor({
                       className="flex items-center justify-between p-2 bg-[#0d1117] rounded border border-gray-700/60 hover:border-gray-600 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-300 truncate">{snippet.name}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm font-medium text-gray-300 truncate">{snippet.name}</div>
+                          {snippet.files && (
+                            <span className="flex items-center gap-1 text-[10px] text-indigo-400 bg-indigo-400/10 px-1.5 py-0.5 rounded">
+                              <Layers className="w-3 h-3" />
+                              Multi
+                            </span>
+                          )}
+                        </div>
                         <div className="text-xs text-gray-500">
                           {new Date(snippet.createdAt).toLocaleDateString()}
                         </div>

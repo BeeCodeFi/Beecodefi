@@ -20,4 +20,5 @@ public class User
     public ICollection<CodeSnippet> CodeSnippets { get; set; } = new List<CodeSnippet>();
     public ICollection<LessonComment> Comments { get; set; } = new List<LessonComment>();
     public ICollection<CommentVote> CommentVotes { get; set; } = new List<CommentVote>();
+    public ICollection<QuizQuestionBookmark> QuizQuestionBookmarks { get; set; } = new List<QuizQuestionBookmark>();
 }

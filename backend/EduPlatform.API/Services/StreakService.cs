@@ -7,10 +7,12 @@ namespace EduPlatform.API.Services;
 public class StreakService : IStreakService
 {
     private readonly AppDbContext _db;
+    private readonly IBadgeService _badgeService;
 
-    public StreakService(AppDbContext db)
+    public StreakService(AppDbContext db, IBadgeService badgeService)
     {
         _db = db;
+        _badgeService = badgeService;
     }
 
     public async Task<StreakDto> GetStreakAsync(int userId)
@@ -118,5 +120,8 @@ public class StreakService : IStreakService
         Console.WriteLine($"[STREAK SERVICE] After update: Current={user.CurrentStreak}, Longest={user.LongestStreak}, LastActive={user.LastActivityDate}");
         await _db.SaveChangesAsync();
         Console.WriteLine($"[STREAK SERVICE] Changes saved to database for user {userId}");
+        
+        // Check and unlock badges
+        await _badgeService.CheckAndUnlockBadgesAsync(userId);
     }
 }

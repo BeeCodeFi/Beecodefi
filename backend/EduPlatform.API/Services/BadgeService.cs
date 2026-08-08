@@ -121,19 +121,27 @@ public class BadgeService : IBadgeService
     {
         return requirement switch
         {
-            "first_quiz" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId) > 0 ? 1 : 0,
-            "5_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId),
-            "10_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId),
-            "25_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId),
-            "50_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId),
+            "first_quiz" => (await _db.QuizAttempts.CountAsync(a => a.UserId == userId) +
+                             await _db.LessonQuizAttempts.CountAsync(a => a.UserId == userId)) > 0 ? 1 : 0,
+            "5_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId) +
+                           await _db.LessonQuizAttempts.CountAsync(a => a.UserId == userId),
+            "10_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId) +
+                            await _db.LessonQuizAttempts.CountAsync(a => a.UserId == userId),
+            "25_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId) +
+                            await _db.LessonQuizAttempts.CountAsync(a => a.UserId == userId),
+            "50_quizzes" => await _db.QuizAttempts.CountAsync(a => a.UserId == userId) +
+                            await _db.LessonQuizAttempts.CountAsync(a => a.UserId == userId),
             "first_lesson" => await _db.TutorialProgress.CountAsync(p => p.UserId == userId) > 0 ? 1 : 0,
             "10_lessons" => await _db.TutorialProgress.CountAsync(p => p.UserId == userId),
             "25_lessons" => await _db.TutorialProgress.CountAsync(p => p.UserId == userId),
             "50_lessons" => await _db.TutorialProgress.CountAsync(p => p.UserId == userId),
             "100_lessons" => await _db.TutorialProgress.CountAsync(p => p.UserId == userId),
-            "perfect_quiz" => await _db.QuizAttempts
+            "perfect_quiz" => (await _db.QuizAttempts
                 .Where(a => a.UserId == userId && a.Score == a.TotalQuestions)
-                .CountAsync() > 0 ? 1 : 0,
+                .CountAsync() +
+                await _db.LessonQuizAttempts
+                .Where(a => a.UserId == userId && a.Score == a.TotalQuestions)
+                .CountAsync()) > 0 ? 1 : 0,
             "3_day_streak" => await GetUserStreakAsync(userId),
             "7_day_streak" => await GetUserStreakAsync(userId),
             "30_day_streak" => await GetUserStreakAsync(userId),

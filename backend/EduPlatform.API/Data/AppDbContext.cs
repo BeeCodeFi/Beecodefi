@@ -27,6 +27,7 @@ public class AppDbContext : DbContext
     public DbSet<CodeSnippet> CodeSnippets => Set<CodeSnippet>();
     public DbSet<LessonComment> LessonComments => Set<LessonComment>();
     public DbSet<CommentVote> CommentVotes => Set<CommentVote>();
+    public DbSet<QuizQuestionBookmark> QuizQuestionBookmarks => Set<QuizQuestionBookmark>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -249,6 +250,18 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(cv => new { cv.UserId, cv.CommentId }).IsUnique();
+        });
+
+        modelBuilder.Entity<QuizQuestionBookmark>(entity =>
+        {
+            entity.HasOne(qqb => qqb.User)
+                .WithMany(u => u.QuizQuestionBookmarks)
+                .HasForeignKey(qqb => qqb.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(qqb => new { qqb.UserId, qqb.QuestionId, qqb.QuizTopic }).IsUnique();
+            entity.Property(qqb => qqb.QuizTopic).HasMaxLength(100);
+            entity.Property(qqb => qqb.QuestionText).HasMaxLength(1000);
         });
     }
 }

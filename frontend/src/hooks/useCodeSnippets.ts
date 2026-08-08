@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 
+export interface CodeFile {
+  name: string;
+  content: string;
+  language: string;
+}
+
 export interface CodeSnippet {
   id: number;
   name: string;
   code: string;
   language: string;
   shareId?: string;
+  files?: string; // JSON string for multi-file support
   createdAt: string;
   updatedAt: string;
 }
@@ -15,12 +22,28 @@ export interface CreateSnippetDto {
   name: string;
   code: string;
   language: string;
+  files?: string; // JSON string for multi-file support
 }
 
 export interface UpdateSnippetDto {
   name: string;
   code: string;
+  files?: string; // JSON string for multi-file support
 }
+
+// Helper functions for multi-file support
+export const parseFiles = (filesJson?: string): CodeFile[] => {
+  if (!filesJson) return [];
+  try {
+    return JSON.parse(filesJson);
+  } catch {
+    return [];
+  }
+};
+
+export const stringifyFiles = (files: CodeFile[]): string => {
+  return JSON.stringify(files);
+};
 
 export function useCodeSnippets() {
   const [snippets, setSnippets] = useState<CodeSnippet[]>([]);
@@ -92,5 +115,7 @@ export function useCodeSnippets() {
     updateSnippet,
     deleteSnippet,
     getSharedSnippet,
+    parseFiles,
+    stringifyFiles,
   };
 }

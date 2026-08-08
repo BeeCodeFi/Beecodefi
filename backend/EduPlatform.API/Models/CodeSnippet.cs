@@ -8,6 +8,7 @@ public class CodeSnippet
     public string Code { get; set; } = string.Empty;
     public string Language { get; set; } = string.Empty;
     public string? ShareId { get; set; } // Unique ID for sharing
+    public string? Files { get; set; } // JSON string for multi-file support
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     

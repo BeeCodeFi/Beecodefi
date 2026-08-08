@@ -39,6 +39,7 @@ export interface QuizQuestion {
 export interface QuizAnswer {
   id: number;
   text: string;
+  isCorrect?: boolean;
 }
 
 export interface QuizResult {
