@@ -105,23 +105,14 @@
 
 /* ── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
-  /* Force lesson content text colors with maximum specificity */
+  /* Allow lesson content text to inherit the component's own color classes */
   .lesson-content-wrapper p,
   .lesson-content-wrapper li span {
-    color: rgb(75 85 99) !important;
-  }
-
-  :is(.dark) .lesson-content-wrapper p,
-  :is(.dark) .lesson-content-wrapper li span {
-    color: rgb(209 213 219) !important;
+    color: inherit;
   }
 
   .lesson-content-wrapper h2 {
-    color: rgb(17 24 39) !important;
-  }
-
-  :is(.dark) .lesson-content-wrapper h2 {
-    color: rgb(255 255 255) !important;
+    color: inherit;
   }
 
   /* Force exercise instruction text color */
