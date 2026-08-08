@@ -25,7 +25,6 @@ import { quizCategories, type QuizCategoryMeta } from "@/data/quiz-categories";
 import { tutorials } from "@/data/tutorials";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
 import { cn } from "@/lib/utils";
-import { readQuizProgress, mergeQuizBestScore } from "@/lib/quizProgress";
 import { useAuth } from "@/context/AuthContext";
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -89,22 +88,18 @@ function QuizPageContent() {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const { data } = await api.get<QuizTopic[]>("/quiz/topics");
-        const backendTopics = data.map((topic) => {
-          const localProgress = readQuizProgress(user?.id, topic.topic);
-          const categoryProgress = readQuizProgress(
-            user?.id,
-            topic.category.toLowerCase(),
-          );
-          const bestScore = mergeQuizBestScore(
-            topic.bestScore,
-            mergeQuizBestScore(localProgress?.score ?? null, categoryProgress),
-          );
-          return {
-            ...topic,
-            bestScore,
-          };
-        });
+        const [topicsRes, scoresRes] = await Promise.all([
+          api.get<QuizTopic[]>("/quiz/topics"),
+          user?.id ? api.get<Record<string, number>>("/quiz/scores") : Promise.resolve({ data: {} as Record<string, number> }),
+        ]);
+
+        const backendTopics = topicsRes.data;
+        const scores = scoresRes.data;
+
+        const processedTopics = backendTopics.map((topic) => ({
+          ...topic,
+          bestScore: scores[topic.topic] ?? null,
+        }));
 
         const lessonQuizTopics: QuizTopic[] = [];
 
@@ -122,18 +117,8 @@ function QuizPageContent() {
             const categoryMeta = quizCategories.find(
               (cat) => cat.tutorialSlug === tutorial.slug,
             );
-            const localProgress = readQuizProgress(user?.id, quizKey);
-            const categoryProgress = readQuizProgress(
-              user?.id,
-              categoryMeta?.categoryName?.toLowerCase() || tutorial.slug,
-            );
-            const bestScore = mergeQuizBestScore(
-              null,
-              mergeQuizBestScore(
-                localProgress?.score ?? null,
-                categoryProgress,
-              ),
-            );
+            
+            const bestScore = scores[quizKey] ?? null;
 
             lessonQuizTopics.push({
               id: -(lessonQuizTopics.length + 1),
@@ -151,7 +136,7 @@ function QuizPageContent() {
           });
         });
 
-        setTopics([...backendTopics, ...lessonQuizTopics]);
+        setTopics([...processedTopics, ...lessonQuizTopics]);
         setApiDown(false);
       } catch {
         // Backend unreachable — show offline banner, gracefully degrade
@@ -169,25 +154,18 @@ function QuizPageContent() {
       if (!user?.id) return;
       const refreshTopics = async () => {
         try {
-          const { data } = await api.get<QuizTopic[]>("/quiz/topics");
-          const backendTopics = data.map((topic) => {
-            const localProgress = readQuizProgress(user.id, topic.topic);
-            const categoryProgress = readQuizProgress(
-              user.id,
-              topic.category.toLowerCase(),
-            );
-            const bestScore = mergeQuizBestScore(
-              topic.bestScore,
-              mergeQuizBestScore(
-                localProgress?.score ?? null,
-                categoryProgress,
-              ),
-            );
-            return {
-              ...topic,
-              bestScore,
-            };
-          });
+          const [topicsRes, scoresRes] = await Promise.all([
+            api.get<QuizTopic[]>("/quiz/topics"),
+            api.get<Record<string, number>>("/quiz/scores"),
+          ]);
+
+          const backendTopics = topicsRes.data;
+          const scores = scoresRes.data;
+
+          const processedTopics = backendTopics.map((topic) => ({
+            ...topic,
+            bestScore: scores[topic.topic] ?? null,
+          }));
 
           const lessonQuizTopics: QuizTopic[] = [];
           tutorials.forEach((tutorial) => {
@@ -204,18 +182,8 @@ function QuizPageContent() {
               const categoryMeta = quizCategories.find(
                 (cat) => cat.tutorialSlug === tutorial.slug,
               );
-              const localProgress = readQuizProgress(user.id, quizKey);
-              const categoryProgress = readQuizProgress(
-                user.id,
-                categoryMeta?.categoryName?.toLowerCase() || tutorial.slug,
-              );
-              const bestScore = mergeQuizBestScore(
-                null,
-                mergeQuizBestScore(
-                  localProgress?.score ?? null,
-                  categoryProgress,
-                ),
-              );
+              
+              const bestScore = scores[quizKey] ?? null;
 
               lessonQuizTopics.push({
                 id: -(lessonQuizTopics.length + 1),
@@ -233,7 +201,7 @@ function QuizPageContent() {
             });
           });
 
-          setTopics([...backendTopics, ...lessonQuizTopics]);
+          setTopics([...processedTopics, ...lessonQuizTopics]);
         } catch {
           setTopics([]);
         }
