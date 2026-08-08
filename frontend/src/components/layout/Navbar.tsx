@@ -18,6 +18,7 @@ import {
   Flame,
   Target,
   Award,
+  MoreHorizontal,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/context/AuthContext";
@@ -25,11 +26,14 @@ import { cn } from "@/lib/utils";
 import GlobalSearch from "@/components/search/GlobalSearch";
 import { useStreak } from "@/hooks/useStreak";
 
-const navLinks = [
+const primaryNavLinks = [
   { href: "/", label: "Home" },
   { href: "/tutorials", label: "Tutorials" },
-  { href: "/courses", label: "Courses" },
   { href: "/quiz", label: "Quiz" },
+];
+
+const secondaryNavLinks = [
+  { href: "/courses", label: "Courses" },
   { href: "/interview-questions", label: "Interview Questions" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/roadmap", label: "Roadmap" },
@@ -40,6 +44,7 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -63,10 +68,11 @@ export default function Navbar() {
 
   // Close mobile menu on route change
   useEffect(() => {
-    if (isOpen || showUserMenu) {
+    if (isOpen || showUserMenu || showMoreMenu) {
       queueMicrotask(() => {
         setIsOpen(false);
         setShowUserMenu(false);
+        setShowMoreMenu(false);
       });
     }
   }, [pathname]);
@@ -80,6 +86,7 @@ export default function Navbar() {
     }
     if (e.key === "Escape") {
       setShowUserMenu(false);
+      setShowMoreMenu(false);
       setIsOpen(false);
     }
   }, []);
@@ -166,9 +173,9 @@ export default function Navbar() {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1.5">
-              {navLinks.map((link) => {
+            {/* Desktop Navigation - Primary Links */}
+            <div className="hidden lg:flex items-center gap-1">
+              {primaryNavLinks.map((link) => {
                 const active = pathname === link.href;
                 return (
                   <Link
@@ -199,6 +206,61 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+
+              {/* More Dropdown for Secondary Links */}
+              <div className="relative">
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  className={cn(
+                    "flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-200",
+                    "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-white/5"
+                  )}
+                  aria-label="More navigation options"
+                  aria-expanded={showMoreMenu}
+                  aria-haspopup="true"
+                  data-cursor-grow
+                >
+                  More
+                  <motion.span
+                    animate={{ rotate: showMoreMenu ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </motion.span>
+                </motion.button>
+
+                <AnimatePresence>
+                  {showMoreMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      className="absolute left-0 mt-2 w-48 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/60 dark:border-white/8 py-2 overflow-hidden"
+                    >
+                      {secondaryNavLinks.map((link) => {
+                        const active = pathname === link.href;
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setShowMoreMenu(false)}
+                            className={cn(
+                              "flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors",
+                              active
+                                ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6"
+                            )}
+                          >
+                            {link.label}
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* Right — Search + Streak + Theme + Auth */}
@@ -449,12 +511,12 @@ export default function Navbar() {
               className="md:hidden border-t border-gray-200/60 dark:border-white/6 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl overflow-hidden"
             >
               <div className="px-4 py-4 space-y-1">
-                {navLinks.map((link, i) => (
+                {[...primaryNavLinks, ...secondaryNavLinks].map((link, i) => (
                   <motion.div
                     key={link.href}
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04, duration: 0.2 }}
+                    transition={{ delay: i * 0.03, duration: 0.2 }}
                   >
                     <Link
                       href={link.href}

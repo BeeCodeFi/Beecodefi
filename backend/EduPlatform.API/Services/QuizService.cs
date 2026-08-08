@@ -184,8 +184,10 @@ public class QuizService : IQuizService
             
             await _db.SaveChangesAsync();
 
-            // Award XP
-            await _xpService.AddXPAsync(userId.Value, score * 10, $"Completed quiz: {quiz.Title}");
+            // Award XP with streak multiplier
+            var baseXP = score * 10;
+            var finalXP = await _xpService.CalculateXPWithMultiplierAsync(userId.Value, baseXP);
+            await _xpService.AddXPAsync(userId.Value, finalXP, $"Completed quiz: {quiz.Title}");
         }
 
         return new QuizResultDto
@@ -288,8 +290,10 @@ public class QuizService : IQuizService
                 
                 await _db.SaveChangesAsync();
 
-            // Award XP
-            await _xpService.AddXPAsync(userId.Value, dto.Score * 5, $"Completed lesson quiz: {dto.QuizTitle}");
+            // Award XP with streak multiplier
+            var baseXP = dto.Score * 5;
+            var finalXP = await _xpService.CalculateXPWithMultiplierAsync(userId.Value, baseXP);
+            await _xpService.AddXPAsync(userId.Value, finalXP, $"Completed lesson quiz: {dto.QuizTitle}");
             }
             catch (Exception ex)
             {

@@ -28,4 +28,11 @@ public class LeaderboardController : BaseController
         var stats = await _leaderboardService.GetMyStatsAsync(GetUserId());
         return Ok(stats);
     }
+
+    [HttpGet("xp")]
+    public async Task<ActionResult<PaginatedLeaderboardDto>> GetXPLeaderboard([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        var leaderboard = await _leaderboardService.GetXPLeaderboardAsync(page, pageSize);
+        return Ok(leaderboard);
+    }
 }

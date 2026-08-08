@@ -50,8 +50,10 @@ public class ProgressService : IProgressService
         // Check and unlock badges
         await _badgeService.CheckAndUnlockBadgesAsync(userId);
         
-        // Award XP
-        await _xpService.AddXPAsync(userId, 50, $"Completed lesson: {dto.LessonSlug}");
+        // Award XP with streak multiplier
+        var baseXP = 50;
+        var finalXP = await _xpService.CalculateXPWithMultiplierAsync(userId, baseXP);
+        await _xpService.AddXPAsync(userId, finalXP, $"Completed lesson: {dto.LessonSlug}");
         
         // Track in Recent Activity - keep only the most recent for this lesson
         var existingActivity = await _db.RecentActivities

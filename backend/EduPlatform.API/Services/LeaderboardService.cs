@@ -25,9 +25,9 @@ public class LeaderboardService : ILeaderboardService
         var userStatsQuery = _db.Users
             .Select(u => new
             {
-                u.Id,
-                u.Name,
-                u.ProfileImageUrl,
+                Id = u.Id,
+                Name = u.Name,
+                ProfileImageUrl = u.ProfileImageUrl,
                 QuizzesCompleted = track == "all" 
                     ? _db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() + 
                       _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count()
@@ -133,6 +133,58 @@ public class LeaderboardService : ILeaderboardService
             CurrentStreak = currentStreak,
             LongestStreak = longestStreak,
             GlobalRank = globalRank
+        };
+    }
+
+    public async Task<PaginatedLeaderboardDto> GetXPLeaderboardAsync(int page = 1, int pageSize = 20)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var userStatsQuery = _db.Users
+            .Select(u => new
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ProfileImageUrl = u.ProfileImageUrl,
+                TotalXP = u.TotalXP,
+                CurrentStreak = u.CurrentStreak,
+                LongestStreak = u.LongestStreak
+            })
+            .Where(u => u.TotalXP > 0)
+            .OrderByDescending(u => u.TotalXP)
+            .ThenByDescending(u => u.CurrentStreak);
+
+        var totalCount = await userStatsQuery.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var userStats = await userStatsQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var startRank = ((page - 1) * pageSize) + 1;
+        var leaderboard = userStats.Select((u, index) => new LeaderboardEntryDto
+        {
+            Rank = startRank + index,
+            UserName = u.Name,
+            TotalPoints = u.TotalXP,
+            QuizzesCompleted = 0, // Not relevant for XP leaderboard
+            LessonsCompleted = 0, // Not relevant for XP leaderboard
+            AverageScore = 0, // Not relevant for XP leaderboard
+            CurrentStreak = u.CurrentStreak,
+            ProfileImageUrl = u.ProfileImageUrl
+        }).ToList();
+
+        return new PaginatedLeaderboardDto
+        {
+            Items = leaderboard,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = totalPages,
+            HasNextPage = page < totalPages,
+            HasPreviousPage = page > 1
         };
     }
 }

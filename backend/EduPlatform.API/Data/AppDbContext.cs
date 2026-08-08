@@ -32,6 +32,7 @@ public class AppDbContext : DbContext
     public DbSet<LessonCodeExampleVote> LessonCodeExampleVotes => Set<LessonCodeExampleVote>();
     public DbSet<LessonTip> LessonTips => Set<LessonTip>();
     public DbSet<LessonTipVote> LessonTipVotes => Set<LessonTipVote>();
+    public DbSet<StudySession> StudySessions => Set<StudySession>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -326,6 +327,17 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(ltv => new { ltv.UserId, ltv.TipId }).IsUnique();
+        });
+
+        modelBuilder.Entity<StudySession>(entity =>
+        {
+            entity.HasOne(ss => ss.User)
+                .WithMany(u => u.StudySessions)
+                .HasForeignKey(ss => ss.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ss => new { ss.UserId, ss.Category }).IsUnique();
+            entity.Property(ss => ss.Category).HasMaxLength(50);
         });
     }
 }

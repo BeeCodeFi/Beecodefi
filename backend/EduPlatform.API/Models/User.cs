@@ -28,4 +28,5 @@ public class User
     public ICollection<LessonCodeExampleVote> LessonCodeExampleVotes { get; set; } = new List<LessonCodeExampleVote>();
     public ICollection<LessonTip> LessonTips { get; set; } = new List<LessonTip>();
     public ICollection<LessonTipVote> LessonTipVotes { get; set; } = new List<LessonTipVote>();
+    public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
 }
