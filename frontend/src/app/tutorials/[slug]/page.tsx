@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, Suspense } from "react";
+import { Fragment, use, useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,7 +31,10 @@ import LessonComments from "@/components/tutorial/LessonComments";
 import { getQuizCategoryForTutorial } from "@/data/quiz-categories";
 import { lessonQuizzes } from "@/data/lesson-quizzes";
 import StructuredData from "@/components/seo/StructuredData";
-import { generateLearningResourceSchema, generateBreadcrumbSchema } from "@/lib/schema";
+import {
+  generateLearningResourceSchema,
+  generateBreadcrumbSchema,
+} from "@/lib/schema";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { getUserStorageKey } from "@/lib/userStorage";
 import { useAuth } from "@/context/AuthContext";
@@ -60,10 +63,7 @@ function renderInlineMarkdown(text: string): string {
       /\*\*([^*]+)\*\*/g,
       '<strong class="inline-strong-element font-semibold">$1</strong>',
     )
-    .replace(
-      /\*([^*]+)\*/g,
-      '<em class="inline-em-element italic">$1</em>',
-    );
+    .replace(/\*([^*]+)\*/g, '<em class="inline-em-element italic">$1</em>');
 }
 
 // Renders the full lesson body: ## headings get anchor IDs, lists, paragraphs
@@ -73,9 +73,12 @@ function LessonContent({ content }: { content: string }) {
   return (
     <div className="lesson-content-wrapper space-y-0 text-gray-700 dark:text-gray-300">
       {blocks.map((block, i) => {
+        const trimmedBlock = block.trim();
+        if (!trimmedBlock) return null;
+
         // ── H2 heading with scroll anchor ──
-        if (block.startsWith("## ")) {
-          const text = block.replace(/^## /, "").trim();
+        if (trimmedBlock.startsWith("## ")) {
+          const text = trimmedBlock.replace(/^## /, "").trim();
           const id = slugify(text);
           return (
             <h2
@@ -95,9 +98,114 @@ function LessonContent({ content }: { content: string }) {
           );
         }
 
+        const lines = trimmedBlock
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+        const hasListItems = lines.some(
+          (line) => line.startsWith("- ") || /^\d+\.\s/.test(line),
+        );
+
+        if (hasListItems) {
+          const elements: React.ReactNode[] = [];
+          let paragraphLines: string[] = [];
+          let listItems: string[] = [];
+          let listType: "ul" | "ol" | null = null;
+
+          const flushParagraph = () => {
+            if (paragraphLines.length > 0) {
+              const paragraphText = paragraphLines.join(" ");
+              elements.push(
+                <p
+                  key={`paragraph-${elements.length}`}
+                  className="text-base sm:text-[1.05rem] leading-[1.85] mb-4 !text-gray-600 dark:!text-gray-300"
+                  dangerouslySetInnerHTML={{
+                    __html: renderInlineMarkdown(paragraphText),
+                  }}
+                />,
+              );
+              paragraphLines = [];
+            }
+          };
+
+          const flushList = () => {
+            if (listItems.length > 0) {
+              if (listType === "ol") {
+                elements.push(
+                  <ol
+                    key={`ordered-${elements.length}`}
+                    className="my-4 space-y-2.5 pl-1 list-none counter-reset-none"
+                  >
+                    {listItems.map((item, j) => (
+                      <li key={`${i}-${j}`} className="flex items-start gap-3">
+                        <span className="mt-0.5 w-6 h-6 rounded-md bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0">
+                          {j + 1}
+                        </span>
+                        <span
+                          className="text-base !text-gray-600 dark:!text-gray-300 leading-relaxed"
+                          dangerouslySetInnerHTML={{
+                            __html: renderInlineMarkdown(item),
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ol>,
+                );
+              } else {
+                elements.push(
+                  <ul
+                    key={`unordered-${elements.length}`}
+                    className="my-4 space-y-2.5 pl-1"
+                  >
+                    {listItems.map((item, j) => (
+                      <li key={`${i}-${j}`} className="flex items-start gap-3">
+                        <span className="mt-[9px] w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                        <span
+                          className="text-base !text-gray-600 dark:!text-gray-300 leading-relaxed"
+                          dangerouslySetInnerHTML={{
+                            __html: renderInlineMarkdown(item),
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>,
+                );
+              }
+              listItems = [];
+              listType = null;
+            }
+          };
+
+          lines.forEach((line) => {
+            if (line.startsWith("- ")) {
+              flushParagraph();
+              if (listType !== "ul") {
+                flushList();
+                listType = "ul";
+              }
+              listItems.push(line.replace(/^- /, ""));
+            } else if (/^\d+\.\s/.test(line)) {
+              flushParagraph();
+              if (listType !== "ol") {
+                flushList();
+                listType = "ol";
+              }
+              listItems.push(line.replace(/^\d+\.\s/, ""));
+            } else {
+              flushList();
+              paragraphLines.push(line);
+            }
+          });
+
+          flushList();
+          flushParagraph();
+
+          return <Fragment key={i}>{elements}</Fragment>;
+        }
+
         // ── Bullet list ──
-        if (block.startsWith("- ")) {
-          const items = block.split("\n").filter((l) => l.trim());
+        if (trimmedBlock.startsWith("- ")) {
+          const items = lines;
           return (
             <ul key={i} className="my-4 space-y-2.5 pl-1">
               {items.map((item, j) => (
@@ -116,8 +224,8 @@ function LessonContent({ content }: { content: string }) {
         }
 
         // ── Numbered list ──
-        if (/^\d+\.\s/.test(block)) {
-          const items = block.split("\n").filter((l) => l.trim());
+        if (/^\d+\.\s/.test(trimmedBlock)) {
+          const items = lines;
           return (
             <ol
               key={i}
@@ -143,28 +251,31 @@ function LessonContent({ content }: { content: string }) {
         }
 
         // ── Bold lines used as sub-headings (e.g. "**Best Practices:**") ──
-        if (/^\*\*[^*]+\*\*[:\s]/.test(block) && !block.includes("\n")) {
+        if (
+          /^\*\*[^*]+\*\*[:\s]/.test(trimmedBlock) &&
+          !trimmedBlock.includes("\n")
+        ) {
           return (
             <p
               key={i}
               className="text-base font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-1"
-              dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(block) }}
+              dangerouslySetInnerHTML={{
+                __html: renderInlineMarkdown(trimmedBlock),
+              }}
             />
           );
         }
 
         // ── Regular paragraph ──
-        if (block.trim()) {
-          return (
-            <p
-              key={i}
-              className="text-base sm:text-[1.05rem] leading-[1.85] mb-4 !text-gray-600 dark:!text-gray-300"
-              dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(block) }}
-            />
-          );
-        }
-
-        return null;
+        return (
+          <p
+            key={i}
+            className="text-base sm:text-[1.05rem] leading-[1.85] mb-4 !text-gray-600 dark:!text-gray-300"
+            dangerouslySetInnerHTML={{
+              __html: renderInlineMarkdown(trimmedBlock),
+            }}
+          />
+        );
       })}
     </div>
   );
@@ -219,11 +330,11 @@ function TutorialPageContent({
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
-      
+
       // Save scroll position to sessionStorage for page reloads
       sessionStorage.setItem(
         `scroll-${slug}-${currentLessonIndex}`,
-        String(scrollTop)
+        String(scrollTop),
       );
     };
     window.addEventListener("scroll", update, { passive: true });
@@ -234,22 +345,25 @@ function TutorialPageContent({
   // Scroll management: restore on reload, reset on navigation
   useEffect(() => {
     if (!hydrated) return;
-    
+
     const savedScroll = sessionStorage.getItem(
-      `scroll-${slug}-${currentLessonIndex}`
+      `scroll-${slug}-${currentLessonIndex}`,
     );
-    
+
     // Check if this is a page reload (savedScroll exists) or a navigation (no savedScroll)
     if (savedScroll) {
       // Page reload - restore scroll position
       const scrollPos = parseInt(savedScroll, 10);
       setTimeout(() => {
-        window.scrollTo({ top: scrollPos, behavior: 'instant' as ScrollBehavior });
+        window.scrollTo({
+          top: scrollPos,
+          behavior: "instant" as ScrollBehavior,
+        });
       }, 0);
     } else {
       // Navigation between lessons - scroll to top
       setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+        window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
         setScrollProgress(0);
       }, 0);
     }
@@ -305,9 +419,9 @@ function TutorialPageContent({
     const savedIndex = localStorage.getItem(
       getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
     );
-    
+
     let targetIndex = 0;
-    
+
     if (savedIndex !== null) {
       // User has a saved lesson - use that
       const idx = parseInt(savedIndex, 10);
@@ -316,12 +430,14 @@ function TutorialPageContent({
       }
     } else {
       // No saved lesson - find the first incomplete lesson
-      const firstIncomplete = tutorial.lessons.findIndex((_, i) => !localIndices.has(i));
+      const firstIncomplete = tutorial.lessons.findIndex(
+        (_, i) => !localIndices.has(i),
+      );
       if (firstIncomplete !== -1) {
         targetIndex = firstIncomplete;
       }
     }
-    
+
     const lessonSlug = tutorial.lessons[targetIndex]?.slug;
     queueMicrotask(() => {
       setCurrentLessonIndex(targetIndex);
@@ -381,25 +497,25 @@ function TutorialPageContent({
       );
       return next;
     });
-    
+
     if (tutorial) {
       const lessonSlug = tutorial.lessons[index]?.slug;
       const lessonTitle = tutorial.lessons[index]?.title;
-      
+
       if (lessonSlug) {
         // Save to backend (which will automatically update streak and recent activity)
         api
-          .post("/progress/mark", { 
-            tutorialSlug: slug, 
+          .post("/progress/mark", {
+            tutorialSlug: slug,
             lessonSlug,
             tutorialTitle: tutorial.title,
-            lessonTitle: lessonTitle
+            lessonTitle: lessonTitle,
           })
           .catch(() => {});
-        
+
         // No need for localStorage recent activity anymore - it's in the database
       }
-      
+
       // Toast: lesson completed
       if (lessonTitle) success("Lesson completed! ✓", lessonTitle);
     }
@@ -438,17 +554,17 @@ function TutorialPageContent({
   const goToLesson = (index: number) => {
     // Clear saved scroll for the target lesson to force scroll to top
     sessionStorage.removeItem(`scroll-${slug}-${index}`);
-    
+
     setCurrentLessonIndex(index);
     localStorage.setItem(
       getUserStorageKey(user?.id, `tutorial-lesson-${slug}`),
       String(index),
     );
     setSidebarOpen(false);
-    
+
     // Immediately scroll to top
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-    
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+
     // Update URL so the lesson is shareable / bookmarkable
     const lessonSlug = tutorial?.lessons[index]?.slug;
     if (lessonSlug) {
@@ -553,336 +669,342 @@ function TutorialPageContent({
             { name: "Home", url: "/" },
             { name: "Tutorials", url: "/tutorials" },
             { name: tutorial.title, url: `/tutorials/${slug}` },
-            { name: lesson.title, url: `/tutorials/${slug}?lesson=${lesson.slug}` },
+            {
+              name: lesson.title,
+              url: `/tutorials/${slug}?lesson=${lesson.slug}`,
+            },
           ])}
         />
       )}
 
       <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Certificate modal */}
-      <AnimatePresence>
-        {showCertificate && tutorial && (
-          <Certificate
-            name="Learner"
-            trackTitle={tutorial.title}
-            lessonsCount={tutorial.lessons.length}
-            completedAt={new Date().toISOString()}
-            onClose={() => setShowCertificate(false)}
-          />
-        )}
-      </AnimatePresence>
+        {/* Certificate modal */}
+        <AnimatePresence>
+          {showCertificate && tutorial && (
+            <Certificate
+              name="Learner"
+              trackTitle={tutorial.title}
+              lessonsCount={tutorial.lessons.length}
+              completedAt={new Date().toISOString()}
+              onClose={() => setShowCertificate(false)}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Scroll-driven reading progress line — embedded in LessonNavHeader */}
+        {/* Scroll-driven reading progress line — embedded in LessonNavHeader */}
 
-      {/* ── Course complete banner ── */}
-      <AnimatePresence>
-        {courseComplete && (
-          <motion.div
-            initial={{ opacity: 0, y: -60 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -60 }}
-            className="fixed top-0 inset-x-0 z-50 flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-xl"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🎉</span>
-              <div>
-                <p className="font-bold text-base">Course Complete!</p>
-                <p className="text-sm text-emerald-100">
-                  You finished all lessons in {tutorial.title}. Great work!
-                </p>
+        {/* ── Course complete banner ── */}
+        <AnimatePresence>
+          {courseComplete && (
+            <motion.div
+              initial={{ opacity: 0, y: -60 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -60 }}
+              className="fixed top-0 inset-x-0 z-50 flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-xl"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🎉</span>
+                <div>
+                  <p className="font-bold text-base">Course Complete!</p>
+                  <p className="text-sm text-emerald-100">
+                    You finished all lessons in {tutorial.title}. Great work!
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              {quizCategory && (
+              <div className="flex items-center gap-3 shrink-0">
+                {quizCategory && (
+                  <Link
+                    href={`/quiz?category=${quizCategory.id}`}
+                    className="px-4 py-2 bg-white text-emerald-700 hover:bg-emerald-50 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Take the Quiz →
+                  </Link>
+                )}
                 <Link
-                  href={`/quiz?category=${quizCategory.id}`}
-                  className="px-4 py-2 bg-white text-emerald-700 hover:bg-emerald-50 rounded-lg text-sm font-medium transition-colors"
+                  href="/tutorials"
+                  className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
                 >
-                  Take the Quiz →
+                  Browse More
                 </Link>
-              )}
-              <Link
-                href="/tutorials"
-                className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
-              >
-                Browse More
-              </Link>
-              <button
-                onClick={() => setCourseComplete(false)}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <button
+                  onClick={() => setCourseComplete(false)}
+                  className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* ── Sticky lesson nav header (below main site nav) ── */}
-      <LessonNavHeader
-        lessonTitle={lesson?.title ?? "Lesson"}
-        lessonIndex={currentLessonIndex}
-        totalLessons={tutorial.lessons.length}
-        hasPrev={hasPrev}
-        hasNext={hasNext}
-        onPrev={goPrev}
-        onNext={goNext}
-        onMenuToggle={() => setSidebarOpen((o) => !o)}
-        scrollProgress={scrollProgress}
-      />
-
-      {/* ── Mobile sidebar overlay backdrop ── */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            key="overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="lg:hidden fixed inset-0 z-20 bg-black/40 backdrop-blur-sm"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Three-column layout: sidebar | content | toc ── */}
-      <div className="max-w-[1440px] mx-auto flex">
-        {/* LEFT: fixed sidebar */}
-        <TutorialSidebar
-          tutorial={tutorial}
-          slug={slug}
-          currentLessonIndex={currentLessonIndex}
-          completedLessons={completedLessons}
-          onSelectLesson={goToLesson}
-          isOpen={sidebarOpen}
+        {/* ── Sticky lesson nav header (below main site nav) ── */}
+        <LessonNavHeader
+          lessonTitle={lesson?.title ?? "Lesson"}
+          lessonIndex={currentLessonIndex}
+          totalLessons={tutorial.lessons.length}
+          hasPrev={hasPrev}
+          hasNext={hasNext}
+          onPrev={goPrev}
+          onNext={goNext}
+          onMenuToggle={() => setSidebarOpen((o) => !o)}
+          scrollProgress={scrollProgress}
         />
 
-        {/* CENTER: lesson content */}
-        <AnimatePresence mode="wait">
-          <motion.main
-            key={currentLessonIndex}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-            className="flex-1 min-w-0 px-5 sm:px-8 lg:px-12 py-8 lg:py-10 max-w-3xl mx-auto xl:mx-0 xl:max-w-none"
-          >
-            {/* Lesson eyebrow */}
-            <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-3">
-              <BookOpen className="w-4 h-4" />
-              <span>
-                Lesson {currentLessonIndex + 1} of {tutorial.lessons.length}
-              </span>
-            </div>
+        {/* ── Mobile sidebar overlay backdrop ── */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="lg:hidden fixed inset-0 z-20 bg-black/40 backdrop-blur-sm"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+        </AnimatePresence>
 
-            {/* Lesson title + Bookmark + Completion Status */}
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div className="flex-1">
-                <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
-                  {lesson?.title ?? "Lesson"}
-                </h1>
-                {/* Completion status badge */}
-                {completedLessons.has(currentLessonIndex) && (
-                  <div className="flex items-center gap-2 mt-3">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800/60">
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
+        {/* ── Three-column layout: sidebar | content | toc ── */}
+        <div className="max-w-[1440px] mx-auto flex">
+          {/* LEFT: fixed sidebar */}
+          <TutorialSidebar
+            tutorial={tutorial}
+            slug={slug}
+            currentLessonIndex={currentLessonIndex}
+            completedLessons={completedLessons}
+            onSelectLesson={goToLesson}
+            isOpen={sidebarOpen}
+          />
+
+          {/* CENTER: lesson content */}
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={currentLessonIndex}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25 }}
+              className="flex-1 min-w-0 px-5 sm:px-8 lg:px-12 py-8 lg:py-10 max-w-3xl mx-auto xl:mx-0 xl:max-w-none"
+            >
+              {/* Lesson eyebrow */}
+              <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-3">
+                <BookOpen className="w-4 h-4" />
+                <span>
+                  Lesson {currentLessonIndex + 1} of {tutorial.lessons.length}
+                </span>
+              </div>
+
+              {/* Lesson title + Bookmark + Completion Status */}
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex-1">
+                  <h1 className="text-3xl sm:text-[2.25rem] font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
+                    {lesson?.title ?? "Lesson"}
+                  </h1>
+                  {/* Completion status badge */}
+                  {completedLessons.has(currentLessonIndex) && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800/60">
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Completed
+                      </span>
+                      <button
+                        onClick={() => markIncomplete(currentLessonIndex)}
+                        className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors"
+                        title="Mark as incomplete"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      Completed
-                    </span>
-                    <button
-                      onClick={() => markIncomplete(currentLessonIndex)}
-                      className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors"
-                      title="Mark as incomplete"
-                    >
-                      Mark incomplete
-                    </button>
-                  </div>
+                        Mark incomplete
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {/* Bookmark — logged-in only */}
+                {user && lesson && (
+                  <button
+                    onClick={() =>
+                      toggleBookmark({
+                        tutorialSlug: slug,
+                        lessonSlug: lesson.slug,
+                        lessonTitle: lesson.title,
+                        trackTitle: tutorial.title,
+                      })
+                    }
+                    title={
+                      isBookmarked(slug, lesson.slug)
+                        ? "Remove bookmark (B)"
+                        : "Bookmark this lesson (B)"
+                    }
+                    className={`shrink-0 mt-1 p-2 rounded-xl border transition-all ${
+                      isBookmarked(slug, lesson.slug)
+                        ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400"
+                        : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-400 hover:text-indigo-500 hover:border-indigo-300"
+                    }`}
+                  >
+                    {isBookmarked(slug, lesson.slug) ? (
+                      <BookmarkCheck className="w-5 h-5" />
+                    ) : (
+                      <Bookmark className="w-5 h-5" />
+                    )}
+                  </button>
                 )}
               </div>
-              {/* Bookmark — logged-in only */}
-              {user && lesson && (
-                <button
-                  onClick={() =>
-                    toggleBookmark({
-                      tutorialSlug: slug,
-                      lessonSlug: lesson.slug,
-                      lessonTitle: lesson.title,
-                      trackTitle: tutorial.title,
-                    })
-                  }
-                  title={
-                    isBookmarked(slug, lesson.slug)
-                      ? "Remove bookmark (B)"
-                      : "Bookmark this lesson (B)"
-                  }
-                  className={`shrink-0 mt-1 p-2 rounded-xl border transition-all ${
-                    isBookmarked(slug, lesson.slug)
-                      ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400"
-                      : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-400 hover:text-indigo-500 hover:border-indigo-300"
-                  }`}
-                >
-                  {isBookmarked(slug, lesson.slug) ? (
-                    <BookmarkCheck className="w-5 h-5" />
-                  ) : (
-                    <Bookmark className="w-5 h-5" />
-                  )}
-                </button>
-              )}
-            </div>
 
-            {/* Meta badges */}
-            <LessonMeta
-              difficulty={lesson?.difficulty ?? "beginner"}
-              estimatedMinutes={lesson?.estimatedMinutes ?? 0}
-              mdnReference={lesson?.mdnReference}
-            />
+              {/* Meta badges */}
+              <LessonMeta
+                difficulty={lesson?.difficulty ?? "beginner"}
+                estimatedMinutes={lesson?.estimatedMinutes ?? 0}
+                mdnReference={lesson?.mdnReference}
+              />
 
-            {/* ── Lesson body ── */}
-            <div className="mt-6 text-gray-700 dark:text-gray-300">
-              <LessonContent content={lesson?.content ?? ""} />
-            </div>
-
-            {/* ── Code examples ── */}
-            {lesson?.codeExamples && lesson.codeExamples.length > 0 && (
-              <div className="mt-8 space-y-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                    Code Examples
-                  </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
-                </div>
-                {lesson.codeExamples.map((example, i) => (
-                  <LiveCodeEditor
-                    key={i}
-                    initialCode={example.code}
-                    language={example.language}
-                    title={example.title}
-                    description={example.description}
-                  />
-                ))}
+              {/* ── Lesson body ── */}
+              <div className="mt-6 text-gray-700 dark:text-gray-300">
+                <LessonContent content={lesson?.content ?? ""} />
               </div>
-            )}
 
-            {/* ── Key takeaways ── */}
-            {lesson?.keyTakeaways && lesson.keyTakeaways.length > 0 && (
-              <KeyTakeaways takeaways={lesson.keyTakeaways} />
-            )}
-
-            {/* ── Practice exercises ── */}
-            {lesson?.interactiveExercises &&
-              lesson.interactiveExercises.length > 0 && (
-                <div className="mt-10">
-                  <div className="flex items-center gap-2.5 mb-5">
-                    <Zap className="w-5 h-5 text-indigo-500" />
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                      Practice Exercises
-                    </h3>
-                    <span className="ml-auto text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
-                      {lesson.interactiveExercises.length} exercise
-                      {lesson.interactiveExercises.length !== 1 ? "s" : ""}
+              {/* ── Code examples ── */}
+              {lesson?.codeExamples && lesson.codeExamples.length > 0 && (
+                <div className="mt-8 space-y-2">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                      Code Examples
                     </span>
+                    <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
                   </div>
-                  {lesson.interactiveExercises.map((exercise, i) => (
-                    <ExerciseBlock
-                      key={exercise.id}
-                      exercise={exercise}
-                      exerciseNumber={i + 1}
+                  {lesson.codeExamples.map((example, i) => (
+                    <LiveCodeEditor
+                      key={i}
+                      initialCode={example.code}
+                      language={example.language}
+                      title={example.title}
+                      description={example.description}
                     />
                   ))}
                 </div>
               )}
 
-            {/* ── Quick Quiz (for advanced lessons with quickQuiz property) ── */}
-            {lesson?.quickQuiz && lesson.quickQuiz.length > 0 && (
-              <LessonQuiz
-                key={`quick-quiz-${lesson.slug}`}
-                questions={lesson.quickQuiz.map((q, idx) => ({
-                  id: `${lesson.slug}-quick-${idx}`,
-                  question: q.question,
-                  options: q.options,
-                  correctIndex: q.correctAnswer,
-                  explanation: q.explanation,
-                }))}
-                lessonTitle={lesson.title}
-                storageKey={`quick-quiz-${slug}-${lesson.slug}`}
-                quizTopic={`${slug}/${lesson.slug}`}
-              />
-            )}
+              {/* ── Key takeaways ── */}
+              {lesson?.keyTakeaways && lesson.keyTakeaways.length > 0 && (
+                <KeyTakeaways takeaways={lesson.keyTakeaways} />
+              )}
 
-            {/* ── Inline lesson quiz (only if no quickQuiz property exists) ── */}
-            {!lesson?.quickQuiz && quizQuestions && quizQuestions.length > 0 && lesson && (
-              <LessonQuiz
-                key={quizKey}
-                questions={quizQuestions}
-                lessonTitle={lesson.title}
-                storageKey={quizKey}
-                quizTopic={quizKey}
-              />
-            )}
-
-            {/* ── Lesson Feedback ── */}
-            {lesson && (
-              <LessonFeedback tutorialSlug={slug} lessonSlug={lesson.slug} />
-            )}
-
-            {/* ── End-of-course quiz CTA ── */}
-            {quizCategory && !hasNext && <QuizCTA category={quizCategory} />}
-
-            {/* ── Bottom prev/next navigation ── */}
-            <div className="flex items-center justify-between mt-14 pt-8 border-t border-gray-100 dark:border-gray-800">
-              <button
-                onClick={goPrev}
-                disabled={!hasPrev}
-                className={cn(
-                  "flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all",
-                  hasPrev
-                    ? "border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900"
-                    : "text-gray-300 dark:text-gray-700 cursor-not-allowed",
+              {/* ── Practice exercises ── */}
+              {lesson?.interactiveExercises &&
+                lesson.interactiveExercises.length > 0 && (
+                  <div className="mt-10">
+                    <div className="flex items-center gap-2.5 mb-5">
+                      <Zap className="w-5 h-5 text-indigo-500" />
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                        Practice Exercises
+                      </h3>
+                      <span className="ml-auto text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
+                        {lesson.interactiveExercises.length} exercise
+                        {lesson.interactiveExercises.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    {lesson.interactiveExercises.map((exercise, i) => (
+                      <ExerciseBlock
+                        key={exercise.id}
+                        exercise={exercise}
+                        exerciseNumber={i + 1}
+                      />
+                    ))}
+                  </div>
                 )}
-              >
-                <ChevronLeft className="w-4 h-4 shrink-0" />
-                <span className="truncate max-w-[180px]">
-                  {hasPrev
-                    ? tutorial.lessons[currentLessonIndex - 1].title
-                    : "Previous"}
-                </span>
-              </button>
 
-              <button
-                onClick={goNext}
-                className={cn(
-                  "flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all shadow-md",
-                  hasNext
-                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-indigo-500/25"
-                    : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/25",
+              {/* ── Quick Quiz (for advanced lessons with quickQuiz property) ── */}
+              {lesson?.quickQuiz && lesson.quickQuiz.length > 0 && (
+                <LessonQuiz
+                  key={`quick-quiz-${lesson.slug}`}
+                  questions={lesson.quickQuiz.map((q, idx) => ({
+                    id: `${lesson.slug}-quick-${idx}`,
+                    question: q.question,
+                    options: q.options,
+                    correctIndex: q.correctAnswer,
+                    explanation: q.explanation,
+                  }))}
+                  lessonTitle={lesson.title}
+                  storageKey={`quick-quiz-${slug}-${lesson.slug}`}
+                  quizTopic={`${slug}/${lesson.slug}`}
+                />
+              )}
+
+              {/* ── Inline lesson quiz (only if no quickQuiz property exists) ── */}
+              {!lesson?.quickQuiz &&
+                quizQuestions &&
+                quizQuestions.length > 0 &&
+                lesson && (
+                  <LessonQuiz
+                    key={quizKey}
+                    questions={quizQuestions}
+                    lessonTitle={lesson.title}
+                    storageKey={quizKey}
+                    quizTopic={quizKey}
+                  />
                 )}
-              >
-                <span className="truncate max-w-[180px]">
-                  {hasNext
-                    ? tutorial.lessons[currentLessonIndex + 1].title
-                    : "Mark Complete ✓"}
-                </span>
-                <ChevronRight className="w-4 h-4 shrink-0" />
-              </button>
-            </div>
-          </motion.main>
-        </AnimatePresence>
 
-        {/* RIGHT: table of contents — sticky column that stays fixed while content scrolls */}
-        <div className="hidden xl:flex xl:flex-col w-56 shrink-0 sticky top-[108px] h-[calc(100vh-108px)] px-4 py-8 overflow-y-auto scrollbar-thin">
-          <TableOfContents content={lesson?.content ?? ""} />
+              {/* ── Lesson Feedback ── */}
+              {lesson && (
+                <LessonFeedback tutorialSlug={slug} lessonSlug={lesson.slug} />
+              )}
+
+              {/* ── End-of-course quiz CTA ── */}
+              {quizCategory && !hasNext && <QuizCTA category={quizCategory} />}
+
+              {/* ── Bottom prev/next navigation ── */}
+              <div className="flex items-center justify-between mt-14 pt-8 border-t border-gray-100 dark:border-gray-800">
+                <button
+                  onClick={goPrev}
+                  disabled={!hasPrev}
+                  className={cn(
+                    "flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all",
+                    hasPrev
+                      ? "border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900"
+                      : "text-gray-300 dark:text-gray-700 cursor-not-allowed",
+                  )}
+                >
+                  <ChevronLeft className="w-4 h-4 shrink-0" />
+                  <span className="truncate max-w-[180px]">
+                    {hasPrev
+                      ? tutorial.lessons[currentLessonIndex - 1].title
+                      : "Previous"}
+                  </span>
+                </button>
+
+                <button
+                  onClick={goNext}
+                  className={cn(
+                    "flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all shadow-md",
+                    hasNext
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-indigo-500/25"
+                      : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/25",
+                  )}
+                >
+                  <span className="truncate max-w-[180px]">
+                    {hasNext
+                      ? tutorial.lessons[currentLessonIndex + 1].title
+                      : "Mark Complete ✓"}
+                  </span>
+                  <ChevronRight className="w-4 h-4 shrink-0" />
+                </button>
+              </div>
+            </motion.main>
+          </AnimatePresence>
+
+          {/* RIGHT: table of contents — sticky column that stays fixed while content scrolls */}
+          <div className="hidden xl:flex xl:flex-col w-56 shrink-0 sticky top-[108px] h-[calc(100vh-108px)] px-4 py-8 overflow-y-auto scrollbar-thin">
+            <TableOfContents content={lesson?.content ?? ""} />
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
