@@ -22,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<Bookmark> Bookmarks => Set<Bookmark>();
     public DbSet<RecentActivity> RecentActivities => Set<RecentActivity>();
     public DbSet<InterviewRevision> InterviewRevisions => Set<InterviewRevision>();
+    public DbSet<InterviewProgress> InterviewProgress => Set<InterviewProgress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -179,6 +180,18 @@ public class AppDbContext : DbContext
             entity.HasIndex(ir => new { ir.UserId, ir.Category, ir.QuestionId }).IsUnique();
             entity.Property(ir => ir.Category).HasMaxLength(50);
             entity.Property(ir => ir.QuestionId).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<InterviewProgress>(entity =>
+        {
+            entity.HasOne(ip => ip.User)
+                .WithMany()
+                .HasForeignKey(ip => ip.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ip => new { ip.UserId, ip.Category, ip.QuestionId }).IsUnique();
+            entity.Property(ip => ip.Category).HasMaxLength(50);
+            entity.Property(ip => ip.QuestionId).HasMaxLength(50);
         });
     }
 }
