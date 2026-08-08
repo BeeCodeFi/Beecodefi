@@ -113,6 +113,7 @@
 - [x] Lesson quizzes now count toward quiz completion badges
 - [x] Perfect quiz badge includes lesson quizzes
 - [x] BadgeService integrated into QuizService, ProgressService, and StreakService
+- [x] Lazy badge unlock checks on the Achievements page to ensure synchronization
 
 ---
 
@@ -204,7 +205,7 @@
   - [ ] "Speed Demon" - Complete lesson in record time
   - [ ] "Perfectionist" - Get 100% on all quizzes
   - [ ] "Interviewer Ready" - Complete all interview questions
-- [ ] Badge Progress: Show % progress toward each locked badge
+- [x] Badge Progress: Show % progress toward each locked badge
 - [ ] Rare Badges: Special badges for exceptional achievements
 
 #### B. XP & Leveling System (MEDIUM PRIORITY)
@@ -367,31 +368,6 @@
 | Learning   | Lesson completion rate, quiz pass rate, avg score, streak rate     |
 | Content    | Most popular tutorials, most bookmarked, most challenging quizzes  |
 | Retention  | Day 1 / 7 / 30 retention, churn rate, reactivation rate           |
-
----
-
-## Implementation Priority (Next 3 Months)
-
-### Month 1: Content & Quiz
-1. [x] CSS Interview Questions (25 questions) -- DONE
-2. [x] JavaScript Interview Questions (30 questions) -- DONE
-3. [ ] Quiz Timed Mode (countdown timer)
-4. [ ] Quiz Review Mode (post-quiz answer explanations)
-5. [ ] XP & Leveling System (basic)
-
-### Month 2: Engagement & Mobile
-1. [ ] PWA basics (manifest + service worker)
-2. [ ] Enhanced Badge types (Night Owl, Early Bird, etc.)
-3. [ ] Daily Challenges system
-4. [ ] Public User Profiles
-5. [ ] Performance Graphs on dashboard
-
-### Month 3: Social & AI
-1. [ ] Friends & Following system
-2. [ ] Enhanced Leaderboards (monthly, friends-only)
-3. [ ] AI "Explain this" button on lessons
-4. [ ] Related content suggestions
-5. [ ] Study Plans with calendar
 
 ---
 

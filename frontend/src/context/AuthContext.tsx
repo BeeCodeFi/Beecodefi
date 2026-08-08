@@ -32,7 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!storedUser) return null;
 
     try {
-      return JSON.parse(storedUser) as User;
+      const parsedUser = JSON.parse(storedUser) as User;
+      parsedUser.level = Math.floor(Math.sqrt((parsedUser.totalXP || 0) / 10)) + 1;
+      return parsedUser;
     } catch {
       localStorage.removeItem("user");
       return null;
@@ -53,8 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
+      const userWithLevel = {
+        ...data.user,
+        level: Math.floor(Math.sqrt((data.user.totalXP || 0) / 10)) + 1
+      };
+      localStorage.setItem("user", JSON.stringify(userWithLevel));
+      setUser(userWithLevel);
     } catch (error: unknown) {
       // Re-throw with enhanced error message from api.ts interceptor
       throw error;
@@ -70,8 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
+      const userWithLevel = {
+        ...data.user,
+        level: Math.floor(Math.sqrt((data.user.totalXP || 0) / 10)) + 1
+      };
+      localStorage.setItem("user", JSON.stringify(userWithLevel));
+      setUser(userWithLevel);
     } catch (error: unknown) {
       // Re-throw with enhanced error message from api.ts interceptor
       throw error;
@@ -86,8 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateUser = (updatedUser: User) => {
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
+    const userWithLevel = {
+      ...updatedUser,
+      level: Math.floor(Math.sqrt((updatedUser.totalXP || 0) / 10)) + 1
+    };
+    localStorage.setItem("user", JSON.stringify(userWithLevel));
+    setUser(userWithLevel);
   };
 
   return (

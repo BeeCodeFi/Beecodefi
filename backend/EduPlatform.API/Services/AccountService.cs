@@ -46,6 +46,26 @@ public class AccountService : IAccountService
             }
         }
 
+        if (!string.IsNullOrWhiteSpace(dto.Username))
+        {
+            var username = dto.Username.Trim().ToLowerInvariant();
+            
+            if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"^[a-z0-9_]{3,20}$"))
+                throw new InvalidOperationException("Username must be between 3 and 20 characters and contain only letters, numbers, and underscores.");
+
+            if (username != user.Username?.ToLowerInvariant())
+            {
+                if (await _db.Users.AnyAsync(u => u.Username.ToLower() == username && u.Id != userId))
+                    throw new InvalidOperationException("Username is already taken");
+                user.Username = dto.Username.Trim();
+            }
+        }
+
+        if (dto.Bio != null)
+        {
+            user.Bio = dto.Bio;
+        }
+
         await _db.SaveChangesAsync();
 
         return new UserDto
@@ -53,7 +73,10 @@ public class AccountService : IAccountService
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            ProfileImageUrl = user.ProfileImageUrl
+            ProfileImageUrl = user.ProfileImageUrl,
+            TotalXP = user.TotalXP,
+            Username = user.Username,
+            Bio = user.Bio
         };
     }
 

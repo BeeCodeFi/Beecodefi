@@ -36,6 +36,9 @@ public class UserDto
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string? ProfileImageUrl { get; set; }
+    public int TotalXP { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string? Bio { get; set; }
 }
 
 public class RefreshTokenDto

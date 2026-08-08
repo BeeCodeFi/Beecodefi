@@ -10,12 +10,14 @@ public class QuizService : IQuizService
     private readonly AppDbContext _db;
     private readonly IStreakService _streakService;
     private readonly IBadgeService _badgeService;
+    private readonly IXPService _xpService;
 
-    public QuizService(AppDbContext db, IStreakService streakService, IBadgeService badgeService)
+    public QuizService(AppDbContext db, IStreakService streakService, IBadgeService badgeService, IXPService xpService)
     {
         _db = db;
         _streakService = streakService;
         _badgeService = badgeService;
+        _xpService = xpService;
     }
 
     public async Task<List<QuizTopicDto>> GetTopicsAsync(int? userId = null)
@@ -181,6 +183,9 @@ public class QuizService : IQuizService
             });
             
             await _db.SaveChangesAsync();
+
+            // Award XP
+            await _xpService.AddXPAsync(userId.Value, score * 10, $"Completed quiz: {quiz.Title}");
         }
 
         return new QuizResultDto
@@ -282,6 +287,9 @@ public class QuizService : IQuizService
                 });
                 
                 await _db.SaveChangesAsync();
+
+            // Award XP
+            await _xpService.AddXPAsync(userId.Value, dto.Score * 5, $"Completed lesson quiz: {dto.QuizTitle}");
             }
             catch (Exception ex)
             {

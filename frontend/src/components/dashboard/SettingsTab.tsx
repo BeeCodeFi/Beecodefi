@@ -39,6 +39,8 @@ export default function SettingsTab({
   // Profile form
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [username, setUsername] = useState(user?.username || "");
+  const [bio, setBio] = useState(user?.bio || "");
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMsg, setProfileMsg] = useState<{
     type: "success" | "error";
@@ -100,7 +102,7 @@ export default function SettingsTab({
     setProfileSaving(true);
     setProfileMsg(null);
     try {
-      const { data } = await api.put("/account/profile", { name, email });
+      const { data } = await api.put("/account/profile", { name, email, username, bio });
       updateUser(data);
       setProfileMsg({ type: "success", text: "Profile updated successfully" });
       success("Profile updated", "Your name and email have been saved");
@@ -387,6 +389,37 @@ export default function SettingsTab({
                 required
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Username
+            </label>
+            <div className="relative flex items-center">
+              <span className="absolute left-3 text-gray-400">@</span>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full pl-8 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                pattern="[a-zA-Z0-9_]{3,20}"
+                title="3-20 characters, letters, numbers, and underscores only"
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Bio
+            </label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              rows={3}
+              maxLength={160}
+              placeholder="Tell the world about yourself..."
+              className="w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+            />
+            <p className="text-xs text-gray-500 mt-1 text-right">{bio.length}/160</p>
           </div>
 
           {profileMsg && (

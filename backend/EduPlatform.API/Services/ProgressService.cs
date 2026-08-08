@@ -10,12 +10,14 @@ public class ProgressService : IProgressService
     private readonly AppDbContext _db;
     private readonly IStreakService _streakService;
     private readonly IBadgeService _badgeService;
+    private readonly IXPService _xpService;
 
-    public ProgressService(AppDbContext db, IStreakService streakService, IBadgeService badgeService)
+    public ProgressService(AppDbContext db, IStreakService streakService, IBadgeService badgeService, IXPService xpService)
     {
         _db = db;
         _streakService = streakService;
         _badgeService = badgeService;
+        _xpService = xpService;
     }
 
     public async Task MarkCompleteAsync(int userId, MarkProgressDto dto)
@@ -47,6 +49,9 @@ public class ProgressService : IProgressService
         
         // Check and unlock badges
         await _badgeService.CheckAndUnlockBadgesAsync(userId);
+        
+        // Award XP
+        await _xpService.AddXPAsync(userId, 50, $"Completed lesson: {dto.LessonSlug}");
         
         // Track in Recent Activity - keep only the most recent for this lesson
         var existingActivity = await _db.RecentActivities

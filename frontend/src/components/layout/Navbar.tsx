@@ -219,13 +219,26 @@ export default function Navbar() {
                 </kbd>
               </motion.button>
 
+              {/* Level & XP — logged-in only */}
+              {mounted && user && (
+                <div className="flex items-center gap-1.5 hidden lg:flex">
+                  <div
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold shadow-sm"
+                    title={`${user.totalXP} Total XP`}
+                  >
+                    <span className="text-[10px] uppercase opacity-80 tracking-wider">Lvl</span>
+                    {user.level || 1}
+                  </div>
+                </div>
+              )}
+
               {/* Streak — logged-in only */}
               {mounted && user && streak.current > 0 && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 400 }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 text-orange-600 dark:text-orange-400 text-xs font-bold"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/40 text-orange-600 dark:text-orange-400 text-xs font-bold shadow-sm"
                   title={`${streak.current} day streak! Longest: ${streak.longest}`}
                 >
                   <Flame className="w-3.5 h-3.5" />
@@ -300,6 +313,15 @@ export default function Navbar() {
                         transition={{ duration: 0.15, ease: "easeOut" }}
                         className="absolute right-0 mt-2 w-52 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-200/60 dark:border-white/8 py-2 overflow-hidden"
                       >
+                        {user.username && (
+                          <Link
+                            href={`/u/${user.username}`}
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <UserPlus className="w-4 h-4" /> Public Profile
+                          </Link>
+                        )}
                         <Link
                           href="/dashboard"
                           className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/6 transition-colors"

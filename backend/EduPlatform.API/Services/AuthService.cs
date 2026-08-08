@@ -27,10 +27,14 @@ public class AuthService : IAuthService
         if (await _db.Users.AnyAsync(u => u.Email == dto.Email.ToLowerInvariant()))
             throw new InvalidOperationException("Email already registered");
 
+        var baseUsername = dto.Name.Replace(" ", "").ToLowerInvariant();
+        var uniqueSuffix = Guid.NewGuid().ToString().Substring(0, 6);
+        
         var user = new User
         {
             Name = dto.Name,
             Email = dto.Email.ToLowerInvariant(),
+            Username = $"{baseUsername}{uniqueSuffix}",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             CreatedAt = DateTime.UtcNow
         };
@@ -121,7 +125,10 @@ public class AuthService : IAuthService
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                ProfileImageUrl = user.ProfileImageUrl
+                ProfileImageUrl = user.ProfileImageUrl,
+                TotalXP = user.TotalXP,
+                Username = user.Username,
+                Bio = user.Bio
             }
         };
     }

@@ -3,6 +3,10 @@ export interface User {
   name: string;
   email: string;
   profileImageUrl?: string | null;
+  totalXP: number;
+  username: string;
+  bio?: string | null;
+  level?: number;
 }
 
 export interface AuthResponse {
