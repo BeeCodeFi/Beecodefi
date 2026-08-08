@@ -39,6 +39,7 @@ public class UserDto
     public int TotalXP { get; set; }
     public string Username { get; set; } = string.Empty;
     public string? Bio { get; set; }
+    public string? Skills { get; set; }
 }
 
 public class RefreshTokenDto

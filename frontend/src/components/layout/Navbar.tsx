@@ -36,6 +36,8 @@ const secondaryNavLinks = [
   { href: "/courses", label: "Courses" },
   { href: "/interview-questions", label: "Interview Questions" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/skills", label: "Skills" },
+  { href: "/quiz-analytics", label: "Quiz Analytics" },
   { href: "/roadmap", label: "Roadmap" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },

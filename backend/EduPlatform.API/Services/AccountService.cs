@@ -23,7 +23,8 @@ public class AccountService : IAccountService
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            ProfileImageUrl = user.ProfileImageUrl
+            ProfileImageUrl = user.ProfileImageUrl,
+            Skills = user.Skills
         };
     }
 
@@ -66,6 +67,11 @@ public class AccountService : IAccountService
             user.Bio = dto.Bio;
         }
 
+        if (dto.Skills != null)
+        {
+            user.Skills = dto.Skills;
+        }
+
         await _db.SaveChangesAsync();
 
         return new UserDto
@@ -76,7 +82,8 @@ public class AccountService : IAccountService
             ProfileImageUrl = user.ProfileImageUrl,
             TotalXP = user.TotalXP,
             Username = user.Username,
-            Bio = user.Bio
+            Bio = user.Bio,
+            Skills = user.Skills
         };
     }
 
@@ -112,7 +119,8 @@ public class AccountService : IAccountService
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            ProfileImageUrl = user.ProfileImageUrl
+            ProfileImageUrl = user.ProfileImageUrl,
+            Skills = user.Skills
         };
     }
 

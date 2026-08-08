@@ -6,6 +6,7 @@ export interface User {
   totalXP: number;
   username: string;
   bio?: string | null;
+  skills?: string | null;
   level?: number;
 }
 

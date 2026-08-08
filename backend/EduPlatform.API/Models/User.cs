@@ -15,6 +15,7 @@ public class User
     public int TotalXP { get; set; } = 0;
     public string Username { get; set; } = string.Empty;
     public string? Bio { get; set; }
+    public string? Skills { get; set; }
     public DateTime? LastActivityDate { get; set; }
     public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
     public ICollection<TutorialProgress> TutorialProgress { get; set; } = new List<TutorialProgress>();

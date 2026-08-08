@@ -41,6 +41,8 @@ public class AppDbContext : DbContext
             entity.HasIndex(u => u.Email).IsUnique();
             entity.Property(u => u.Email).HasMaxLength(256);
             entity.Property(u => u.Name).HasMaxLength(100);
+            entity.Property(u => u.Skills).HasMaxLength(1000);
+            entity.HasIndex(u => u.Skills).HasMethod("gin");
         });
 
         modelBuilder.Entity<Quiz>(entity =>

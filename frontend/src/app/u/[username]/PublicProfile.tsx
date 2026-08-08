@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
-import { Award, Flame, Calendar, BookOpen, CheckCircle, Clock } from "lucide-react";
+import { Award, Flame, Calendar, BookOpen, CheckCircle, Clock, Code, Tag } from "lucide-react";
 import Image from "next/image";
 
 interface Badge {
@@ -28,6 +28,7 @@ interface UserProfile {
   name: string;
   username: string;
   bio?: string;
+  skills?: string;
   profileImageUrl?: string;
   totalXP: number;
   level: number;
@@ -104,6 +105,16 @@ export default function PublicProfile({ username }: { username: string }) {
             <p className="text-indigo-600 dark:text-indigo-400 font-medium mt-1">@{profile.username}</p>
             {profile.bio && (
               <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl">{profile.bio}</p>
+            )}
+            {profile.skills && (
+              <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
+                {profile.skills.split(',').map((skill, index) => (
+                  <span key={index} className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
+                    <Tag className="w-3 h-3" />
+                    {skill.trim()}
+                  </span>
+                ))}
+              </div>
             )}
             <div className="flex items-center gap-2 mt-4 text-sm text-gray-500 dark:text-gray-400 justify-center md:justify-start">
               <Calendar className="w-4 h-4" /> Joined {new Date(profile.createdAt).toLocaleDateString()}

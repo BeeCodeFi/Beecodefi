@@ -219,6 +219,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
         </motion.div>
+        )}
 
         {/* Filters */}
         <motion.div
@@ -251,7 +252,7 @@ export default function LeaderboardPage() {
             >
               XP
             </button>
-          )}
+          </div>
 
           {/* Track Filters - Only show for Points leaderboard */}
           {leaderboardType === "points" && (

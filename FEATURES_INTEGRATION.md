@@ -37,10 +37,19 @@ This document provides a comprehensive overview of all platform features with th
 - **Status**: ✅ **Fully Integrated**
 
 ### Skills Showcase
-- **Frontend**: ⏳ Pending
-- **Backend**: ⏳ Pending
-  - Skills field in User model (not in DTOs)
-- **Status**: ⏳ **Pending** (Requires DTO review)
+- **Frontend**: ✅ Complete
+  - Skills page with search functionality
+  - Skills display in public profiles
+  - Skills editing in user settings
+  - Popular skills display
+  - Skills categorization with levels
+- **Backend**: ✅ Complete
+  - Skills field in User model with database configuration
+  - SkillsDto, UserSkillsDto, SkillCategoryDto created
+  - SkillsController with CRUD, search, and popular skills endpoints
+  - Skills integrated into UserProfileDto, AuthDtos, AccountDtos
+  - Database migration created
+- **Status**: ✅ **Fully Integrated**
 
 ---
 
@@ -132,14 +141,18 @@ This document provides a comprehensive overview of all platform features with th
 - **Status**: ✅ **Fully Integrated**
 
 ### Quiz Advanced Analytics
-- **Frontend**: ⏳ Pending
-  - Performance graphs
-  - Topic mastery breakdown
-  - Weak areas identification
-- **Backend**: ⏳ Pending
-  - Analytics endpoints
+- **Frontend**: ✅ Complete
+  - Quiz analytics page with performance graphs
+  - Topic mastery breakdown with progress bars
+  - Weak areas identification with recommendations
+  - Weekly performance charts
+  - Overview stats (attempts, avg score, time, best score)
+- **Backend**: ✅ Complete
+  - QuizAnalyticsController with overview, history, topics, weak-areas, weekly endpoints
+  - QuizAnalyticsDtos with comprehensive analytics DTOs
+  - QuizAnalyticsService interface and implementation
   - Historical performance tracking
-- **Status**: ⏳ **Pending**
+- **Status**: ✅ **Fully Integrated**
 
 ### Custom Quiz Builder
 - **Frontend**: ⏳ Pending
@@ -197,13 +210,14 @@ This document provides a comprehensive overview of all platform features with th
 - **Status**: ✅ **Fully Integrated**
 
 ### XP Leaderboard
-- **Frontend**: ⏳ Pending
-  - XP leaderboard page
-  - XP ranking display
+- **Frontend**: ✅ Complete
+  - XP leaderboard page integrated into leaderboard
+  - XP ranking display with toggle between points/XP
+  - Build error fixed (missing closing bracket)
 - **Backend**: ✅ Complete
   - XP leaderboard endpoint in LeaderboardController
   - XP-based ranking logic
-- **Status**: 🔄 **Backend Complete, Frontend Pending**
+- **Status**: ✅ **Fully Integrated**
 
 ### Leaderboard Enhancements
 - **Frontend**: ✅ Complete

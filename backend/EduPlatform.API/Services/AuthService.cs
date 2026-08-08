@@ -128,7 +128,8 @@ public class AuthService : IAuthService
                 ProfileImageUrl = user.ProfileImageUrl,
                 TotalXP = user.TotalXP,
                 Username = user.Username,
-                Bio = user.Bio
+                Bio = user.Bio,
+                Skills = user.Skills
             }
         };
     }
