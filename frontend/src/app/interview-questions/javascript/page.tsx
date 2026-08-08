@@ -1,32 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Search, Filter, Braces, Star, StarOff, RotateCcw, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Filter,
+  Braces,
+  Star,
+  StarOff,
+  RotateCcw,
+  X,
+  Clock,
+  Layers,
+  StickyNote,
+  StickyNoteIcon,
+  PenLine,
+} from "lucide-react";
 import Link from "next/link";
 import { jsInterviewQuestions } from "@/data/interview-questions/js-questions";
 import { useRevisions } from "@/hooks/useRevisions";
 import { useInterviewProgress } from "@/hooks/useInterviewProgress";
+import { useStudySession } from "@/hooks/useStudySession";
+import { useInterviewNotes } from "@/hooks/useInterviewNotes";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
+import FlashcardMode from "@/components/interview/FlashcardMode";
 
 export default function JSInterviewQuestionsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [showRevisionsOnly, setShowRevisionsOnly] = useState(false);
+  const [showFlashcards, setShowFlashcards] = useState(false);
+  // Notes state: which question's note editor is open
+  const [openNoteId, setOpenNoteId] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState("");
+  const noteRef = useRef<HTMLTextAreaElement>(null);
 
   const { user } = useAuth();
   const { success, error: toastError, info } = useToast();
-  const { loading, toggleRevision, clearAllRevisions, isMarked, count } = useRevisions('javascript');
-  const { isRead, markAsRead, readCount } = useInterviewProgress('javascript');
+  const { loading, toggleRevision, clearAllRevisions, isMarked, count } = useRevisions("javascript");
+  const { isRead, markAsRead, readCount } = useInterviewProgress("javascript");
+  const { sessionFormatted, totalFormatted } = useStudySession("javascript");
+  const { getNote, saveNote, hasNote, noteCount, isAuthenticated } = useInterviewNotes("javascript");
 
   const filteredQuestions = jsInterviewQuestions.filter((q) => {
     const matchesSearch =
       q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      q.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesDifficulty = selectedDifficulty === "all" || q.difficulty === selectedDifficulty;
+      q.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesDifficulty =
+      selectedDifficulty === "all" || q.difficulty === selectedDifficulty;
     const matchesRevision = !showRevisionsOnly || isMarked(q.id);
     return matchesSearch && matchesDifficulty && matchesRevision;
   });
@@ -35,6 +61,8 @@ export default function JSInterviewQuestionsPage() {
     const isOpening = expandedId !== id;
     setExpandedId(expandedId === id ? null : id);
     if (isOpening && user) markAsRead(id);
+    // Close any open note when switching questions
+    if (openNoteId && openNoteId !== id) setOpenNoteId(null);
   };
 
   const handleToggleRevision = async (questionId: string, e: React.MouseEvent) => {
@@ -46,11 +74,9 @@ export default function JSInterviewQuestionsPage() {
     const wasMarked = isMarked(questionId);
     const result = await toggleRevision(questionId);
     if (result) {
-      if (wasMarked) {
-        info("Unmarked", "Question removed from revision list");
-      } else {
-        success("Marked for revision! ⭐", "Question added to your revision list");
-      }
+      wasMarked
+        ? info("Unmarked", "Question removed from revision list")
+        : success("Marked for revision! ⭐", "Question added to your revision list");
     } else {
       toastError("Failed to update", "Please try again");
     }
@@ -69,58 +95,105 @@ export default function JSInterviewQuestionsPage() {
     }
   };
 
-  const escapeHtml = (text: string) => {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+  // ── Notes handlers ──
+  const openNote = (questionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (openNoteId === questionId) {
+      setOpenNoteId(null);
+    } else {
+      setOpenNoteId(questionId);
+      setNoteText(getNote(questionId));
+      setTimeout(() => noteRef.current?.focus(), 50);
+    }
   };
+
+  const handleSaveNote = async (questionId: string) => {
+    const result = await saveNote(questionId, noteText);
+    setOpenNoteId(null);
+    if (result) {
+      success(
+        "Note saved!",
+        isAuthenticated ? "Synced to your account." : "Saved locally (log in to sync)."
+      );
+    } else {
+      toastError("Failed to save note", "Please try again.");
+    }
+  };
+
+  const escapeHtml = (text: string) =>
+    text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
   const formatAnswer = (answer: string) => {
     let formatted = answer.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
       const escapedCode = escapeHtml(code.trim());
-      return `<pre class="!bg-gray-900 dark:!bg-black !border !border-gray-700 dark:!border-gray-800 rounded-lg p-4 overflow-x-auto my-4"><code class="language-${lang || 'text'} !text-gray-100 text-sm block whitespace-pre">${escapedCode}</code></pre>`;
+      return `<pre class="!bg-gray-900 dark:!bg-black !border !border-gray-700 dark:!border-gray-800 rounded-lg p-4 overflow-x-auto my-4"><code class="language-${lang || "text"} !text-gray-100 text-sm block whitespace-pre">${escapedCode}</code></pre>`;
     });
 
-    // Tables
-    formatted = formatted.replace(/(\|.+\|\n\|[-| :]+\|\n(?:\|.+\|\n?)+)/g, (tableStr) => {
-      const rows = tableStr.trim().split('\n');
-      const headers = rows[0].split('|').filter(c => c.trim()).map(c =>
-        `<th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">${c.trim()}</th>`
-      ).join('');
-      const bodyRows = rows.slice(2).map(row => {
-        const cells = row.split('|').filter(c => c.trim()).map(c =>
-          `<td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800">${c.trim()}</td>`
-        ).join('');
-        return `<tr class="hover:bg-yellow-50/30 dark:hover:bg-yellow-950/20 transition-colors">${cells}</tr>`;
-      }).join('');
-      return `<div class="overflow-x-auto my-4 rounded-lg border border-gray-200 dark:border-gray-700"><table class="w-full"><thead class="bg-gray-50 dark:bg-gray-800/60"><tr>${headers}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
-    });
+    formatted = formatted.replace(
+      /(\|.+\|\n\|[-| :]+\|\n(?:\|.+\|\n?)+)/g,
+      (tableStr) => {
+        const rows = tableStr.trim().split("\n");
+        const headers = rows[0]
+          .split("|")
+          .filter((c) => c.trim())
+          .map(
+            (c) =>
+              `<th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">${c.trim()}</th>`,
+          )
+          .join("");
+        const bodyRows = rows
+          .slice(2)
+          .map((row) => {
+            const cells = row
+              .split("|")
+              .filter((c) => c.trim())
+              .map(
+                (c) =>
+                  `<td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-800">${c.trim()}</td>`,
+              )
+              .join("");
+            return `<tr class="hover:bg-yellow-50/30 dark:hover:bg-yellow-950/20 transition-colors">${cells}</tr>`;
+          })
+          .join("");
+        return `<div class="overflow-x-auto my-4 rounded-lg border border-gray-200 dark:border-gray-700"><table class="w-full"><thead class="bg-gray-50 dark:bg-gray-800/60"><tr>${headers}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
+      },
+    );
 
-    formatted = formatted.replace(/`([^`]+)`/g, '<code class="!bg-yellow-100 dark:!bg-yellow-900/30 !text-yellow-700 dark:!text-yellow-400 px-1.5 py-0.5 rounded font-mono text-sm">$1</code>');
-    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-yellow-700 dark:text-yellow-300 font-bold">$1</strong>');
+    formatted = formatted.replace(
+      /`([^`]+)`/g,
+      '<code class="!bg-yellow-100 dark:!bg-yellow-900/30 !text-yellow-700 dark:!text-yellow-400 px-1.5 py-0.5 rounded font-mono text-sm">$1</code>',
+    );
+    formatted = formatted.replace(
+      /\*\*(.*?)\*\*/g,
+      '<strong class="text-yellow-700 dark:text-yellow-300 font-bold">$1</strong>',
+    );
 
-    const paragraphs = formatted.split('\n\n').filter(p => p.trim());
-    return paragraphs.map(p => {
-      if (p.trim().startsWith('<pre') || p.trim().startsWith('<div')) return p;
-      return `<p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">${p.replace(/\n/g, '<br>')}</p>`;
-    }).join('');
+    const paragraphs = formatted.split("\n\n").filter((p) => p.trim());
+    return paragraphs
+      .map((p) => {
+        if (p.trim().startsWith("<pre") || p.trim().startsWith("<div")) return p;
+        return `<p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">${p.replace(/\n/g, "<br>")}</p>`;
+      })
+      .join("");
   };
 
-  const beginnerQs = jsInterviewQuestions.filter(q => q.difficulty === 'beginner');
-  const intermediateQs = jsInterviewQuestions.filter(q => q.difficulty === 'intermediate');
-  const advancedQs = jsInterviewQuestions.filter(q => q.difficulty === 'advanced');
+  const beginnerQs = jsInterviewQuestions.filter((q) => q.difficulty === "beginner");
+  const intermediateQs = jsInterviewQuestions.filter((q) => q.difficulty === "intermediate");
+  const advancedQs = jsInterviewQuestions.filter((q) => q.difficulty === "advanced");
 
   const stats = {
     total: jsInterviewQuestions.length,
     beginner: beginnerQs.length,
     intermediate: intermediateQs.length,
     advanced: advancedQs.length,
-    beginnerRead: beginnerQs.filter(q => isRead(q.id)).length,
-    intermediateRead: intermediateQs.filter(q => isRead(q.id)).length,
-    advancedRead: advancedQs.filter(q => isRead(q.id)).length,
+    beginnerRead: beginnerQs.filter((q) => isRead(q.id)).length,
+    intermediateRead: intermediateQs.filter((q) => isRead(q.id)).length,
+    advancedRead: advancedQs.filter((q) => isRead(q.id)).length,
     markedForRevision: count,
     totalRead: readCount,
     filtered: filteredQuestions.length,
@@ -128,6 +201,17 @@ export default function JSInterviewQuestionsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {/* Flashcard Modal */}
+      <AnimatePresence>
+        {showFlashcards && (
+          <FlashcardMode
+            questions={jsInterviewQuestions}
+            onClose={() => setShowFlashcards(false)}
+            accentColor="from-yellow-500 to-amber-500"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,37 +233,81 @@ export default function JSInterviewQuestionsPage() {
             </div>
           </div>
 
-          {/* Stats Panel — always visible */}
+          {/* Stats Panel */}
           <div className="mt-2 p-4 bg-white/10 rounded-lg backdrop-blur-sm space-y-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="text-center">
-                <div className="text-2xl font-bold">{stats.totalRead}/{stats.total}</div>
+                <div className="text-2xl font-bold">
+                  {stats.totalRead}/{stats.total}
+                </div>
                 <div className="text-xs text-white/70">Read</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-200">{stats.beginnerRead}/{stats.beginner}</div>
+                <div className="text-2xl font-bold text-green-200">
+                  {stats.beginnerRead}/{stats.beginner}
+                </div>
                 <div className="text-xs text-white/70">Beginner</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-orange-200">{stats.intermediateRead}/{stats.intermediate}</div>
+                <div className="text-2xl font-bold text-orange-200">
+                  {stats.intermediateRead}/{stats.intermediate}
+                </div>
                 <div className="text-xs text-white/70">Intermediate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-200">{stats.advancedRead}/{stats.advanced}</div>
+                <div className="text-2xl font-bold text-red-200">
+                  {stats.advancedRead}/{stats.advanced}
+                </div>
                 <div className="text-xs text-white/70">Advanced</div>
               </div>
             </div>
+
+            {/* Progress bar */}
             <div>
               <div className="flex justify-between text-xs text-white/60 mb-1">
                 <span>Overall Progress</span>
-                <span>{stats.total > 0 ? Math.round((stats.totalRead / stats.total) * 100) : 0}%</span>
+                <span>
+                  {stats.total > 0
+                    ? Math.round((stats.totalRead / stats.total) * 100)
+                    : 0}
+                  %
+                </span>
               </div>
               <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-white rounded-full transition-all duration-500"
-                  style={{ width: `${stats.total > 0 ? (stats.totalRead / stats.total) * 100 : 0}%` }}
+                  style={{
+                    width: `${stats.total > 0 ? (stats.totalRead / stats.total) * 100 : 0}%`,
+                  }}
                 />
               </div>
+            </div>
+
+            {/* Study session + quick actions */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div className="flex items-center gap-4 text-xs text-white/70">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  Session: <span className="font-semibold text-white">{sessionFormatted}</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  Total: <span className="font-semibold text-white">{totalFormatted}</span>
+                </span>
+                {noteCount > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <StickyNote className="w-3.5 h-3.5" />
+                    <span className="font-semibold text-white">{noteCount}</span> notes
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setShowFlashcards(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                <Layers className="w-4 h-4" />
+                Flashcard Mode
+              </button>
             </div>
           </div>
         </div>
@@ -214,12 +342,12 @@ export default function JSInterviewQuestionsPage() {
               <div className="flex items-center gap-2">
                 <Filter className="w-5 h-5 text-gray-400" />
                 <select
-                  value={showRevisionsOnly ? 'revisions' : selectedDifficulty}
+                  value={showRevisionsOnly ? "revisions" : selectedDifficulty}
                   onChange={(e) => {
                     const val = e.target.value;
-                    if (val === 'revisions') {
+                    if (val === "revisions") {
                       setShowRevisionsOnly(true);
-                      setSelectedDifficulty('all');
+                      setSelectedDifficulty("all");
                     } else {
                       setShowRevisionsOnly(false);
                       setSelectedDifficulty(val);
@@ -231,7 +359,11 @@ export default function JSInterviewQuestionsPage() {
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
-                  {user && <option value="revisions">⭐ Revisions Only{count > 0 ? ` (${count})` : ''}</option>}
+                  {user && (
+                    <option value="revisions">
+                      ⭐ Revisions Only{count > 0 ? ` (${count})` : ""}
+                    </option>
+                  )}
                 </select>
               </div>
             </div>
@@ -259,7 +391,11 @@ export default function JSInterviewQuestionsPage() {
         {!user && (
           <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
             <p className="text-sm text-yellow-800 dark:text-yellow-300">
-              💡 <Link href="/login" className="font-semibold underline">Log in</Link> to mark questions for revision and track your progress!
+              💡{" "}
+              <Link href="/login" className="font-semibold underline">
+                Log in
+              </Link>{" "}
+              to mark questions for revision and track your progress!
             </p>
           </div>
         )}
@@ -280,39 +416,50 @@ export default function JSInterviewQuestionsPage() {
                   className="flex-1 flex items-center gap-4 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-amber-50 dark:hover:from-yellow-950/20 dark:hover:to-amber-950/20 transition-all text-left group -m-5 p-5 rounded-xl"
                 >
                   {/* Question Number */}
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md transition-all ${
-                    isRead(question.id)
-                      ? 'bg-gradient-to-br from-green-500 to-emerald-500'
-                      : 'bg-gradient-to-br from-yellow-500 to-amber-500'
-                  }`}>
-                    {jsInterviewQuestions.findIndex(q => q.id === question.id) + 1}
+                  <div
+                    className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md transition-all ${
+                      isRead(question.id)
+                        ? "bg-gradient-to-br from-green-500 to-emerald-500"
+                        : "bg-gradient-to-br from-yellow-500 to-amber-500"
+                    }`}
+                  >
+                    {jsInterviewQuestions.findIndex((q) => q.id === question.id) + 1}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-3 flex-wrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                        question.difficulty === 'beginner'
-                          ? 'bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/40 dark:to-emerald-900/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
-                          : question.difficulty === 'intermediate'
-                          ? 'bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/40 dark:to-orange-900/40 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800'
-                          : 'bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900/40 dark:to-pink-900/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                          question.difficulty === "beginner"
+                            ? "bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/40 dark:to-emerald-900/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
+                            : question.difficulty === "intermediate"
+                              ? "bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/40 dark:to-orange-900/40 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
+                              : "bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900/40 dark:to-pink-900/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800"
+                        }`}
+                      >
                         {question.difficulty}
                       </span>
                       <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
                         {question.category}
                       </span>
+                      {hasNote(question.id) && (
+                        <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
+                          <StickyNote className="w-3 h-3" /> Note
+                        </span>
+                      )}
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">
                       {question.question}
                     </h3>
                   </div>
 
-                  <div className={`shrink-0 p-2 rounded-lg transition-all ${
-                    expandedId === question.id
-                      ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
-                  }`}>
+                  <div
+                    className={`shrink-0 p-2 rounded-lg transition-all ${
+                      expandedId === question.id
+                        ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                    }`}
+                  >
                     {expandedId === question.id ? (
                       <ChevronUp className="w-5 h-5" />
                     ) : (
@@ -321,26 +468,87 @@ export default function JSInterviewQuestionsPage() {
                   </div>
                 </button>
 
-                {/* Revision Star Button */}
-                {user && (
+                {/* Action buttons */}
+                <div className="flex items-center gap-1 shrink-0">
+                  {/* Note button */}
                   <button
-                    onClick={(e) => handleToggleRevision(question.id, e)}
-                    disabled={loading}
-                    className={`shrink-0 p-2.5 rounded-lg transition-all ${
-                      isMarked(question.id)
-                        ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-200 dark:hover:bg-yellow-900/60'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:text-yellow-500'
-                    } disabled:opacity-50`}
-                    title={isMarked(question.id) ? "Remove from revision list" : "Mark for revision"}
+                    onClick={(e) => openNote(question.id, e)}
+                    className={`p-2.5 rounded-lg transition-all ${
+                      openNoteId === question.id || hasNote(question.id)
+                        ? "bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/60"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-500"
+                    }`}
+                    title="Add/view note"
                   >
-                    {isMarked(question.id) ? (
-                      <Star className="w-5 h-5 fill-current" />
-                    ) : (
-                      <StarOff className="w-5 h-5" />
-                    )}
+                    <PenLine className="w-5 h-5" />
                   </button>
-                )}
+
+                  {/* Revision Star Button */}
+                  {user && (
+                    <button
+                      onClick={(e) => handleToggleRevision(question.id, e)}
+                      disabled={loading}
+                      className={`p-2.5 rounded-lg transition-all ${
+                        isMarked(question.id)
+                          ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-200 dark:hover:bg-yellow-900/60"
+                          : "bg-gray-100 dark:bg-gray-800 text-gray-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:text-yellow-500"
+                      } disabled:opacity-50`}
+                      title={isMarked(question.id) ? "Remove from revision list" : "Mark for revision"}
+                    >
+                      {isMarked(question.id) ? (
+                        <Star className="w-5 h-5 fill-current" />
+                      ) : (
+                        <StarOff className="w-5 h-5" />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {/* Note Editor */}
+              <AnimatePresence>
+                {openNoteId === question.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 py-4 border-t border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <StickyNoteIcon className="w-4 h-4 text-amber-500" />
+                        <span className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                          My Note
+                        </span>
+                        <span className="text-xs text-gray-400 ml-1">(saved locally)</span>
+                      </div>
+                      <textarea
+                        ref={noteRef}
+                        value={noteText}
+                        onChange={(e) => setNoteText(e.target.value)}
+                        placeholder="Write your personal notes here..."
+                        rows={3}
+                        className="w-full px-3 py-2.5 text-sm border border-amber-200 dark:border-amber-800 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none transition-all"
+                      />
+                      <div className="flex items-center justify-end gap-2 mt-2">
+                        <button
+                          onClick={() => setOpenNoteId(null)}
+                          className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleSaveNote(question.id)}
+                          className="px-4 py-1.5 text-sm bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors"
+                        >
+                          Save Note
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Answer (Expandable) */}
               <AnimatePresence>
@@ -357,6 +565,25 @@ export default function JSInterviewQuestionsPage() {
                         className="prose prose-sm dark:prose-invert max-w-none"
                         dangerouslySetInnerHTML={{ __html: formatAnswer(question.answer) }}
                       />
+                      {/* Saved note display inside answer */}
+                      {hasNote(question.id) && openNoteId !== question.id && (
+                        <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
+                              <StickyNote className="w-3.5 h-3.5" /> My Note
+                            </span>
+                            <button
+                              onClick={(e) => openNote(question.id, e)}
+                              className="text-xs text-amber-600 hover:underline"
+                            >
+                              Edit
+                            </button>
+                          </div>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                            {getNote(question.id)}
+                          </p>
+                        </div>
+                      )}
                       {/* Tags */}
                       <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-yellow-200 dark:border-yellow-900/50">
                         {question.tags.map((tag) => (
