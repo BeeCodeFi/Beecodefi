@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<RecentActivity> RecentActivities => Set<RecentActivity>();
     public DbSet<InterviewRevision> InterviewRevisions => Set<InterviewRevision>();
     public DbSet<InterviewProgress> InterviewProgress => Set<InterviewProgress>();
+    public DbSet<InterviewNote> InterviewNotes => Set<InterviewNote>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -192,6 +193,18 @@ public class AppDbContext : DbContext
             entity.HasIndex(ip => new { ip.UserId, ip.Category, ip.QuestionId }).IsUnique();
             entity.Property(ip => ip.Category).HasMaxLength(50);
             entity.Property(ip => ip.QuestionId).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<InterviewNote>(entity =>
+        {
+            entity.HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(n => new { n.UserId, n.Category, n.QuestionId }).IsUnique();
+            entity.Property(n => n.Category).HasMaxLength(50);
+            entity.Property(n => n.QuestionId).HasMaxLength(50);
         });
     }
 }
