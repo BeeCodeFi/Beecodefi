@@ -47,6 +47,8 @@ export default function LeaderboardPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
+  const [timeframe, setTimeframe] = useState<"all" | "monthly">("all");
+  const [track, setTrack] = useState<"all" | "html" | "css" | "javascript">("all");
   const { user } = useAuth();
   const pageSize = 20;
 
@@ -55,7 +57,7 @@ export default function LeaderboardPage() {
       setLoading(true);
       try {
         const { data: leaderboardData } = await api.get<PaginatedLeaderboard>(
-          `/leaderboard?page=${page}&pageSize=${pageSize}`
+          `/leaderboard?page=${page}&pageSize=${pageSize}&timeframe=${timeframe}&track=${track}`
         );
         setLeaderboard(leaderboardData.items);
         setTotalPages(leaderboardData.totalPages);
@@ -75,7 +77,7 @@ export default function LeaderboardPage() {
     };
 
     fetchData();
-  }, [user, page]);
+  }, [user, page, timeframe, track]);
 
   const goToPage = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -208,6 +210,58 @@ export default function LeaderboardPage() {
                 <p className="text-gray-600 dark:text-gray-400">Learn daily to maintain streaks</p>
               </div>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
+        >
+          {/* Timeframe Tabs */}
+          <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+            <button
+              onClick={() => setTimeframe("all")}
+              className={cn(
+                "px-6 py-2 rounded-lg text-sm font-medium transition-all",
+                timeframe === "all"
+                  ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              )}
+            >
+              All Time
+            </button>
+            <button
+              onClick={() => setTimeframe("monthly")}
+              className={cn(
+                "px-6 py-2 rounded-lg text-sm font-medium transition-all",
+                timeframe === "monthly"
+                  ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              )}
+            >
+              This Month
+            </button>
+          </div>
+
+          {/* Track Filters */}
+          <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto w-full sm:w-auto">
+            {(["all", "html", "css", "javascript"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTrack(t)}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize whitespace-nowrap",
+                  track === t
+                    ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                )}
+              >
+                {t === "all" ? "Global" : t}
+              </button>
+            ))}
           </div>
         </motion.div>
 

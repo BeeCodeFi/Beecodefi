@@ -15,9 +15,9 @@ public class LeaderboardController : BaseController
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedLeaderboardDto>> GetLeaderboard([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    public async Task<ActionResult<PaginatedLeaderboardDto>> GetLeaderboard([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] string timeframe = "all", [FromQuery] string track = "all")
     {
-        var leaderboard = await _leaderboardService.GetLeaderboardAsync(page, pageSize);
+        var leaderboard = await _leaderboardService.GetLeaderboardAsync(page, pageSize, timeframe, track);
         return Ok(leaderboard);
     }
 

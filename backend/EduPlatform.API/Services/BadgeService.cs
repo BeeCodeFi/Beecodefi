@@ -160,8 +160,36 @@ public class BadgeService : IBadgeService
                 .Where(p => p.UserId == userId && p.TutorialSlug == "javascript")
                 .CountAsync(),
             "complete_foundations" => await GetFoundationsProgressAsync(userId),
+            "night_owl" => await CheckNightOwlAsync(userId),
+            "early_bird" => await CheckEarlyBirdAsync(userId),
+            "weekend_warrior" => await CheckWeekendWarriorAsync(userId),
+            "speed_demon" => 0, // This needs to be triggered at the moment of lesson completion with timestamp diffs (handled elsewhere, or we just return 0 here and manually unlock it)
+            "perfectionist" => await _db.QuizAttempts.Where(a => a.UserId == userId && a.Score == a.TotalQuestions).CountAsync() + 
+                               await _db.LessonQuizAttempts.Where(a => a.UserId == userId && a.Score == a.TotalQuestions).CountAsync(),
+            "interviewer_ready" => await _db.InterviewProgress.Where(p => p.UserId == userId).CountAsync(),
             _ => 0
         };
+    }
+
+    private async Task<int> CheckNightOwlAsync(int userId)
+    {
+        // Has any recent activity between 10 PM (22:00) and 4 AM (04:00)
+        var hasActivity = await _db.RecentActivities.AnyAsync(a => a.UserId == userId && (a.Timestamp.Hour >= 22 || a.Timestamp.Hour < 4));
+        return hasActivity ? 1 : 0;
+    }
+
+    private async Task<int> CheckEarlyBirdAsync(int userId)
+    {
+        // Has any recent activity between 5 AM (05:00) and 8 AM (08:00)
+        var hasActivity = await _db.RecentActivities.AnyAsync(a => a.UserId == userId && a.Timestamp.Hour >= 5 && a.Timestamp.Hour < 8);
+        return hasActivity ? 1 : 0;
+    }
+
+    private async Task<int> CheckWeekendWarriorAsync(int userId)
+    {
+        // Has any recent activity on Saturday or Sunday
+        var hasActivity = await _db.RecentActivities.AnyAsync(a => a.UserId == userId && (a.Timestamp.DayOfWeek == DayOfWeek.Saturday || a.Timestamp.DayOfWeek == DayOfWeek.Sunday));
+        return hasActivity ? 1 : 0;
     }
 
     private async Task<int> GetFoundationsProgressAsync(int userId)

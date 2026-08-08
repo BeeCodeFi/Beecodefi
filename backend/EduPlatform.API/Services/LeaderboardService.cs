@@ -13,11 +13,14 @@ public class LeaderboardService : ILeaderboardService
         _db = db;
     }
 
-    public async Task<PaginatedLeaderboardDto> GetLeaderboardAsync(int page = 1, int pageSize = 20)
+    public async Task<PaginatedLeaderboardDto> GetLeaderboardAsync(int page = 1, int pageSize = 20, string timeframe = "all", string track = "all")
     {
         // Ensure valid page and pageSize values
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var now = DateTime.UtcNow;
+        var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
         var userStatsQuery = _db.Users
             .Select(u => new
@@ -25,21 +28,34 @@ public class LeaderboardService : ILeaderboardService
                 u.Id,
                 u.Name,
                 u.ProfileImageUrl,
-                // Count unique quizzes, not total attempts
-                QuizzesCompleted = _db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() + 
-                                   _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count(),
-                LessonsCompleted = _db.TutorialProgress.Count(p => p.UserId == u.Id),
-                AverageScore = (_db.QuizAttempts.Where(a => a.UserId == u.Id).Any() || _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Any())
-                    ? (_db.QuizAttempts.Where(a => a.UserId == u.Id).Sum(a => (double)a.Score / a.TotalQuestions * 100) +
-                       _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Sum(a => (double)a.Score / a.TotalQuestions * 100)) /
-                      (_db.QuizAttempts.Count(a => a.UserId == u.Id) + _db.LessonQuizAttempts.Count(a => a.UserId == u.Id))
-                    : 0,
+                QuizzesCompleted = track == "all" 
+                    ? _db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() + 
+                      _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count()
+                    : _db.LessonQuizAttempts.Where(a => a.UserId == u.Id && a.QuizTopic.ToLower().Contains(track.ToLower())).Select(a => a.QuizTopic).Distinct().Count(),
+                LessonsCompleted = track == "all"
+                    ? _db.TutorialProgress.Count(p => p.UserId == u.Id)
+                    : _db.TutorialProgress.Count(p => p.UserId == u.Id && p.TutorialSlug.ToLower() == track.ToLower()),
+                AverageScore = track == "all" 
+                    ? ((_db.QuizAttempts.Where(a => a.UserId == u.Id).Any() || _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Any())
+                        ? (_db.QuizAttempts.Where(a => a.UserId == u.Id).Sum(a => (double)a.Score / a.TotalQuestions * 100) +
+                           _db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Sum(a => (double)a.Score / a.TotalQuestions * 100)) /
+                          (_db.QuizAttempts.Count(a => a.UserId == u.Id) + _db.LessonQuizAttempts.Count(a => a.UserId == u.Id))
+                        : 0)
+                    : (_db.LessonQuizAttempts.Where(a => a.UserId == u.Id && a.QuizTopic.ToLower().Contains(track.ToLower())).Any()
+                        ? _db.LessonQuizAttempts.Where(a => a.UserId == u.Id && a.QuizTopic.ToLower().Contains(track.ToLower())).Sum(a => (double)a.Score / a.TotalQuestions * 100) /
+                          _db.LessonQuizAttempts.Count(a => a.UserId == u.Id && a.QuizTopic.ToLower().Contains(track.ToLower()))
+                        : 0),
                 CurrentStreak = u.CurrentStreak,
-                // Points: 10 points per unique quiz completed + 5 points per lesson completed
-                TotalPoints = (_db.QuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizId).Distinct().Count() * 10) +
-                              (_db.LessonQuizAttempts.Where(a => a.UserId == u.Id).Select(a => a.QuizTopic).Distinct().Count() * 10) +
-                              (_db.TutorialProgress.Count(p => p.UserId == u.Id) * 5)
+                // If "monthly", calculate XP from activities in current month
+                TotalPoints = timeframe == "monthly"
+                    ? ((_db.LessonQuizAttempts.Where(a => a.UserId == u.Id && a.CompletedAt >= startOfMonth && (track == "all" || a.QuizTopic.ToLower().Contains(track.ToLower()))).Select(a => a.QuizTopic).Distinct().Count() * 10) +
+                       (_db.TutorialProgress.Count(p => p.UserId == u.Id && p.CompletedAt >= startOfMonth && (track == "all" || p.TutorialSlug.ToLower() == track.ToLower())) * 50))
+                    : (track == "all" ? u.TotalXP : 
+                        ((_db.LessonQuizAttempts.Where(a => a.UserId == u.Id && a.QuizTopic.ToLower().Contains(track.ToLower())).Select(a => a.QuizTopic).Distinct().Count() * 10) +
+                        (_db.TutorialProgress.Count(p => p.UserId == u.Id && p.TutorialSlug.ToLower() == track.ToLower()) * 50))) // 50 XP per lesson based on new XP scale
             })
+            // Filter out users with 0 points if filtering by timeframe or track to keep the leaderboard clean
+            .Where(u => u.TotalPoints > 0 || (timeframe == "all" && track == "all"))
             .OrderByDescending(u => u.TotalPoints)
             .ThenByDescending(u => u.CurrentStreak);
 

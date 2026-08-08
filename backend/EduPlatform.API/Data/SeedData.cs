@@ -833,38 +833,53 @@ public static class SeedData
         //  Achievement Badges
         // ═══════════════════════════════════════════════════
 
-        if (!await db.Badges.AnyAsync())
+        // ═══════════════════════════════════════════════════
+        //  Achievement Badges
+        // ═══════════════════════════════════════════════════
+
+        var badges = new List<Badge>
         {
-            var badges = new List<Badge>
-            {
-                // Tutorial Completion Badges
-                new() { Name = "HTML Master", Description = "Complete all HTML lessons", Icon = "🏗️", Category = "tutorial", Requirement = "complete_html", RequiredCount = 17, Color = "from-orange-400 to-red-600" },
-                new() { Name = "CSS Wizard", Description = "Complete all CSS lessons", Icon = "🎨", Category = "tutorial", Requirement = "complete_css", RequiredCount = 18, Color = "from-blue-400 to-indigo-600" },
-                new() { Name = "JavaScript Pro", Description = "Complete all JavaScript lessons", Icon = "⚡", Category = "tutorial", Requirement = "complete_javascript", RequiredCount = 24, Color = "from-yellow-400 to-amber-600" },
-                new() { Name = "Frontend Foundations", Description = "Complete HTML, CSS, and JavaScript", Icon = "🚀", Category = "tutorial", Requirement = "complete_foundations", RequiredCount = 3, Color = "from-purple-400 to-pink-600" },
+            // Tutorial Completion Badges
+            new() { Name = "HTML Master", Description = "Complete all HTML lessons", Icon = "🏗️", Category = "tutorial", Requirement = "complete_html", RequiredCount = 17, Color = "from-orange-400 to-red-600" },
+            new() { Name = "CSS Wizard", Description = "Complete all CSS lessons", Icon = "🎨", Category = "tutorial", Requirement = "complete_css", RequiredCount = 18, Color = "from-blue-400 to-indigo-600" },
+            new() { Name = "JavaScript Pro", Description = "Complete all JavaScript lessons", Icon = "⚡", Category = "tutorial", Requirement = "complete_javascript", RequiredCount = 24, Color = "from-yellow-400 to-amber-600" },
+            new() { Name = "Frontend Foundations", Description = "Complete HTML, CSS, and JavaScript", Icon = "🚀", Category = "tutorial", Requirement = "complete_foundations", RequiredCount = 3, Color = "from-purple-400 to-pink-600" },
 
-                // Quiz Badges
-                new() { Name = "First Steps", Description = "Complete your first quiz", Icon = "🎯", Category = "quiz", Requirement = "first_quiz", RequiredCount = 1, Color = "from-blue-400 to-blue-600" },
-                new() { Name = "Quiz Novice", Description = "Complete 5 quizzes", Icon = "📝", Category = "quiz", Requirement = "5_quizzes", RequiredCount = 5, Color = "from-green-400 to-green-600" },
-                new() { Name = "Quiz Expert", Description = "Complete 10 quizzes", Icon = "🏆", Category = "quiz", Requirement = "10_quizzes", RequiredCount = 10, Color = "from-purple-400 to-purple-600" },
-                new() { Name = "Quiz Master", Description = "Complete 25 quizzes", Icon = "⭐", Category = "quiz", Requirement = "25_quizzes", RequiredCount = 25, Color = "from-yellow-400 to-yellow-600" },
-                new() { Name = "Quiz Legend", Description = "Complete 50 quizzes", Icon = "👑", Category = "quiz", Requirement = "50_quizzes", RequiredCount = 50, Color = "from-red-400 to-red-600" },
-                new() { Name = "Perfect Score", Description = "Get 100% on any quiz", Icon = "💯", Category = "quiz", Requirement = "perfect_quiz", RequiredCount = 1, Color = "from-emerald-400 to-emerald-600" },
+            // Quiz Badges
+            new() { Name = "First Steps", Description = "Complete your first quiz", Icon = "🎯", Category = "quiz", Requirement = "first_quiz", RequiredCount = 1, Color = "from-blue-400 to-blue-600" },
+            new() { Name = "Quiz Novice", Description = "Complete 5 quizzes", Icon = "📝", Category = "quiz", Requirement = "5_quizzes", RequiredCount = 5, Color = "from-green-400 to-green-600" },
+            new() { Name = "Quiz Expert", Description = "Complete 10 quizzes", Icon = "🏆", Category = "quiz", Requirement = "10_quizzes", RequiredCount = 10, Color = "from-purple-400 to-purple-600" },
+            new() { Name = "Quiz Master", Description = "Complete 25 quizzes", Icon = "⭐", Category = "quiz", Requirement = "25_quizzes", RequiredCount = 25, Color = "from-yellow-400 to-yellow-600" },
+            new() { Name = "Quiz Legend", Description = "Complete 50 quizzes", Icon = "👑", Category = "quiz", Requirement = "50_quizzes", RequiredCount = 50, Color = "from-red-400 to-red-600" },
+            new() { Name = "Perfect Score", Description = "Get 100% on any quiz", Icon = "💯", Category = "quiz", Requirement = "perfect_quiz", RequiredCount = 1, Color = "from-emerald-400 to-emerald-600" },
 
-                // Lesson Badges
-                new() { Name = "Learning Begins", Description = "Complete your first lesson", Icon = "📚", Category = "lesson", Requirement = "first_lesson", RequiredCount = 1, Color = "from-indigo-400 to-indigo-600" },
-                new() { Name = "Knowledge Seeker", Description = "Complete 10 lessons", Icon = "🔍", Category = "lesson", Requirement = "10_lessons", RequiredCount = 10, Color = "from-cyan-400 to-cyan-600" },
-                new() { Name = "Dedicated Learner", Description = "Complete 25 lessons", Icon = "📖", Category = "lesson", Requirement = "25_lessons", RequiredCount = 25, Color = "from-teal-400 to-teal-600" },
-                new() { Name = "Study Champion", Description = "Complete 50 lessons", Icon = "🎓", Category = "lesson", Requirement = "50_lessons", RequiredCount = 50, Color = "from-violet-400 to-violet-600" },
-                new() { Name = "Master Scholar", Description = "Complete 100 lessons", Icon = "🌟", Category = "lesson", Requirement = "100_lessons", RequiredCount = 100, Color = "from-amber-400 to-amber-600" },
+            // Lesson Badges
+            new() { Name = "Learning Begins", Description = "Complete your first lesson", Icon = "📚", Category = "lesson", Requirement = "first_lesson", RequiredCount = 1, Color = "from-indigo-400 to-indigo-600" },
+            new() { Name = "Knowledge Seeker", Description = "Complete 10 lessons", Icon = "🔍", Category = "lesson", Requirement = "10_lessons", RequiredCount = 10, Color = "from-cyan-400 to-cyan-600" },
+            new() { Name = "Dedicated Learner", Description = "Complete 25 lessons", Icon = "📖", Category = "lesson", Requirement = "25_lessons", RequiredCount = 25, Color = "from-teal-400 to-teal-600" },
+            new() { Name = "Study Champion", Description = "Complete 50 lessons", Icon = "🎓", Category = "lesson", Requirement = "50_lessons", RequiredCount = 50, Color = "from-violet-400 to-violet-600" },
+            new() { Name = "Master Scholar", Description = "Complete 100 lessons", Icon = "🌟", Category = "lesson", Requirement = "100_lessons", RequiredCount = 100, Color = "from-amber-400 to-amber-600" },
 
-                // Streak Badges
-                new() { Name = "Consistent", Description = "Maintain a 3-day streak", Icon = "🔥", Category = "streak", Requirement = "3_day_streak", RequiredCount = 3, Color = "from-orange-400 to-orange-600" },
-                new() { Name = "Committed", Description = "Maintain a 7-day streak", Icon = "⚡", Category = "streak", Requirement = "7_day_streak", RequiredCount = 7, Color = "from-red-400 to-orange-500" },
-                new() { Name = "Unstoppable", Description = "Maintain a 30-day streak", Icon = "🚀", Category = "streak", Requirement = "30_day_streak", RequiredCount = 30, Color = "from-pink-400 to-rose-600" },
-            };
+            // Streak Badges
+            new() { Name = "Consistent", Description = "Maintain a 3-day streak", Icon = "🔥", Category = "streak", Requirement = "3_day_streak", RequiredCount = 3, Color = "from-orange-400 to-orange-600" },
+            new() { Name = "Committed", Description = "Maintain a 7-day streak", Icon = "⚡", Category = "streak", Requirement = "7_day_streak", RequiredCount = 7, Color = "from-red-400 to-orange-500" },
+            new() { Name = "Unstoppable", Description = "Maintain a 30-day streak", Icon = "🚀", Category = "streak", Requirement = "30_day_streak", RequiredCount = 30, Color = "from-pink-400 to-rose-600" },
 
-            db.Badges.AddRange(badges);
+            // Advanced Gamification Badges
+            new() { Name = "Night Owl", Description = "Learn between 10 PM and 4 AM", Icon = "🦉", Category = "dedication", Requirement = "night_owl", RequiredCount = 1, Color = "from-indigo-700 to-blue-900" },
+            new() { Name = "Early Bird", Description = "Learn between 5 AM and 8 AM", Icon = "🌅", Category = "dedication", Requirement = "early_bird", RequiredCount = 1, Color = "from-yellow-300 to-orange-400" },
+            new() { Name = "Weekend Warrior", Description = "Learn on a Saturday or Sunday", Icon = "⚔️", Category = "dedication", Requirement = "weekend_warrior", RequiredCount = 1, Color = "from-red-500 to-pink-600" },
+            new() { Name = "Speed Demon", Description = "Complete a lesson in record time", Icon = "🏎️", Category = "achievement", Requirement = "speed_demon", RequiredCount = 1, Color = "from-red-500 to-yellow-500" },
+            new() { Name = "Perfectionist", Description = "Get 100% on 5 quizzes", Icon = "✨", Category = "achievement", Requirement = "perfectionist", RequiredCount = 5, Color = "from-cyan-300 to-blue-500" },
+            new() { Name = "Interviewer Ready", Description = "Complete all interview questions", Icon = "👔", Category = "learning", Requirement = "interviewer_ready", RequiredCount = 125, Color = "from-emerald-500 to-teal-700" }
+        };
+
+        var existingBadges = await db.Badges.Select(b => b.Requirement).ToListAsync();
+        var newBadges = badges.Where(b => !existingBadges.Contains(b.Requirement)).ToList();
+
+        if (newBadges.Any())
+        {
+            db.Badges.AddRange(newBadges);
             await db.SaveChangesAsync();
         }
     }

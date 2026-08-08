@@ -198,19 +198,19 @@
 ### 4. Gamification & Engagement
 
 #### A. Enhanced Badge System (MEDIUM PRIORITY)
-- [ ] More Badges:
-  - [ ] "Night Owl" - Learn after 10 PM
-  - [ ] "Early Bird" - Learn before 7 AM
-  - [ ] "Weekend Warrior" - Learn on weekends
-  - [ ] "Speed Demon" - Complete lesson in record time
-  - [ ] "Perfectionist" - Get 100% on all quizzes
-  - [ ] "Interviewer Ready" - Complete all interview questions
+- [x] More Badges:
+  - [x] "Night Owl" - Learn after 10 PM
+  - [x] "Early Bird" - Learn before 7 AM
+  - [x] "Weekend Warrior" - Learn on weekends
+  - [x] "Speed Demon" - Complete lesson in record time
+  - [x] "Perfectionist" - Get 100% on all quizzes
+  - [x] "Interviewer Ready" - Complete all interview questions
 - [x] Badge Progress: Show % progress toward each locked badge
 - [ ] Rare Badges: Special badges for exceptional achievements
 
 #### B. XP & Leveling System (MEDIUM PRIORITY)
-- [ ] Earn XP for completing lessons, quizzes, streaks
-- [ ] Level up system (Level 1-50)
+- [x] Earn XP for completing lessons, quizzes, streaks
+- [x] Level up system (Level 1-50)
 - [ ] XP multipliers for streaks
 - [ ] Daily/Weekly XP goals
 - [ ] XP leaderboard
@@ -226,11 +226,11 @@
 ### 5. Social & Collaborative Features
 
 #### A. User Profiles (MEDIUM PRIORITY)
-- [ ] Public profile pages
-- [ ] Activity feed
+- [x] Public profile pages
+- [x] Activity feed
 - [ ] Skills showcase
-- [ ] Completed tutorials display
-- [ ] Badges and achievements on profile
+- [x] Completed tutorials display
+- [x] Badges and achievements on profile
 - [ ] Contribution history
 
 #### B. Friends & Following
@@ -240,12 +240,11 @@
 - [ ] Study groups/teams
 - [ ] Private messaging
 
-#### C. Leaderboard Enhancements
-- [ ] Monthly rankings (currently global only)
-- [ ] Friends-only leaderboard
-- [ ] By learning track / topic
-- [ ] By region/country
-- [ ] Achievement showcases
+#### C. Leaderboard Enhancements (LOW PRIORITY)
+- [x] Time Filters: Weekly, Monthly, All-time views
+- [x] Category Filters: Leaderboard per language/track
+- [ ] Friends Leaderboard: Compare with friends only
+- [ ] Relative Ranking: Show users just above/below current user
 
 ---
 

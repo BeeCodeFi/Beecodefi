@@ -43,9 +43,13 @@ export default function BadgesPage() {
 
   const categories = [
     { id: "all", label: "All Badges" },
+    { id: "tutorial", label: "Tutorials" },
     { id: "quiz", label: "Quiz" },
     { id: "lesson", label: "Lessons" },
     { id: "streak", label: "Streaks" },
+    { id: "dedication", label: "Dedication" },
+    { id: "achievement", label: "Achievement" },
+    { id: "learning", label: "Learning" },
   ];
 
   const filteredBadges = filter === "all" 
