@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Bookmark> Bookmarks => Set<Bookmark>();
     public DbSet<RecentActivity> RecentActivities => Set<RecentActivity>();
+    public DbSet<InterviewRevision> InterviewRevisions => Set<InterviewRevision>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -166,6 +167,18 @@ public class AppDbContext : DbContext
             entity.Property(ra => ra.LessonSlug).HasMaxLength(150);
             entity.Property(ra => ra.TutorialTitle).HasMaxLength(200);
             entity.Property(ra => ra.LessonTitle).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<InterviewRevision>(entity =>
+        {
+            entity.HasOne(ir => ir.User)
+                .WithMany()
+                .HasForeignKey(ir => ir.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ir => new { ir.UserId, ir.Category, ir.QuestionId }).IsUnique();
+            entity.Property(ir => ir.Category).HasMaxLength(50);
+            entity.Property(ir => ir.QuestionId).HasMaxLength(50);
         });
     }
 }
