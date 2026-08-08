@@ -155,14 +155,20 @@ This document provides a comprehensive overview of all platform features with th
 - **Status**: ✅ **Fully Integrated**
 
 ### Custom Quiz Builder
-- **Frontend**: ⏳ Pending
-  - Quiz builder UI
-  - Topic/difficulty selection
-  - Question limit settings
-- **Backend**: ⏳ Pending
-  - Custom quiz generation
-  - Quiz sharing
-- **Status**: ⏳ **Pending**
+- **Frontend**: ✅ Complete
+  - Custom quiz builder page with topic/difficulty selection
+  - Question count slider (5-50 questions)
+  - Custom title and description
+  - My quizzes list with take/share/delete functionality
+  - Share code generation for quiz sharing
+- **Backend**: ✅ Complete
+  - CustomQuiz and CustomQuizQuestion models
+  - CustomQuizService with create, read, delete, share functionality
+  - CustomQuizController with full API endpoints
+  - Random question selection from existing quiz pool
+  - Unique share code generation
+  - Database migration created
+- **Status**: ✅ **Fully Integrated**
 
 ---
 

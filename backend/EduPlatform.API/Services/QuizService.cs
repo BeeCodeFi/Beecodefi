@@ -112,45 +112,15 @@ public class QuizService : IQuizService
 
         if (userId.HasValue)
         {
-            var today = DateTime.UtcNow.Date;
-            var tomorrow = today.AddDays(1);
-            
-            // Check if user already has an attempt for this quiz today
-            var existingAttemptToday = await _db.QuizAttempts
-                .Where(a => a.UserId == userId.Value 
-                    && a.QuizId == dto.QuizId 
-                    && a.CompletedAt >= today 
-                    && a.CompletedAt < tomorrow)
-                .FirstOrDefaultAsync();
-
-            if (existingAttemptToday != null)
+            // Store each individual attempt separately for accurate analytics
+            _db.QuizAttempts.Add(new QuizAttempt
             {
-                // Update existing attempt if new score is better
-                if (score > existingAttemptToday.Score)
-                {
-                    existingAttemptToday.Score = score;
-                    existingAttemptToday.CompletedAt = DateTime.UtcNow;
-                    _db.QuizAttempts.Update(existingAttemptToday);
-                }
-                // If score is not better, just update the timestamp but keep the best score
-                else
-                {
-                    existingAttemptToday.CompletedAt = DateTime.UtcNow;
-                    _db.QuizAttempts.Update(existingAttemptToday);
-                }
-            }
-            else
-            {
-                // Create new attempt for a different day
-                _db.QuizAttempts.Add(new QuizAttempt
-                {
-                    UserId = userId.Value,
-                    QuizId = dto.QuizId,
-                    Score = score,
-                    TotalQuestions = quiz.Questions.Count,
-                    CompletedAt = DateTime.UtcNow
-                });
-            }
+                UserId = userId.Value,
+                QuizId = dto.QuizId,
+                Score = score,
+                TotalQuestions = quiz.Questions.Count,
+                CompletedAt = DateTime.UtcNow
+            });
             
             await _db.SaveChangesAsync();
             

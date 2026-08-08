@@ -33,6 +33,8 @@ public class AppDbContext : DbContext
     public DbSet<LessonTip> LessonTips => Set<LessonTip>();
     public DbSet<LessonTipVote> LessonTipVotes => Set<LessonTipVote>();
     public DbSet<StudySession> StudySessions => Set<StudySession>();
+    public DbSet<CustomQuiz> CustomQuizzes => Set<CustomQuiz>();
+    public DbSet<CustomQuizQuestion> CustomQuizQuestions => Set<CustomQuizQuestion>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -340,6 +342,34 @@ public class AppDbContext : DbContext
 
             entity.HasIndex(ss => new { ss.UserId, ss.Category }).IsUnique();
             entity.Property(ss => ss.Category).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<CustomQuiz>(entity =>
+        {
+            entity.HasOne(cq => cq.User)
+                .WithMany()
+                .HasForeignKey(cq => cq.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(cq => cq.ShareCode).IsUnique();
+            entity.Property(cq => cq.Title).HasMaxLength(200);
+            entity.Property(cq => cq.Topic).HasMaxLength(500);
+            entity.Property(cq => cq.ShareCode).HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<CustomQuizQuestion>(entity =>
+        {
+            entity.HasOne(cqq => cqq.CustomQuiz)
+                .WithMany(cq => cq.Questions)
+                .HasForeignKey(cqq => cqq.CustomQuizId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cqq => cqq.Question)
+                .WithMany()
+                .HasForeignKey(cqq => cqq.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(cqq => new { cqq.CustomQuizId, cqq.QuestionId }).IsUnique();
         });
     }
 }

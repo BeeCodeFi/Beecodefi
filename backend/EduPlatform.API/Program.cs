@@ -69,6 +69,7 @@ builder.Services.AddScoped<ILessonCodeExampleService, LessonCodeExampleService>(
 builder.Services.AddScoped<ILessonTipService, LessonTipService>();
 builder.Services.AddScoped<IAiExplanationService, AiExplanationService>();
 builder.Services.AddScoped<IQuizAnalyticsService, QuizAnalyticsService>();
+builder.Services.AddScoped<ICustomQuizService, CustomQuizService>();
 builder.Services.AddHostedService<RefreshTokenCleanupService>();
 
 // Rate Limiting
